@@ -5,8 +5,7 @@ import {
   Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
 } from './modelos';
 
-// A API roda na mesma máquina que serve o front (na porta 8080); assim funciona em localhost e pelo IP da rede (celular).
-export const API_URL = `${location.protocol}//${location.hostname}:8080/api`;
+export const API_URL = 'http://localhost:8080/api';
 
 /** Extrai a mensagem do ProblemDetail da API (campo `detail`) ou devolve um texto padrão. */
 export function mensagemDeErro(erro: unknown): string {
