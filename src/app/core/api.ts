@@ -1,7 +1,9 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Exercicio, GrupoMuscular, Plano, PlanoRequest, PlanoResumo } from './modelos';
+import {
+  Exercicio, GrupoMuscular, Hoje, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
+} from './modelos';
 
 export const API_URL = 'http://localhost:8080/api';
 
@@ -55,5 +57,33 @@ export class ExerciciosApi {
     if (grupo) params = params.set('grupo', grupo);
     if (busca.trim()) params = params.set('busca', busca.trim());
     return this.http.get<Exercicio[]>(`${API_URL}/exercicios`, { params });
+  }
+}
+
+
+@Injectable({ providedIn: 'root' })
+export class SessoesApi {
+  private readonly http = inject(HttpClient);
+
+  hoje(): Observable<Hoje> {
+    return this.http.get<Hoje>(`${API_URL}/hoje`);
+  }
+
+  pular(): Observable<Hoje> {
+    return this.http.post<Hoje>(`${API_URL}/hoje/pular`, {});
+  }
+
+  historico(pagina: number, tamanho: number): Observable<SessaoResumo[]> {
+    const params = new HttpParams().set('pagina', pagina).set('tamanho', tamanho);
+    return this.http.get<SessaoResumo[]>(`${API_URL}/sessoes`, { params });
+  }
+
+  obter(id: string): Observable<SessaoLocal> {
+    return this.http.get<SessaoLocal>(`${API_URL}/sessoes/${id}`);
+  }
+
+  /** Upsert idempotente: o cliente gera os ids e reenvia a sessão inteira. */
+  salvar(sessao: SessaoLocal): Observable<SessaoLocal> {
+    return this.http.put<SessaoLocal>(`${API_URL}/sessoes/${sessao.id}`, sessao);
   }
 }

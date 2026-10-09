@@ -1,0 +1,99 @@
+<section class="cabecalho">
+  <h1 class="titulo-md">Histórico de Treinos</h1>
+  <p class="suave">Registro das suas sessões realizadas.</p>
+</section>
+
+@if (carregando()) {
+  <p class="estado suave" role="status">Carregando…</p>
+} @else if (erro() && sessoes().length === 0) {
+  <div class="estado">
+    <p class="erro">{{ erro() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregarPagina()">Tentar de novo</button>
+  </div>
+} @else if (sessoes().length === 0) {
+  <div class="estado">
+    <span class="icone circulo" aria-hidden="true">event_busy</span>
+    <h2 class="titulo-sm">Nenhum treino registrado ainda</h2>
+    <p class="suave">Inicie seu primeiro treino para acompanhar sua evolução.</p>
+    <a class="btn btn-primario" routerLink="/hoje">
+      <span class="icone" aria-hidden="true">play_arrow</span> Ir para Hoje
+    </a>
+  </div>
+} @else {
+  @for (mes of meses(); track mes.chave) {
+    <section class="mes">
+      <header class="mes-topo">
+        <h2 class="rotulo suave">{{ mes.rotulo }}</h2>
+        <span class="suave num">{{ mes.concluidas }} {{ mes.concluidas === 1 ? 'treino' : 'treinos' }} · {{ formatarKg(mes.volumeKg) }} kg</span>
+      </header>
+
+      <ul class="lista">
+        @for (s of mes.sessoes; track s.id) {
+          <li class="cartao" [class.abandonada]="s.estado === 'ABANDONADA'">
+            <header class="cartao-topo">
+              <div>
+                <p class="rotulo suave">{{ formatarDataRelativa(s.iniciadaEm) }} · {{ diaSemana(s.iniciadaEm) }}</p>
+                <h3 class="titulo-sm">{{ s.diaNome }}</h3>
+                <p class="suave plano">{{ s.planoNome }}</p>
+              </div>
+              @if (s.estado === 'ABANDONADA') {
+                <span class="chip aband">Abandonado</span>
+              }
+            </header>
+
+            <ul class="dados">
+              <li><span class="icone" aria-hidden="true">timer</span><span class="num">{{ duracaoMinutos(s.iniciadaEm, s.finalizadaEm) }} min</span></li>
+              <li><span class="icone" aria-hidden="true">format_list_numbered</span><span class="num">{{ s.seriesConcluidas }} séries</span></li>
+              <li><span class="icone" aria-hidden="true">fitness_center</span><span class="num">{{ formatarKg(s.volumeKg) }} kg</span></li>
+            </ul>
+
+            <button type="button" class="detalhes" [attr.aria-expanded]="abertas().has(s.id)" (click)="alternar(s)">
+              <span class="icone" aria-hidden="true">read_more</span>
+              Detalhes dos exercícios
+              <span class="icone chevron" aria-hidden="true">{{ abertas().has(s.id) ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+
+            @if (abertas().has(s.id)) {
+              <div class="expandido">
+                @if (detalhes().get(s.id); as d) {
+                  @for (e of d.exercicios; track e.id) {
+                    <div class="ex">
+                      <h4 class="ex-nome">{{ e.nome }}</h4>
+                      <ul class="series">
+                        @for (serie of e.series; track serie.id; let i = $index) {
+                          <li [class.pulada]="!serie.concluida">
+                            <span class="rotulo suave">S{{ i + 1 }}</span>
+                            <span class="num">
+                              @if (serie.concluida) {
+                                {{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}
+                              } @else {
+                                não feita
+                              }
+                            </span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                } @else if (erroDetalhe()) {
+                  <p class="erro">{{ erroDetalhe() }}</p>
+                } @else {
+                  <p class="suave" role="status">Carregando…</p>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (erro()) {
+    <p class="erro centro">{{ erro() }}</p>
+  }
+  @if (temMais()) {
+    <button type="button" class="btn btn-secundario mais" [disabled]="carregandoMais()" (click)="carregarPagina()">
+      {{ carregandoMais() ? 'Carregando…' : 'Carregar mais' }}
+    </button>
+  }
+}

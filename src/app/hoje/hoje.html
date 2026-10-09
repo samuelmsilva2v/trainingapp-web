@@ -1,0 +1,86 @@
+<h1 class="titulo-md saudacao">Hoje</h1>
+
+@if (carregando()) {
+  <p class="estado suave" role="status">Carregando…</p>
+} @else if (erro()) {
+  <div class="estado">
+    <p class="erro">{{ erro() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
+  </div>
+} @else if (hoje(); as h) {
+  @if (!h.planoId) {
+    <div class="vazio">
+      <span class="icone circulo" aria-hidden="true">fitness_center</span>
+      <h2 class="titulo-sm">Nenhum plano ativo</h2>
+      <p class="suave">Monte sua divisão de treinos e acompanhe sua evolução série a série.</p>
+      <a class="btn btn-primario" routerLink="/planos/novo">
+        <span class="icone" aria-hidden="true">add_circle</span> Criar meu primeiro plano
+      </a>
+    </div>
+  } @else {
+    @if (h.sessaoEmAndamento; as andamento) {
+      <section class="cartao destaque">
+        <span class="chip andamento"><span class="icone cheio" aria-hidden="true">timer</span> Em andamento</span>
+        <h2 class="titulo-md">{{ andamento.diaNome }}</h2>
+        <p class="suave">{{ andamento.planoNome }} · iniciado há {{ duracaoMinutos(andamento.iniciadaEm, null) }} min</p>
+        <button type="button" class="btn btn-primario" (click)="continuar()">
+          <span class="icone" aria-hidden="true">play_arrow</span> Continuar treino
+        </button>
+      </section>
+    } @else if (h.proximoDia; as dia) {
+      <section class="cartao destaque">
+        <p class="suave plano">
+          <span class="icone" aria-hidden="true">calendar_today</span>
+          {{ h.planoNome }} · Dia {{ dia.ordem + 1 }} de {{ h.totalDias }} na rotação
+        </p>
+        <h2 class="titulo-md">{{ dia.nome }}</h2>
+
+        @if (dia.exercicios.length) {
+          <ul class="exercicios">
+            @for (e of dia.exercicios.slice(0, 4); track e.id) {
+              <li>
+                <span class="nome">{{ e.exercicioNome }}</span>
+                <span class="meta num">{{ e.series }} × {{ e.repsMin }}–{{ e.repsMax }}</span>
+              </li>
+            }
+          </ul>
+          @if (dia.exercicios.length > 4) {
+            <p class="suave resto">+{{ dia.exercicios.length - 4 }} exercícios restantes na sessão</p>
+          }
+          <button type="button" class="btn btn-primario" [disabled]="ocupado()" (click)="iniciar()">
+            <span class="icone" aria-hidden="true">play_arrow</span> Iniciar treino
+          </button>
+        } @else {
+          <p class="suave">Este dia ainda não tem exercícios.</p>
+          <a class="btn btn-secundario" [routerLink]="['/planos', h.planoId]">
+            <span class="icone" aria-hidden="true">edit</span> Editar plano
+          </a>
+        }
+
+        @if (h.totalDias > 1) {
+          <button type="button" class="btn btn-secundario" [disabled]="ocupado()" (click)="pular()">
+            <span class="icone" aria-hidden="true">skip_next</span> Pular este dia na rotação
+          </button>
+        }
+      </section>
+    } @else {
+      <div class="vazio">
+        <h2 class="titulo-sm">{{ h.planoNome }}</h2>
+        <p class="suave">O plano ativo não tem dias de treino.</p>
+        <a class="btn btn-secundario" [routerLink]="['/planos', h.planoId]">Editar plano</a>
+      </div>
+    }
+  }
+
+  @if (ultimo(); as u) {
+    <section class="cartao ultimo">
+      <h2 class="rotulo suave">Último treino</h2>
+      <p class="titulo-sm">{{ formatarDataRelativa(u.iniciadaEm) }} · {{ u.diaNome }}</p>
+      <dl class="totais">
+        <div><dd class="num">{{ duracaoMinutos(u.iniciadaEm, u.finalizadaEm) }}</dd><dt>minutos</dt></div>
+        <div><dd class="num">{{ u.seriesConcluidas }}</dd><dt>séries</dt></div>
+        <div><dd class="num">{{ formatarKg(u.volumeKg) }}</dd><dt>kg volume</dt></div>
+      </dl>
+    </section>
+  }
+}

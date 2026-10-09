@@ -1,0 +1,172 @@
+@if (sessao(); as s) {
+  <header class="topo">
+    <button type="button" class="btn-icone" aria-label="Voltar para Hoje" (click)="voltar()">
+      <span class="icone" aria-hidden="true">arrow_back</span>
+    </button>
+    <h1 class="titulo-sm">Sessão ativa</h1>
+    <span class="sincronia" [class.erro]="store.status() === 'erro'" role="status">
+      @switch (store.status()) {
+        @case ('salvo') { <span class="icone" aria-hidden="true">cloud_done</span> Salvo }
+        @case ('salvando') { <span class="icone" aria-hidden="true">sync</span> Salvando… }
+        @case ('erro') {
+          <button type="button" class="tentar" (click)="store.reenviar()">
+            <span class="icone" aria-hidden="true">cloud_off</span> Falha ao salvar · tentar de novo
+          </button>
+        }
+      }
+    </span>
+  </header>
+
+  <div class="pagina">
+    <section class="hud">
+      <div class="hud-info">
+        <span class="rotulo suave">{{ s.diaNome }}</span>
+        <span class="relogio num">{{ cronometro(decorrido()) }}</span>
+        <span class="suave num">{{ store.seriesConcluidas() }}/{{ store.totalSeries() }} séries</span>
+      </div>
+      <div class="hud-acoes">
+        <button type="button" class="btn btn-primario finalizar" (click)="abrirResumo()">
+          Finalizar <span class="icone" aria-hidden="true">flag</span>
+        </button>
+        <div class="menu-ancora">
+          <button type="button" class="btn-icone" aria-label="Mais opções" [attr.aria-expanded]="menuAberto()"
+                  (click)="menuAberto.set(!menuAberto())">
+            <span class="icone" aria-hidden="true">more_vert</span>
+          </button>
+          @if (menuAberto()) {
+            <div class="menu" role="menu">
+              <button type="button" role="menuitem" class="perigo" (click)="abandonar()">
+                <span class="icone" aria-hidden="true">cancel</span> Abandonar treino
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    @if (exercicio(); as ex) {
+      <section class="navegador">
+        <button type="button" class="btn-icone" aria-label="Exercício anterior" [disabled]="indice() === 0" (click)="irPara(-1)">
+          <span class="icone" aria-hidden="true">chevron_left</span>
+        </button>
+        <span class="rotulo suave">Exercício {{ indice() + 1 }} de {{ s.exercicios.length }}</span>
+        <button type="button" class="btn-icone" aria-label="Próximo exercício"
+                [disabled]="indice() === s.exercicios.length - 1" (click)="irPara(1)">
+          <span class="icone" aria-hidden="true">chevron_right</span>
+        </button>
+      </section>
+
+      <section class="cartao-ex">
+        <h2 class="titulo-md">{{ ex.nome }}</h2>
+        <span class="tags">
+          <span class="tag">{{ rotuloGrupo(ex.grupoMuscular) }}</span>
+          <span class="tag">{{ rotuloEquipamento(ex.equipamento) }}</span>
+        </span>
+        <dl class="metas">
+          <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }}</dd></div>
+          <div><dt>Alvo</dt><dd class="num">{{ ex.metaCarga === null ? '—' : formatarCarga(ex.metaCarga) + ' kg' }}</dd></div>
+          <div><dt>Descanso</dt><dd class="num">{{ ex.metaDescansoSegundos === null ? '—' : ex.metaDescansoSegundos + 's' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="series">
+        <h3 class="rotulo suave">Registro de séries</h3>
+        @for (serie of ex.series; track serie.id; let i = $index) {
+          <article class="serie" [class.feita]="serie.concluida">
+            <header class="serie-topo">
+              <span class="numero num">{{ i + 1 }}</span>
+              <span class="suave serie-meta">Meta: {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }} reps</span>
+              @if (ex.series.length > 1 && !serie.concluida) {
+                <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (i + 1)" (click)="removerSerie(i)">
+                  <span class="icone" aria-hidden="true">delete</span>
+                </button>
+              }
+              <button type="button" class="check" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
+                      [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (i + 1)"
+                      (click)="alternarConcluida(i)">
+                <span class="icone" aria-hidden="true">{{ serie.concluida ? 'check' : 'radio_button_unchecked' }}</span>
+              </button>
+            </header>
+
+            <div class="steppers">
+              <div class="stepper">
+                <span class="rotulo suave">Reps</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos uma repetição" (click)="ajustarReps(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <input class="num" type="number" inputmode="numeric" min="0" aria-label="Repetições"
+                         [value]="serie.reps ?? ''" (change)="digitarReps(i, $event)" />
+                  <button type="button" aria-label="Mais uma repetição" (click)="ajustarReps(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
+              <div class="stepper">
+                <span class="rotulo suave">Carga (kg)</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos 2,5 kg" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <input class="num" type="number" inputmode="decimal" min="0" step="0.5" aria-label="Carga em quilos"
+                         [value]="serie.carga ?? ''" (change)="digitarCarga(i, $event)" />
+                  <button type="button" aria-label="Mais 2,5 kg" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+        <button type="button" class="btn btn-secundario" (click)="adicionarSerie()">
+          <span class="icone" aria-hidden="true">add</span> Adicionar série
+        </button>
+      </section>
+
+      @if (proximo(); as prox) {
+        <button type="button" class="proximo" (click)="irPara(1)">
+          <span class="icone" aria-hidden="true">playlist_play</span>
+          <span class="texto"><span class="rotulo suave">A seguir</span><span class="nome">{{ prox.nome }}</span></span>
+          <span class="suave num">{{ prox.series.length }} séries</span>
+        </button>
+      }
+    } @else {
+      <p class="vazio suave">Este treino não tem exercícios.</p>
+    }
+  </div>
+
+  @if (descansoRestante(); as restante) {
+    <aside class="descanso" role="timer" aria-label="Descanso">
+      <div class="barra"><span [style.width.%]="descansoProgresso()"></span></div>
+      <div class="descanso-corpo">
+        <span class="icone" aria-hidden="true">hourglass_top</span>
+        <span class="rotulo">Descanso</span>
+        <span class="tempo num">{{ cronometro(restante) }}</span>
+        <button type="button" class="btn btn-secundario" (click)="maisDescanso()">+15s</button>
+        <button type="button" class="btn btn-secundario" (click)="pularDescanso()">Pular</button>
+      </div>
+    </aside>
+  }
+
+  @if (resumoAberto()) {
+    <div class="fundo" (click)="resumoAberto.set(false)"></div>
+    <section class="folha" role="dialog" aria-modal="true" aria-label="Resumo da sessão">
+      <header class="folha-topo">
+        <div>
+          <p class="rotulo suave">Pronto para encerrar?</p>
+          <h2 class="titulo-sm">Resumo da sessão</h2>
+        </div>
+        <button type="button" class="btn-icone" aria-label="Fechar" (click)="resumoAberto.set(false)">
+          <span class="icone" aria-hidden="true">close</span>
+        </button>
+      </header>
+      <dl class="totais">
+        <div><dd class="num">{{ store.seriesConcluidas() }}</dd><dt>séries</dt></div>
+        <div><dd class="num">{{ formatarKg(store.volumeKg()) }}</dd><dt>kg total</dt></div>
+        <div><dd class="num">{{ cronometro(decorrido()) }}</dd><dt>tempo</dt></div>
+      </dl>
+      @if (store.seriesConcluidas() === 0) {
+        <p class="aviso">Nenhuma série concluída. Conclua pelo menos uma ou abandone o treino.</p>
+      }
+      <button type="button" class="btn btn-primario" [disabled]="encerrando() || store.seriesConcluidas() === 0" (click)="concluir()">
+        <span class="icone" aria-hidden="true">check_circle</span>
+        {{ encerrando() ? 'Salvando…' : 'Concluir e salvar treino' }}
+      </button>
+      <button type="button" class="btn btn-secundario" (click)="resumoAberto.set(false)">Continuar treinando</button>
+    </section>
+  }
+} @else if (carregando()) {
+  <p class="carregando suave" role="status">Carregando treino…</p>
+}

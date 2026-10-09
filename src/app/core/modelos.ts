@@ -66,3 +66,67 @@ export interface PlanoRequest {
     }[];
   }[];
 }
+
+export type EstadoSessao = 'EM_ANDAMENTO' | 'CONCLUIDA' | 'ABANDONADA';
+
+export interface DiaHoje {
+  id: string;
+  nome: string;
+  ordem: number;
+  exercicios: ItemPlano[];
+}
+
+export interface Hoje {
+  planoId: string | null;
+  planoNome: string | null;
+  totalDias: number;
+  proximoDia: DiaHoje | null;
+  sessaoEmAndamento: SessaoLocal | null;
+}
+
+export interface SerieLocal {
+  id: string;
+  reps: number | null;
+  carga: number | null;
+  concluida: boolean;
+}
+
+export interface ExercicioLocal {
+  id: string;
+  exercicioId: string;
+  nome: string;
+  grupoMuscular: GrupoMuscular;
+  equipamento: Equipamento;
+  metaSeries: number;
+  metaRepsMin: number;
+  metaRepsMax: number;
+  metaCarga: number | null;
+  metaDescansoSegundos: number | null;
+  series: SerieLocal[];
+}
+
+/** Sessão como o cliente a mantém: é o mesmo documento que a API aceita (PUT) e devolve. */
+export interface SessaoLocal {
+  id: string;
+  planoId: string | null;
+  planoNome: string;
+  diaNome: string;
+  diaOrdem: number;
+  estado: EstadoSessao;
+  iniciadaEm: string;
+  finalizadaEm: string | null;
+  atualizadoEm: string;
+  exercicios: ExercicioLocal[];
+}
+
+export interface SessaoResumo {
+  id: string;
+  planoNome: string;
+  diaNome: string;
+  estado: EstadoSessao;
+  iniciadaEm: string;
+  finalizadaEm: string | null;
+  exercicios: number;
+  seriesConcluidas: number;
+  volumeKg: number;
+}

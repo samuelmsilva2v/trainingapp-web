@@ -6,11 +6,10 @@ export const routes: Routes = [
     path: '',
     component: Casca,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'planos' },
+      { path: '', pathMatch: 'full', redirectTo: 'hoje' },
       {
         path: 'hoje',
-        loadComponent: () => import('./compartilhado/em-breve').then(m => m.EmBreve),
-        data: { titulo: 'Hoje' },
+        loadComponent: () => import('./hoje/hoje').then(m => m.HojeTela),
       },
       {
         path: 'planos',
@@ -18,8 +17,7 @@ export const routes: Routes = [
       },
       {
         path: 'historico',
-        loadComponent: () => import('./compartilhado/em-breve').then(m => m.EmBreve),
-        data: { titulo: 'Histórico' },
+        loadComponent: () => import('./historico/historico').then(m => m.Historico),
       },
       {
         path: 'perfil',
@@ -29,6 +27,10 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'treino',
+    loadComponent: () => import('./treino/treino').then(m => m.Treino),
+  },
+  {
     path: 'planos/novo',
     loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
   },
@@ -36,5 +38,5 @@ export const routes: Routes = [
     path: 'planos/:id',
     loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
   },
-  { path: '**', redirectTo: 'planos' },
+  { path: '**', redirectTo: 'hoje' },
 ];

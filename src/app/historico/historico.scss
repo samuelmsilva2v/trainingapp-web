@@ -1,0 +1,64 @@
+:host { display: block; }
+
+.cabecalho { padding: 8px 0 16px; p { margin-top: 2px; } }
+
+.estado { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; a { text-decoration: none; } }
+.erro { color: var(--c-erro); }
+.centro { text-align: center; }
+.circulo { width: 80px; height: 80px; border-radius: 50%; background: var(--c-sup-3); color: var(--c-texto-2); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+
+.mes { margin-bottom: 8px; }
+.mes-topo { display: flex; align-items: baseline; justify-content: space-between; padding: 8px 0; }
+
+.lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+
+.cartao {
+  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--c-sup-2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  &.abandonada { opacity: 0.8; }
+}
+.cartao-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; .plano { font-size: 12px; } }
+.chip.aband { background: rgba(254, 107, 0, 0.15); color: var(--c-secundaria); }
+
+.dados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  li { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: var(--c-sup-3); font-weight: 600; }
+  .icone { font-size: 16px; color: var(--c-texto-2); }
+}
+
+.detalhes {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--c-sup-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  .chevron { margin-left: auto; }
+}
+
+.expandido { display: flex; flex-direction: column; gap: 12px; }
+.ex-nome { margin: 0 0 6px; font: 600 16px/24px 'Inter', sans-serif; }
+.series {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+  li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-sup-3); }
+  li.pulada { opacity: 0.5; }
+}
+
+.mais { width: 100%; margin-top: 16px; }
