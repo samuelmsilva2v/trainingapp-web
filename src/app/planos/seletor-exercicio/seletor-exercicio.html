@@ -1,0 +1,67 @@
+<div class="tela">
+  <header class="busca-topo">
+    <div class="linha">
+      <h2 class="titulo-sm">Escolher exercício</h2>
+      <button type="button" class="btn-icone" aria-label="Fechar" (click)="fechar()">
+        <span class="icone" aria-hidden="true">close</span>
+      </button>
+    </div>
+    <label class="campo-busca">
+      <span class="icone" aria-hidden="true">search</span>
+      <input type="search" placeholder="Buscar exercício pelo nome…" autocomplete="off"
+             [value]="busca()" (input)="digitar($event)" />
+    </label>
+  </header>
+
+  <div class="chips" role="group" aria-label="Grupo muscular">
+    <button type="button" class="filtro" [class.sel]="grupo() === null" (click)="grupo.set(null)">Todos</button>
+    @for (g of grupos; track g.valor) {
+      <button type="button" class="filtro" [class.sel]="grupo() === g.valor" (click)="grupo.set(g.valor)">
+        {{ g.rotulo }}
+      </button>
+    }
+  </div>
+
+  <div class="secundarios">
+    <select aria-label="Equipamento" (change)="escolherEquipamento($event)">
+      <option value="">Equipamento: todos</option>
+      @for (e of equipamentos; track e.valor) {
+        <option [value]="e.valor">{{ e.rotulo }}</option>
+      }
+    </select>
+    <label class="alternar">
+      <input type="checkbox" [checked]="apenasMeus()" (change)="apenasMeus.set(!apenasMeus())" />
+      <span>Meus exercícios</span>
+    </label>
+  </div>
+
+  <div class="lista" aria-live="polite">
+    @if (erro()) {
+      <p class="aviso erro">{{ erro() }}</p>
+    } @else if (carregando()) {
+      <p class="aviso suave">Carregando…</p>
+    } @else if (exibidos().length === 0) {
+      <div class="aviso">
+        <span class="icone grande" aria-hidden="true">search_off</span>
+        <p class="suave">Nenhum exercício encontrado.</p>
+      </div>
+    } @else {
+      @for (e of exibidos(); track e.id) {
+        <button type="button" class="item" (click)="escolher(e)">
+          <span class="texto">
+            <span class="nome">{{ e.nome }}</span>
+            <span class="tags">
+              <span class="tag">{{ rotuloGrupo(e.grupoMuscular) }}</span>
+              <span class="tag">{{ rotuloEquipamento(e.equipamento) }}</span>
+              @if (e.personalizado) { <span class="tag meu">Meu</span> }
+            </span>
+          </span>
+          <span class="mais"><span class="icone" aria-hidden="true">add</span></span>
+        </button>
+      }
+      @if (excedente() > 0) {
+        <p class="aviso suave">Mostrando {{ exibidos().length }} de {{ filtrados().length }}. Refine a busca para ver o resto.</p>
+      }
+    }
+  </div>
+</div>

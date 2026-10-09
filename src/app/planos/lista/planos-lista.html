@@ -1,0 +1,67 @@
+<section class="cabecalho">
+  <h1 class="titulo-md">Meus Planos de Treino</h1>
+  <p class="suave">Alterne ou gerencie suas rotinas de musculação</p>
+</section>
+
+@if (carregando()) {
+  <p class="estado suave" role="status">Carregando planos…</p>
+} @else if (erro()) {
+  <div class="estado">
+    <p class="erro">{{ erro() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
+  </div>
+} @else if (planos().length === 0) {
+  <div class="vazio">
+    <span class="icone circulo" aria-hidden="true">fitness_center</span>
+    <h2 class="titulo-sm">Você ainda não possui planos de treino</h2>
+    <p class="suave">Crie uma rotina com dias de treino, séries, repetições e cargas para começar sua evolução.</p>
+    <a class="btn btn-primario" routerLink="/planos/novo">
+      <span class="icone" aria-hidden="true">add_circle</span> Criar plano agora
+    </a>
+  </div>
+} @else {
+  <ul class="lista">
+    @for (plano of planos(); track plano.id) {
+      <li class="cartao" [class.ativo]="plano.ativo">
+        <div class="chips">
+          <span class="chip objetivo">{{ rotuloObjetivo(plano.objetivo) }}</span>
+          @if (plano.ativo) {
+            <span class="chip ativo-chip">
+              <span class="icone cheio" aria-hidden="true">check_circle</span> Ativo
+            </span>
+          }
+          <button type="button" class="btn-icone excluir" [attr.aria-label]="'Excluir ' + plano.nome" (click)="excluir(plano)">
+            <span class="icone" aria-hidden="true">delete</span>
+          </button>
+        </div>
+
+        <h2 class="titulo-sm nome">{{ plano.nome }}</h2>
+        <p class="suave dias">
+          <span class="icone" aria-hidden="true">calendar_view_week</span>
+          {{ plano.quantidadeDias }} {{ plano.quantidadeDias === 1 ? 'dia' : 'dias' }} na rotação
+        </p>
+
+        <div class="acoes">
+          @if (plano.ativo) {
+            <a class="btn btn-primario" [routerLink]="['/planos', plano.id]">
+              <span class="icone" aria-hidden="true">edit</span> Editar
+            </a>
+          } @else {
+            <button type="button" class="btn btn-secundario ativar" (click)="ativar(plano)">
+              <span class="icone destaque" aria-hidden="true">radio_button_unchecked</span> Ativar plano
+            </button>
+            <a class="btn-icone editar" [routerLink]="['/planos', plano.id]" [attr.aria-label]="'Editar ' + plano.nome">
+              <span class="icone" aria-hidden="true">edit</span>
+            </a>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+
+  <div class="fixo">
+    <a class="btn btn-primario novo" routerLink="/planos/novo">
+      <span class="icone" aria-hidden="true">add</span> Novo plano
+    </a>
+  </div>
+}

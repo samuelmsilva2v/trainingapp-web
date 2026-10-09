@@ -1,0 +1,143 @@
+<header class="topo">
+  <button type="button" class="btn-icone" aria-label="Voltar" (click)="voltar()">
+    <span class="icone" aria-hidden="true">arrow_back</span>
+  </button>
+  <h1 class="titulo-sm">{{ id ? 'Editar plano' : 'Novo plano' }}</h1>
+</header>
+
+@if (carregando()) {
+  <p class="estado suave" role="status">Carregando plano…</p>
+} @else if (erroCarga()) {
+  <div class="estado">
+    <p class="erro">{{ erroCarga() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregar(id!)">Tentar de novo</button>
+  </div>
+} @else {
+  <div class="pagina">
+    <section class="bloco">
+      <label class="rotulo suave" for="nome-plano">Nome do plano</label>
+      <input id="nome-plano" class="campo-nome" type="text" maxlength="100"
+             placeholder="Ex.: Hipertrofia ABC" autocomplete="off"
+             [value]="nome()" (input)="nome.set($any($event.target).value)" />
+
+      <span class="rotulo suave">Objetivo</span>
+      <div class="objetivos" role="radiogroup" aria-label="Objetivo">
+        @for (o of objetivos; track o.valor) {
+          <button type="button" role="radio" class="pilula" [class.sel]="objetivo() === o.valor"
+                  [attr.aria-checked]="objetivo() === o.valor" (click)="objetivo.set(o.valor)">
+            <span class="icone" aria-hidden="true">{{ o.icone }}</span>
+            {{ o.rotulo }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="dias" role="tablist" aria-label="Dias de treino">
+      @for (d of dias(); track $index) {
+        <button type="button" role="tab" class="dia" [class.sel]="$index === diaAtivo()"
+                [attr.aria-selected]="$index === diaAtivo()" (click)="diaAtivo.set($index)">
+          {{ d.nome || 'Sem nome' }}
+        </button>
+      }
+      <button type="button" class="dia novo-dia" (click)="adicionarDia()">
+        <span class="icone" aria-hidden="true">add</span> Dia
+      </button>
+    </section>
+
+    @if (dia(); as d) {
+      <section class="bloco">
+        <div class="nome-dia">
+          <input class="campo-dia" type="text" maxlength="100" aria-label="Nome do dia"
+                 [value]="d.nome" (input)="renomearDia($event)" />
+          @if (dias().length > 1) {
+            <button type="button" class="btn-icone" aria-label="Remover dia" (click)="removerDia()">
+              <span class="icone" aria-hidden="true">delete</span>
+            </button>
+          }
+        </div>
+
+        <div class="titulo-lista">
+          <span class="rotulo suave">Exercícios programados</span>
+          <span class="chip contagem num">{{ d.exercicios.length }}</span>
+        </div>
+
+        <div class="exercicios" cdkDropList (cdkDropListDropped)="reordenar($event)">
+          @for (item of d.exercicios; track $index; let i = $index) {
+            <article class="exercicio" cdkDrag cdkDragLockAxis="y">
+              <header class="ex-topo">
+                <button type="button" class="btn-icone alca" cdkDragHandle [attr.aria-label]="'Mover ' + item.exercicioNome">
+                  <span class="icone" aria-hidden="true">drag_indicator</span>
+                </button>
+                <div class="ex-nome">
+                  <h3 class="titulo-sm">{{ item.exercicioNome }}</h3>
+                  <span class="tags">
+                    <span class="tag">{{ rotuloGrupo(item.grupoMuscular) }}</span>
+                    <span class="tag">{{ rotuloEquipamento(item.equipamento) }}</span>
+                  </span>
+                </div>
+                <button type="button" class="btn-icone" [attr.aria-label]="'Remover ' + item.exercicioNome" (click)="remover(i)">
+                  <span class="icone" aria-hidden="true">close</span>
+                </button>
+              </header>
+
+              <div class="stepper">
+                <span class="rotulo suave">Séries</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos séries" (click)="ajustar(i, 'series', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <output class="valor num">{{ item.series }}</output>
+                  <button type="button" aria-label="Mais séries" (click)="ajustar(i, 'series', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
+
+              <div class="stepper">
+                <span class="rotulo suave">Carga alvo (kg)</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos carga" (click)="ajustar(i, 'cargaAlvo', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <output class="valor num">{{ formatarCarga(item.cargaAlvo) }}</output>
+                  <button type="button" aria-label="Mais carga" (click)="ajustar(i, 'cargaAlvo', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
+
+              <div class="stepper largo">
+                <span class="rotulo suave">Repetições</span>
+                <div class="reps">
+                  <div class="controle">
+                    <button type="button" aria-label="Menos reps mínimas" (click)="ajustar(i, 'repsMin', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                    <span class="faixa"><small>mín</small><output class="valor num">{{ item.repsMin }}</output></span>
+                    <button type="button" aria-label="Mais reps mínimas" (click)="ajustar(i, 'repsMin', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                  </div>
+                  <div class="controle">
+                    <button type="button" aria-label="Menos reps máximas" (click)="ajustar(i, 'repsMax', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                    <span class="faixa"><small>máx</small><output class="valor num">{{ item.repsMax }}</output></span>
+                    <button type="button" aria-label="Mais reps máximas" (click)="ajustar(i, 'repsMax', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stepper largo">
+                <span class="rotulo suave">Descanso (s)</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos descanso" (click)="ajustar(i, 'descansoSegundos', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <output class="valor num">{{ item.descansoSegundos ?? '—' }}</output>
+                  <button type="button" aria-label="Mais descanso" (click)="ajustar(i, 'descansoSegundos', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <p class="vazio suave">Nenhum exercício neste dia ainda.</p>
+          }
+        </div>
+
+        <button type="button" class="btn btn-secundario adicionar" (click)="escolherExercicio()">
+          <span class="icone" aria-hidden="true">add</span> Adicionar exercício
+        </button>
+      </section>
+    }
+  </div>
+
+  <footer class="rodape">
+    <button type="button" class="btn btn-primario" [disabled]="!podeSalvar() || salvando()" (click)="salvar()">
+      <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar plano' }}
+    </button>
+  </footer>
+}
