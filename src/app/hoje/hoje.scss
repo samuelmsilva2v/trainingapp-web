@@ -2,6 +2,14 @@
 
 .saudacao { padding: 8px 0 12px; }
 
+.status { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-bottom: 16px; }
+.streak, .nivel { padding: 12px 14px; border-radius: var(--r-md); background: var(--c-sup-2); }
+.streak { display: flex; align-items: center; gap: 6px; .icone { color: var(--c-texto-2); font-size: 22px; } .valor { font: 800 22px/28px var(--fonte-titulo); } }
+.streak.viva .icone { color: var(--c-secundaria); }
+.nivel { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.nivel-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.barra { height: 6px; border-radius: 9999px; background: var(--c-sup-4); overflow: hidden; span { display: block; height: 100%; border-radius: inherit; background: var(--c-primaria); } }
+
 .estado, .vazio { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }
 .erro { color: var(--c-erro); }
 .vazio a, .vazio .btn { text-decoration: none; }

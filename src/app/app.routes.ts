@@ -21,8 +21,7 @@ export const routes: Routes = [
       },
       {
         path: 'perfil',
-        loadComponent: () => import('./compartilhado/em-breve').then(m => m.EmBreve),
-        data: { titulo: 'Perfil' },
+        loadComponent: () => import('./perfil/perfil').then(m => m.PerfilTela),
       },
     ],
   },

@@ -1,0 +1,74 @@
+<section class="cabecalho">
+  <h1 class="titulo-md">Perfil</h1>
+  <p class="suave">Seus dados e o fuso usado para contar os dias de treino.</p>
+</section>
+
+@if (gamificacao.dados(); as g) {
+  <section class="progresso" aria-label="Progresso">
+    <div class="nivel">
+      <div class="selo-nivel"><span class="rotulo">Nível</span><span class="num">{{ g.nivel }}</span></div>
+      <div class="nivel-info">
+        <p class="titulo-sm num">{{ formatar(g.xpTotal) }} XP</p>
+        <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal"
+             [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
+          <span [style.width.%]="gamificacao.progresso() * 100"></span>
+        </div>
+        <p class="suave num">Faltam {{ gamificacao.xpFaltante() }} XP para o nível {{ g.nivel + 1 }}</p>
+      </div>
+    </div>
+
+    <dl class="totais">
+      <div><dd class="num">{{ g.streakAtual }}</dd><dt>sequência</dt></div>
+      <div><dd class="num">{{ g.melhorStreak }}</dd><dt>melhor</dt></div>
+      <div><dd class="num">{{ g.treinos }}</dd><dt>treinos</dt></div>
+      <div><dd class="num">{{ g.recordes }}</dd><dt>recordes</dt></div>
+    </dl>
+
+    <h2 class="rotulo suave">Conquistas</h2>
+    <ul class="conquistas">
+      @for (c of g.conquistas; track c.codigo) {
+        <li [class.ganha]="c.conquistada">
+          <span class="icone" [class.cheio]="c.conquistada" aria-hidden="true">{{ c.conquistada ? 'emoji_events' : 'lock' }}</span>
+          <span class="texto">
+            <span class="nome">{{ c.nome }}</span>
+            <span class="suave">{{ c.descricao }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+@if (carregando()) {
+  <p class="estado suave" role="status">Carregando…</p>
+} @else if (erro()) {
+  <div class="estado">
+    <p class="erro">{{ erro() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
+  </div>
+} @else {
+  <form class="form" (submit)="$event.preventDefault(); salvar()">
+    <label class="campo">
+      <span class="rotulo suave">Nome</span>
+      <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
+    </label>
+
+    <label class="campo">
+      <span class="rotulo suave">Fuso horário</span>
+      <select [value]="fuso()" (change)="fuso.set($any($event.target).value)">
+        @for (z of fusos(); track z) {
+          <option [value]="z" [selected]="z === fuso()">{{ z }}</option>
+        }
+      </select>
+      @if (fuso() !== fusoDoAparelho) {
+        <button type="button" class="link" (click)="fuso.set(fusoDoAparelho)">
+          <span class="icone" aria-hidden="true">my_location</span> Usar o fuso deste aparelho ({{ fusoDoAparelho }})
+        </button>
+      }
+    </label>
+
+    <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
+      <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar perfil' }}
+    </button>
+  </form>
+}

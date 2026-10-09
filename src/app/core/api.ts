@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  Exercicio, GrupoMuscular, Hoje, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
+  Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
 } from './modelos';
 
 export const API_URL = 'http://localhost:8080/api';
@@ -84,6 +84,30 @@ export class SessoesApi {
 
   /** Upsert idempotente: o cliente gera os ids e reenvia a sessão inteira. */
   salvar(sessao: SessaoLocal): Observable<SessaoLocal> {
-    return this.http.put<SessaoLocal>(`${API_URL}/sessoes/${sessao.id}`, sessao);
+    // xpGanho e recordes são só de leitura: a API os calcula.
+    const { xpGanho, recordes, ...corpo } = sessao;
+    return this.http.put<SessaoLocal>(`${API_URL}/sessoes/${sessao.id}`, corpo);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class PerfilApi {
+  private readonly http = inject(HttpClient);
+
+  obter(): Observable<Perfil> {
+    return this.http.get<Perfil>(`${API_URL}/perfil`);
+  }
+
+  atualizar(perfil: Perfil): Observable<Perfil> {
+    return this.http.put<Perfil>(`${API_URL}/perfil`, perfil);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class GamificacaoApi {
+  private readonly http = inject(HttpClient);
+
+  resumo(): Observable<Gamificacao> {
+    return this.http.get<Gamificacao>(`${API_URL}/gamificacao`);
   }
 }

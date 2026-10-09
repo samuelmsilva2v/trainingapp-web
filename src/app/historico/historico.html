@@ -36,9 +36,17 @@
                 <h3 class="titulo-sm">{{ s.diaNome }}</h3>
                 <p class="suave plano">{{ s.planoNome }}</p>
               </div>
-              @if (s.estado === 'ABANDONADA') {
-                <span class="chip aband">Abandonado</span>
-              }
+              <span class="selos">
+                @if (s.estado === 'ABANDONADA') {
+                  <span class="chip aband">Abandonado</span>
+                }
+                @if (s.recordes > 0) {
+                  <span class="chip pr">🏆 {{ s.recordes }} PR</span>
+                }
+                @if (s.xpGanho > 0) {
+                  <span class="chip xp"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ s.xpGanho }} XP</span>
+                }
+              </span>
             </header>
 
             <ul class="dados">

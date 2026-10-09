@@ -112,24 +112,26 @@ export class TreinoStore {
     void this.enviar();
   }
 
-  /** Conclui ou abandona: envia o estado final e, se a API aceitar, larga a sessão local. */
-  async encerrar(estado: Exclude<EstadoSessao, 'EM_ANDAMENTO'>): Promise<void> {
+  /** Conclui ou abandona: envia o estado final e, se a API aceitar, larga a sessão local e devolve a resposta (com o XP ganho). */
+  async encerrar(estado: Exclude<EstadoSessao, 'EM_ANDAMENTO'>): Promise<SessaoLocal | null> {
     const agora = new Date().toISOString();
     if (this.temporizador) clearTimeout(this.temporizador);
     // Espera um envio em curso terminar para não competir com o estado final.
     while (this.enviando) await new Promise(r => setTimeout(r, 50));
     const atual = this.sessao();
-    if (!atual) return;
+    if (!atual) return null;
     const final: SessaoLocal = { ...atual, estado, finalizadaEm: agora, atualizadoEm: agora };
     this.status.set('salvando');
+    let resposta: SessaoLocal;
     try {
-      await firstValueFrom(this.api.salvar(final));
+      resposta = await firstValueFrom(this.api.salvar(final));
     } catch (erro) {
       this.status.set('erro');
       throw erro;
     }
     this.sessao.set(null);
     this.status.set('salvo');
+    return resposta;
   }
 
   private async enviar(): Promise<void> {

@@ -15,6 +15,20 @@
 
 .marca { text-transform: uppercase; letter-spacing: -0.01em; }
 
+.xp {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: var(--c-sup-3);
+  color: var(--c-primaria);
+  text-decoration: none;
+  font: 700 12px/16px 'Inter', sans-serif;
+  .icone { font-size: 18px; }
+}
+
 .conteudo {
   max-width: 640px;
   margin: 0 auto;

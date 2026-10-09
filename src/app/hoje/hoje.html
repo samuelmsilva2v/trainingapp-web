@@ -1,5 +1,25 @@
 <h1 class="titulo-md saudacao">Hoje</h1>
 
+@if (gamificacao.dados(); as g) {
+  <section class="status" aria-label="Seu progresso">
+    <div class="streak" [class.viva]="g.streakAtual > 0">
+      <span class="icone cheio" aria-hidden="true">local_fire_department</span>
+      <span class="num valor">{{ g.streakAtual }}</span>
+      <span class="suave">{{ g.streakAtual === 1 ? 'dia de sequência' : 'dias de sequência' }}</span>
+    </div>
+    <div class="nivel">
+      <div class="nivel-topo">
+        <span class="rotulo">Nível {{ g.nivel }}</span>
+        <span class="suave num">faltam {{ gamificacao.xpFaltante() }} XP</span>
+      </div>
+      <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal"
+           [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
+        <span [style.width.%]="gamificacao.progresso() * 100"></span>
+      </div>
+    </div>
+  </section>
+}
+
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando…</p>
 } @else if (erro()) {

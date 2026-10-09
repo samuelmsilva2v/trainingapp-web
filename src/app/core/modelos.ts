@@ -117,6 +117,9 @@ export interface SessaoLocal {
   finalizadaEm: string | null;
   atualizadoEm: string;
   exercicios: ExercicioLocal[];
+  /** Só a API preenche, depois de concluir a sessão. */
+  xpGanho?: number;
+  recordes?: string[];
 }
 
 export interface SessaoResumo {
@@ -129,4 +132,31 @@ export interface SessaoResumo {
   exercicios: number;
   seriesConcluidas: number;
   volumeKg: number;
+  xpGanho: number;
+  recordes: number;
+}
+
+export interface Perfil {
+  nome: string;
+  fusoHorario: string;
+}
+
+export interface Conquista {
+  codigo: string;
+  nome: string;
+  descricao: string;
+  conquistada: boolean;
+}
+
+export interface Gamificacao {
+  xpTotal: number;
+  nivel: number;
+  xpInicioDoNivel: number;
+  xpProximoNivel: number;
+  streakAtual: number;
+  melhorStreak: number;
+  treinos: number;
+  recordes: number;
+  treinouHoje: boolean;
+  conquistas: Conquista[];
 }

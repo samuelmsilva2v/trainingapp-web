@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
+import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { duracaoMinutos, formatarKg, formatarDataRelativa } from '../core/formatos';
 
@@ -15,6 +16,7 @@ import { duracaoMinutos, formatarKg, formatarDataRelativa } from '../core/format
 export class HojeTela implements OnInit {
   private readonly api = inject(SessoesApi);
   private readonly store = inject(TreinoStore);
+  protected readonly gamificacao = inject(GamificacaoStore);
   private readonly roteador = inject(Router);
   private readonly aviso = inject(MatSnackBar);
 

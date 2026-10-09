@@ -22,6 +22,9 @@
   &.abandonada { opacity: 0.8; }
 }
 .cartao-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; .plano { font-size: 12px; } }
+.selos { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.chip.pr { background: rgba(254, 107, 0, 0.15); color: var(--c-secundaria); }
+.chip.xp { background: var(--c-sup-4); color: var(--c-primaria); .icone { font-size: 14px; } }
 .chip.aband { background: rgba(254, 107, 0, 0.15); color: var(--c-secundaria); }
 
 .dados {

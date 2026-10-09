@@ -6,6 +6,7 @@ import { SessoesApi, mensagemDeErro } from '../core/api';
 import { cronometro, formatarCarga, formatarKg } from '../core/formatos';
 import { SerieLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
+import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 
@@ -21,6 +22,7 @@ const REPS_MAX = 1000;
 export class Treino implements OnInit, OnDestroy {
   protected readonly store = inject(TreinoStore);
   private readonly api = inject(SessoesApi);
+  private readonly gamificacao = inject(GamificacaoStore);
   private readonly roteador = inject(Router);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
@@ -215,14 +217,23 @@ export class Treino implements OnInit, OnDestroy {
     if (this.encerrando()) return;
     this.encerrando.set(true);
     try {
-      await this.store.encerrar(estado);
-      this.aviso.open(mensagem, undefined, { duration: 3000 });
+      const resposta = await this.store.encerrar(estado);
+      this.gamificacao.atualizar();
+      this.aviso.open(this.mensagemFinal(mensagem, resposta?.xpGanho ?? 0, resposta?.recordes?.length ?? 0), undefined, {
+        duration: 5000,
+      });
       await this.roteador.navigate([destino]);
     } catch (e) {
       this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
     } finally {
       this.encerrando.set(false);
     }
+  }
+
+  private mensagemFinal(base: string, xp: number, recordes: number): string {
+    if (xp === 0) return base;
+    const pr = recordes > 0 ? ` · ${recordes} ${recordes === 1 ? 'recorde' : 'recordes'} 🏆` : '';
+    return `${base} +${xp} XP${pr}`;
   }
 
   protected voltar(): void {
