@@ -69,7 +69,6 @@
         <div class="tabela" role="table" aria-label="Registro de séries">
           <div class="cabecalho-tabela" role="row">
             <span role="columnheader">Série</span>
-            <span role="columnheader">Anterior</span>
             <span role="columnheader">Reps</span>
             <span role="columnheader">Carga</span>
             <span role="columnheader">Feito</span>
@@ -123,7 +122,6 @@
               <div class="linha" [class.feita]="serie.concluida" role="row" tabindex="0"
                    (click)="ativarSerie(i)" (keydown.enter)="ativarSerie(i)">
                 <span class="numero num" role="cell">{{ i + 1 }}</span>
-                <span class="anterior num" role="cell">{{ textoAnterior(ex, i) ?? '—' }}</span>
                 <span class="valor num" role="cell">{{ serie.reps ?? '—' }}</span>
                 <span class="valor num" role="cell">{{ serie.carga === null ? '—' : formatarCarga(serie.carga) }}</span>
                 <button type="button" class="check mini" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
