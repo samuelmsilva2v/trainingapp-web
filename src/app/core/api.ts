@@ -1,11 +1,12 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import {
   Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
 } from './modelos';
 
-export const API_URL = 'http://localhost:8080/api';
+export const API_URL = environment.apiUrl;
 
 /** Extrai a mensagem do ProblemDetail da API (campo `detail`) ou devolve um texto padrão. */
 export function mensagemDeErro(erro: unknown): string {
