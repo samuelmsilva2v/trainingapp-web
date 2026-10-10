@@ -58,5 +58,27 @@
 .ativar .destaque { color: var(--c-primaria); font-size: 20px; }
 .editar { background: var(--c-sup-1); border-radius: var(--r-md); width: 52px; height: 52px; text-decoration: none; }
 
+.resumo-botao, .ver-resumo {
+  min-height: 48px; padding: 0 14px; border: 0; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  color: var(--c-texto); font: 700 14px/20px 'Inter', sans-serif;
+}
+.resumo-botao { flex: 1; background: var(--c-sup-3); .destaque { color: var(--c-primaria); } }
+.ver-resumo { width: 100%; min-height: 44px; background: var(--c-sup-1); color: var(--c-texto-2); font-size: 12px; font-weight: 600; }
+.resumo-rotulo { display: flex; white-space: nowrap; align-items: center; gap: 8px; .icone { font-size: 20px; } }
+.ver-resumo .resumo-rotulo .icone { font-size: 18px; }
+.chevron { font-size: 20px; color: var(--c-texto-2); }
+.acoes .editar-ativo { flex: 0 0 auto; padding: 0 20px; }
+
+.resumo { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--r-md); background: var(--c-sup-1); }
+.resumo-topo { margin: 0; font: 700 11px/14px 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; color: var(--c-texto-2); }
+.resumo-dias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.resumo-dias li { padding: 10px; border-radius: var(--r-sm); background: var(--c-sup-2); }
+.dia-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.dia-nome { display: flex; align-items: center; gap: 6px; min-width: 0; font: 700 12px/16px 'Inter', sans-serif; }
+.ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--c-primaria); flex-shrink: 0; }
+.dia-qtd { flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }
+.dia-exercicios { margin: 0; padding-left: 14px; font-size: 12px; line-height: 16px; color: var(--c-texto-2); }
+
 .fixo { position: sticky; bottom: 80px; z-index: 30; padding: 16px 0 8px; }
 .novo { width: 100%; text-decoration: none; box-shadow: 0 8px 24px rgba(202, 243, 0, 0.25); }

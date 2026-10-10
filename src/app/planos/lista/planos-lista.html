@@ -43,7 +43,11 @@
 
         <div class="acoes">
           @if (plano.ativo) {
-            <a class="btn btn-primario" [routerLink]="['/planos', plano.id]">
+            <button type="button" class="resumo-botao" [attr.aria-expanded]="abertos().has(plano.id)" (click)="alternar(plano)">
+              <span class="resumo-rotulo"><span class="icone destaque" aria-hidden="true">format_list_bulleted</span>Resumo da Rotina</span>
+              <span class="icone chevron" aria-hidden="true">{{ abertos().has(plano.id) ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+            <a class="btn btn-primario editar-ativo" [routerLink]="['/planos', plano.id]">
               <span class="icone" aria-hidden="true">edit</span> Editar
             </a>
           } @else {
@@ -55,6 +59,40 @@
             </a>
           }
         </div>
+
+        @if (!plano.ativo) {
+          <button type="button" class="ver-resumo" [attr.aria-expanded]="abertos().has(plano.id)" (click)="alternar(plano)">
+            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo da rotina ({{ plano.quantidadeDias }} {{ plano.quantidadeDias === 1 ? 'treino' : 'treinos' }})</span>
+            <span class="icone chevron" aria-hidden="true">{{ abertos().has(plano.id) ? 'expand_less' : 'expand_more' }}</span>
+          </button>
+        }
+
+        @if (abertos().has(plano.id)) {
+          <div class="resumo">
+            @if (detalhes().get(plano.id); as d) {
+              <p class="resumo-topo">Divisão da rotação ({{ letras(d.dias.length) }})</p>
+              <ul class="resumo-dias">
+                @for (dia of d.dias; track dia.id ?? $index) {
+                  <li>
+                    <div class="dia-topo">
+                      <span class="dia-nome"><span class="ponto" aria-hidden="true"></span>{{ dia.nome }}</span>
+                      <span class="dia-qtd">{{ dia.exercicios.length }} {{ dia.exercicios.length === 1 ? 'exercício' : 'exercícios' }}</span>
+                    </div>
+                    @if (dia.exercicios.length) {
+                      <p class="dia-exercicios">{{ nomesDosExercicios(dia) }}</p>
+                    } @else {
+                      <p class="dia-exercicios">Nenhum exercício ainda.</p>
+                    }
+                  </li>
+                }
+              </ul>
+            } @else if (erroResumo()) {
+              <p class="erro">{{ erroResumo() }}</p>
+            } @else {
+              <p class="suave" role="status">Carregando…</p>
+            }
+          </div>
+        }
       </li>
     }
   </ul>
