@@ -5,8 +5,9 @@ import { RouterLink } from '@angular/router';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { SessoesApi, mensagemDeErro } from '../core/api';
 import { GamificacaoStore } from '../core/gamificacao-store';
-import { duracaoMinutos, formatarCarga, formatarDataRelativa, formatarKg } from '../core/formatos';
+import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
+import { Periodo, inicioDaCobertura, partesDoTempo, resumirPeriodo, rotuloDoPeriodo } from './resumo';
 
 const TAMANHO_PAGINA = 20;
 
@@ -15,7 +16,6 @@ interface Mes {
   rotulo: string;
   sessoes: SessaoResumo[];
   concluidas: number;
-  volumeKg: number;
 }
 
 @Component({
@@ -38,13 +38,20 @@ export class Historico implements OnInit {
   protected readonly abertas = signal<ReadonlySet<string>>(new Set());
   protected readonly detalhes = signal<ReadonlyMap<string, SessaoLocal>>(new Map());
   protected readonly erroDetalhe = signal<string | null>(null);
+  protected readonly periodo = signal<Periodo>('SEMANA');
 
   protected readonly duracaoMinutos = duracaoMinutos;
   protected readonly formatarCarga = formatarCarga;
-  protected readonly formatarKg = formatarKg;
   protected readonly formatarDataRelativa = formatarDataRelativa;
+  protected readonly partesDoTempo = partesDoTempo;
 
   private pagina = 0;
+  private readonly hoje = new Date();
+  /** O resumo da semana e do mês só fica certo com o histórico carregado até aqui. */
+  private readonly cobertura = inicioDaCobertura(this.hoje).getTime();
+
+  protected readonly resumo = computed(() => resumirPeriodo(this.sessoes(), this.periodo(), this.hoje));
+  protected readonly rotuloPeriodo = computed(() => rotuloDoPeriodo(this.periodo(), this.hoje));
 
   protected readonly meses = computed<Mes[]>(() => {
     const porMes = new Map<string, Mes>();
@@ -54,14 +61,11 @@ export class Historico implements OnInit {
       let mes = porMes.get(chave);
       if (!mes) {
         const rotulo = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        mes = { chave, rotulo, sessoes: [], concluidas: 0, volumeKg: 0 };
+        mes = { chave, rotulo, sessoes: [], concluidas: 0 };
         porMes.set(chave, mes);
       }
       mes.sessoes.push(s);
-      if (s.estado === 'CONCLUIDA') {
-        mes.concluidas++;
-        mes.volumeKg += s.volumeKg;
-      }
+      if (s.estado === 'CONCLUIDA') mes.concluidas++;
     }
     return [...porMes.values()];
   });
@@ -81,6 +85,9 @@ export class Historico implements OnInit {
         this.pagina++;
         this.carregando.set(false);
         this.carregandoMais.set(false);
+        // Segue buscando enquanto a página mais antiga ainda cai dentro do período do resumo.
+        const maisAntiga = lista.at(-1);
+        if (this.temMais() && maisAntiga && new Date(maisAntiga.iniciadaEm).getTime() >= this.cobertura) this.carregarPagina();
       },
       error: e => {
         this.erro.set(mensagemDeErro(e));

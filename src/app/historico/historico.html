@@ -20,11 +20,36 @@
     </a>
   </div>
 } @else {
+  <section class="resumo" aria-label="Resumo do período">
+    <header class="resumo-topo">
+      <h2 class="titulo-sm"><span class="icone" aria-hidden="true">insights</span> Resumo</h2>
+      <div class="periodos" role="group" aria-label="Período do resumo">
+        <button type="button" class="periodo" [class.sel]="periodo() === 'SEMANA'"
+                [attr.aria-pressed]="periodo() === 'SEMANA'" (click)="periodo.set('SEMANA')">Semana</button>
+        <button type="button" class="periodo" [class.sel]="periodo() === 'MES'"
+                [attr.aria-pressed]="periodo() === 'MES'" (click)="periodo.set('MES')">Mês</button>
+      </div>
+    </header>
+    <p class="resumo-rotulo">{{ rotuloPeriodo() }}</p>
+    @if (resumo(); as r) {
+      <dl class="blocos">
+        <div><dt>Treinos</dt><dd class="num">{{ r.treinos }}</dd></div>
+        <div>
+          <dt>Tempo</dt>
+          @let tempo = partesDoTempo(r.minutos);
+          <dd class="num">{{ tempo.valor }}@if (tempo.unidade) { <small>{{ tempo.unidade }}</small> }</dd>
+        </div>
+        <div><dt>Séries</dt><dd class="num">{{ r.series }}</dd></div>
+        <div><dt>XP</dt><dd class="num xp">+{{ r.xp }}</dd></div>
+      </dl>
+    }
+  </section>
+
   @for (mes of meses(); track mes.chave) {
     <section class="mes">
       <header class="mes-topo">
         <h2 class="rotulo suave">{{ mes.rotulo }}</h2>
-        <span class="suave num">{{ mes.concluidas }} {{ mes.concluidas === 1 ? 'treino' : 'treinos' }} · {{ formatarKg(mes.volumeKg) }} kg</span>
+        <span class="suave num">{{ mes.concluidas }} {{ mes.concluidas === 1 ? 'treino' : 'treinos' }}</span>
       </header>
 
       <ul class="lista">
@@ -52,7 +77,6 @@
             <ul class="dados">
               <li><span class="icone" aria-hidden="true">timer</span><span class="num">{{ duracaoMinutos(s.iniciadaEm, s.finalizadaEm) }} min</span></li>
               <li><span class="icone" aria-hidden="true">format_list_numbered</span><span class="num">{{ s.seriesConcluidas }} séries</span></li>
-              <li><span class="icone" aria-hidden="true">fitness_center</span><span class="num">{{ formatarKg(s.volumeKg) }} kg</span></li>
             </ul>
 
             <button type="button" class="detalhes" [attr.aria-expanded]="abertas().has(s.id)" (click)="alternar(s)">
