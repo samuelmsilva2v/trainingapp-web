@@ -41,11 +41,14 @@
         </button>
       </section>
     } @else if (h.proximoDia; as dia) {
-      <section class="cartao destaque">
-        <p class="suave plano">
-          <span class="icone" aria-hidden="true">calendar_today</span>
-          {{ h.planoNome }} · Dia {{ dia.ordem + 1 }} de {{ h.totalDias }} na rotação
-        </p>
+      <section class="cartao">
+        <div class="plano-topo">
+          <p class="plano">
+            <span class="icone" aria-hidden="true">calendar_today</span>
+            <span class="plano-nome">{{ h.planoNome }}</span>
+          </p>
+          <span class="badge-dia">Dia {{ dia.ordem + 1 }} de {{ h.totalDias }} na rotação</span>
+        </div>
         <h2 class="titulo-md">{{ dia.nome }}</h2>
 
         @if (dia.exercicios.length) {
