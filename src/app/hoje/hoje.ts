@@ -47,8 +47,9 @@ export class HojeTela implements OnInit {
         this.carregando.set(false);
       },
     });
-    this.api.historico(0, 1).subscribe({
-      next: lista => this.ultimo.set(lista[0] ?? null),
+    // O histórico inclui treinos abandonados; o cartão só mostra o último concluído.
+    this.api.historico(0, 5).subscribe({
+      next: lista => this.ultimo.set(lista.find(s => s.estado === 'CONCLUIDA') ?? null),
       error: () => this.ultimo.set(null),
     });
   }
