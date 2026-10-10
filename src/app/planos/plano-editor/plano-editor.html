@@ -84,7 +84,7 @@
                 <span class="rotulo suave">Séries</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos séries" (click)="ajustar(i, 'series', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                  <output class="valor num">{{ item.series }}</output>
+                  <input class="valor num" inputmode="numeric" aria-label="Séries" [value]="item.series" (change)="digitar(i, 'series', $event)" />
                   <button type="button" aria-label="Mais séries" (click)="ajustar(i, 'series', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>
@@ -93,7 +93,7 @@
                 <span class="rotulo suave">Carga alvo (kg)</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos carga" (click)="ajustar(i, 'cargaAlvo', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                  <output class="valor num">{{ formatarCarga(item.cargaAlvo) }}</output>
+                  <input class="valor num" inputmode="decimal" placeholder="—" aria-label="Carga alvo em quilos" [value]="texto(item.cargaAlvo)" (change)="digitar(i, 'cargaAlvo', $event)" />
                   <button type="button" aria-label="Mais carga" (click)="ajustar(i, 'cargaAlvo', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>
@@ -103,12 +103,12 @@
                 <div class="reps">
                   <div class="controle">
                     <button type="button" aria-label="Menos reps mínimas" (click)="ajustar(i, 'repsMin', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                    <span class="faixa"><small>mín</small><output class="valor num">{{ item.repsMin }}</output></span>
+                    <span class="faixa"><small>mín</small><input class="valor num" inputmode="numeric" aria-label="Repetições mínimas" [value]="item.repsMin" (change)="digitar(i, 'repsMin', $event)" /></span>
                     <button type="button" aria-label="Mais reps mínimas" (click)="ajustar(i, 'repsMin', 1)"><span class="icone" aria-hidden="true">add</span></button>
                   </div>
                   <div class="controle">
                     <button type="button" aria-label="Menos reps máximas" (click)="ajustar(i, 'repsMax', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                    <span class="faixa"><small>máx</small><output class="valor num">{{ item.repsMax }}</output></span>
+                    <span class="faixa"><small>máx</small><input class="valor num" inputmode="numeric" aria-label="Repetições máximas" [value]="item.repsMax" (change)="digitar(i, 'repsMax', $event)" /></span>
                     <button type="button" aria-label="Mais reps máximas" (click)="ajustar(i, 'repsMax', 1)"><span class="icone" aria-hidden="true">add</span></button>
                   </div>
                 </div>
@@ -118,7 +118,7 @@
                 <span class="rotulo suave">Descanso (s)</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos descanso" (click)="ajustar(i, 'descansoSegundos', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                  <output class="valor num">{{ item.descansoSegundos ?? '—' }}</output>
+                  <input class="valor num" inputmode="numeric" placeholder="—" aria-label="Descanso em segundos" [value]="texto(item.descansoSegundos)" (change)="digitar(i, 'descansoSegundos', $event)" />
                   <button type="button" aria-label="Mais descanso" (click)="ajustar(i, 'descansoSegundos', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>

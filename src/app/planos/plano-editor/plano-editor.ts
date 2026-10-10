@@ -6,15 +6,40 @@ import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
-import { formatarCarga } from '../../core/formatos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
 
 const SERIES = { min: 1, max: 20 };
 const REPS = { min: 1, max: 100 };
-const CARGA = { passo: 2.5, max: 9999 };
+const CARGA = { passo: 2.5, max: 9999.99 };
 const DESCANSO = { passo: 15, max: 1800 };
+
+/** Aplica um valor a um campo respeitando os limites da API; reps mín nunca passa da máx. */
+export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: number | null): ItemPlano {
+  const limitar = (v: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(v)));
+  const novo = { ...item };
+  switch (campo) {
+    case 'series':
+      if (valor !== null) novo.series = limitar(valor, SERIES.min, SERIES.max);
+      break;
+    case 'repsMin':
+      if (valor !== null) novo.repsMin = limitar(valor, REPS.min, REPS.max);
+      novo.repsMax = Math.max(novo.repsMax, novo.repsMin);
+      break;
+    case 'repsMax':
+      if (valor !== null) novo.repsMax = limitar(valor, REPS.min, REPS.max);
+      novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
+      break;
+    case 'cargaAlvo':
+      novo.cargaAlvo = valor === null || valor <= 0 ? null : Math.min(Math.round(valor * 100) / 100, CARGA.max);
+      break;
+    case 'descansoSegundos':
+      novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
+      break;
+  }
+  return novo;
+}
 
 type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'cargaAlvo' | 'descansoSegundos';
 
@@ -34,7 +59,6 @@ export class PlanoEditor implements OnInit {
   protected readonly objetivos = OBJETIVOS;
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
-  protected readonly formatarCarga = formatarCarga;
 
   protected readonly id = this.rota.snapshot.paramMap.get('id');
   protected readonly carregando = signal(this.id !== null);
@@ -164,31 +188,42 @@ export class PlanoEditor implements OnInit {
     });
   }
 
-  /** Incrementa/decrementa um campo respeitando os limites da API; reps mín nunca passa da máx. */
+  /** Incrementa/decrementa um campo (botões + e −). */
   protected ajustar(indice: number, campo: CampoNumerico, sinal: 1 | -1): void {
     this.atualizarItem(indice, item => {
-      const novo = { ...item };
       switch (campo) {
-        case 'series':
-          novo.series = this.limitar(item.series + sinal, SERIES.min, SERIES.max);
-          break;
-        case 'repsMin':
-          novo.repsMin = this.limitar(item.repsMin + sinal, REPS.min, REPS.max);
-          novo.repsMax = Math.max(novo.repsMax, novo.repsMin);
-          break;
-        case 'repsMax':
-          novo.repsMax = this.limitar(item.repsMax + sinal, REPS.min, REPS.max);
-          novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
-          break;
         case 'cargaAlvo':
-          novo.cargaAlvo = this.passo(item.cargaAlvo, sinal, CARGA.passo, CARGA.max);
-          break;
+          return definirCampo(item, campo, this.passo(item.cargaAlvo, sinal, CARGA.passo, CARGA.max));
         case 'descansoSegundos':
-          novo.descansoSegundos = this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max);
-          break;
+          return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
+        default:
+          return definirCampo(item, campo, item[campo] + sinal);
       }
-      return novo;
     });
+  }
+
+  /** Valor digitado: aceita vírgula decimal; carga e descanso vazios viram "sem valor", texto inválido é descartado. */
+  protected digitar(indice: number, campo: CampoNumerico, evento: Event): void {
+    const campoHtml = evento.target as HTMLInputElement;
+    const texto = campoHtml.value.trim().replace(',', '.');
+    const opcional = campo === 'cargaAlvo' || campo === 'descansoSegundos';
+    const numero = texto === '' && opcional ? null : Number(texto);
+    if (numero !== null && (texto === '' || Number.isNaN(numero))) {
+      campoHtml.value = this.valorAtual(indice, campo);
+      return;
+    }
+    this.atualizarItem(indice, item => definirCampo(item, campo, numero));
+    // O [value] não reescreve o campo se o valor do item não mudou (ex.: 999 limitado a 100 de novo).
+    campoHtml.value = this.valorAtual(indice, campo);
+  }
+
+  private valorAtual(indice: number, campo: CampoNumerico): string {
+    const valor = this.dia().exercicios[indice][campo];
+    return valor === null ? '' : this.texto(valor);
+  }
+
+  protected texto(valor: number | null): string {
+    return valor === null ? '' : String(valor).replace('.', ',');
   }
 
   // --- salvar / sair ---
@@ -236,10 +271,6 @@ export class PlanoEditor implements OnInit {
     if (atual === null) return sinal > 0 ? passo : null;
     const proximo = Math.round((atual + sinal * passo) * 100) / 100;
     return proximo <= 0 ? null : Math.min(proximo, max);
-  }
-
-  private limitar(valor: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, valor));
   }
 
   private atualizarDia(indice: number, fn: (d: DiaPlano) => DiaPlano): void {
