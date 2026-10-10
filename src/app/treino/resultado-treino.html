@@ -65,7 +65,7 @@
       @for (item of itens; track item.e.id) {
         <li>
           <span class="nome">{{ item.e.nome }}</span>
-          <span class="num suave">
+          <span class="num suave dados">
             {{ seriesFeitas(item.e) }}/{{ item.e.metaSeries }} · {{ item.e.xp ?? 0 }} XP
             @if (item.recorde) { <span class="trofeu" role="img" aria-label="Recorde">🏆</span> }
           </span>

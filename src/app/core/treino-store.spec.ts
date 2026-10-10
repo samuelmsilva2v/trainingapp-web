@@ -62,6 +62,19 @@ describe('TreinoStore', () => {
     expect(store.status()).toBe('salvo');
   });
 
+  it('sincronizar envia já o estado atual, sem esperar o agrupamento', async () => {
+    marcarReps(9);
+    expect(salvar).not.toHaveBeenCalled();
+
+    await store.sincronizar();
+
+    expect(salvar).toHaveBeenCalledTimes(1);
+    expect(salvar.mock.calls[0][0].exercicios[0].series[0].reps).toBe(9);
+    expect(store.status()).toBe('salvo');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(salvar).toHaveBeenCalledTimes(1); // o envio agendado foi cancelado
+  });
+
   it('encerrar espera o envio em andamento terminar e envia o estado final', async () => {
     const resposta = new Subject<SessaoLocal>();
     salvar.mockReturnValueOnce(resposta);

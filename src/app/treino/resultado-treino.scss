@@ -19,6 +19,8 @@ section { display: flex; flex-direction: column; gap: 8px; }
 }
 .exercicios {
   list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
-  li { display: flex; justify-content: space-between; gap: 12px; }
+  li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
   .nome { font-weight: 600; text-transform: uppercase; min-width: 0; }
+  // Os dados do exercício (4/4 · 20 XP 🏆) nunca quebram de linha; só o nome pode.
+  .dados { flex-shrink: 0; white-space: nowrap; }
 }

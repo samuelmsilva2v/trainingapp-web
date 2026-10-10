@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { seriesFeitas, volumeTotal } from '../core/series';
+import { linhasComRecorde, seriesFeitas, volumeTotal } from '../core/series';
 import { formatarKg } from '../core/formatos';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
@@ -40,12 +40,7 @@ export class ResultadoTreino implements OnInit {
     : 0;
 
   /** Exercícios com o XP de cada um; o recorde (🏆) marca só a primeira vez que o exercício aparece. */
-  protected readonly itens = this.sessao.exercicios.map((e, i) => ({
-    e,
-    recorde:
-      (this.sessao.recordes ?? []).includes(e.exercicioId) &&
-      this.sessao.exercicios.findIndex(x => x.exercicioId === e.exercicioId) === i,
-  }));
+  protected readonly itens = this.sessao.exercicios.map(e => ({ e, recorde: linhasComRecorde(this.sessao).has(e.id) }));
 
   protected readonly recordes = (this.sessao.recordes ?? [])
     .map(id => this.sessao.exercicios.find(e => e.exercicioId === id)?.nome)

@@ -179,15 +179,16 @@
       </header>
       <dl class="totais">
         <div><dd class="num">{{ store.seriesConcluidas() }}</dd><dt>séries</dt></div>
-        <div><dd class="num">~{{ xpPrevisto() }}</dd><dt>xp estimado</dt></div>
+        <div><dd class="num">{{ previa()?.xpGanho ?? '—' }}</dd><dt>xp</dt></div>
         <div><dd class="num">{{ cronometro(decorrido()) }}</dd><dt>tempo</dt></div>
       </dl>
       <ul class="resumo-exercicios">
         @for (e of store.sessao()!.exercicios; track e.id) {
           <li>
             <span class="nome">{{ e.nome }}</span>
-            <span class="num suave">
-              {{ seriesFeitas(e) }}/{{ e.series.length }} · ~{{ xpPrevistoDoExercicio(e) }} XP
+            <span class="num suave dados">
+              {{ seriesFeitas(e) }}/{{ e.series.length }} · {{ xpDoExercicio(e) ?? '—' }} XP
+              @if (linhasComRecorde().has(e.id)) { <span class="trofeu" role="img" aria-label="Recorde">🏆</span> }
             </span>
           </li>
         }

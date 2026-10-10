@@ -119,6 +119,14 @@ export class TreinoStore {
     void this.enviar();
   }
 
+  /** Garante que o estado atual já está na API, sem esperar o agrupamento de mudanças (ex.: antes de pedir a prévia de XP). */
+  async sincronizar(): Promise<void> {
+    if (this.temporizador) clearTimeout(this.temporizador);
+    if (this.temporizadorReenvio) clearTimeout(this.temporizadorReenvio);
+    while (this.enviando) await new Promise(r => setTimeout(r, 50));
+    if (this.status() !== 'salvo' && this.sessao()) await this.enviar();
+  }
+
   /** Conclui ou abandona: envia o estado final e, se a API aceitar, larga a sessão local e devolve a resposta (com o XP ganho). */
   async encerrar(estado: Exclude<EstadoSessao, 'EM_ANDAMENTO'>): Promise<SessaoLocal | null> {
     const agora = new Date().toISOString();

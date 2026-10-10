@@ -10,8 +10,7 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { seriesFeitas } from '../core/series';
-import { xpDoExercicio, xpEstimado } from '../core/xp';
+import { linhasComRecorde, seriesFeitas } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 
 const PASSO_CARGA = 1;
@@ -40,14 +39,16 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly formatarKg = formatarKg;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
-  /** XP previsto do exercício; é zero quando o treino todo ainda não rende XP (menos de 3 séries). */
-  protected xpPrevistoDoExercicio(e: ExercicioLocal): number {
-    return this.xpPrevisto() > 0 ? xpDoExercicio(e) : 0;
-  }
-  protected readonly xpPrevisto = computed(() => {
-    const s = this.store.sessao();
-    return s ? xpEstimado(s) : 0;
+  /** Sessão como a API a vê agora, com o XP que o treino renderia se fosse concluído (exato, calculado pela API). */
+  protected readonly previa = signal<SessaoLocal | null>(null);
+  protected readonly linhasComRecorde = computed(() => {
+    const p = this.previa();
+    return p ? linhasComRecorde(p) : new Set<string>();
   });
+
+  protected xpDoExercicio(e: ExercicioLocal): number | null {
+    return this.previa()?.exercicios.find(x => x.id === e.id)?.xp ?? null;
+  }
 
   protected readonly carregando = signal(true);
   protected readonly indice = signal(0);
@@ -265,7 +266,21 @@ export class Treino implements OnInit, OnDestroy {
   // --- encerrar ---
 
   protected abrirResumo(): void {
+    this.previa.set(null);
     this.resumoAberto.set(true);
+    void this.carregarPrevia();
+  }
+
+  /** Salva o treino e pede à API o XP exato; sem rede ou com erro, o XP fica como "—". */
+  private async carregarPrevia(): Promise<void> {
+    try {
+      await this.store.sincronizar();
+      const id = this.store.sessao()?.id;
+      if (!id || this.store.status() === 'erro') return;
+      this.previa.set(await firstValueFrom(this.api.obter(id)));
+    } catch {
+      this.previa.set(null);
+    }
   }
 
   protected concluir(): void {
