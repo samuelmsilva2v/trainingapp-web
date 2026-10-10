@@ -1,22 +1,15 @@
-<h1 class="titulo-md saudacao">Hoje</h1>
+<h1 class="titulo-md saudacao">Olá{{ nome() ? ', ' + nome() : '' }} 👋</h1>
 
 @if (gamificacao.dados(); as g) {
   <section class="status" aria-label="Seu progresso">
-    <div class="streak" [class.viva]="g.streakAtual > 0">
+    <span class="chip-status streak" [class.viva]="g.streakAtual > 0">
       <span class="icone cheio" aria-hidden="true">local_fire_department</span>
-      <span class="num valor">{{ g.streakAtual }}</span>
-      <span class="suave">{{ g.streakAtual === 1 ? 'dia de sequência' : 'dias de sequência' }}</span>
-    </div>
-    <div class="nivel">
-      <div class="nivel-topo">
-        <span class="rotulo">Nível {{ g.nivel }}</span>
-        <span class="suave num">faltam {{ gamificacao.xpFaltante() }} XP</span>
-      </div>
-      <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal"
-           [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
-        <span [style.width.%]="gamificacao.progresso() * 100"></span>
-      </div>
-    </div>
+      {{ g.streakAtual }} {{ g.streakAtual === 1 ? 'dia de sequência' : 'dias de sequência' }}
+    </span>
+    <span class="chip-status nivel">
+      <span class="icone cheio" aria-hidden="true">bolt</span>
+      Nível {{ g.nivel }} · {{ g.xpTotal.toLocaleString('pt-BR') }} XP
+    </span>
   </section>
 }
 

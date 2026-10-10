@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
-import { SessoesApi, mensagemDeErro } from '../core/api';
+import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
@@ -15,11 +15,13 @@ import { duracaoMinutos, formatarKg, formatarDataRelativa } from '../core/format
 })
 export class HojeTela implements OnInit {
   private readonly api = inject(SessoesApi);
+  private readonly perfilApi = inject(PerfilApi);
   private readonly store = inject(TreinoStore);
   protected readonly gamificacao = inject(GamificacaoStore);
   private readonly roteador = inject(Router);
   private readonly aviso = inject(MatSnackBar);
 
+  protected readonly nome = signal<string | null>(null);
   protected readonly hoje = signal<Hoje | null>(null);
   protected readonly ultimo = signal<SessaoResumo | null>(null);
   protected readonly carregando = signal(true);
@@ -31,6 +33,10 @@ export class HojeTela implements OnInit {
   protected readonly formatarDataRelativa = formatarDataRelativa;
 
   ngOnInit(): void {
+    this.perfilApi.obter().subscribe({
+      next: perfil => this.nome.set(perfil.nome.trim().split(/\s+/)[0] || null),
+      error: () => this.nome.set(null),
+    });
     this.carregar();
   }
 
