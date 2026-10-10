@@ -31,41 +31,70 @@
       </a>
     </div>
   } @else {
-    @if (h.sessaoEmAndamento; as andamento) {
-      <section class="cartao destaque">
-        <span class="chip andamento"><span class="icone cheio" aria-hidden="true">timer</span> Em andamento</span>
-        <h2 class="titulo-md">{{ andamento.diaNome }}</h2>
-        <p class="suave">{{ andamento.planoNome }} · iniciado há {{ duracaoMinutos(andamento.iniciadaEm, null) }} min</p>
-        <button type="button" class="btn btn-primario" (click)="continuar()">
-          <span class="icone" aria-hidden="true">play_arrow</span> Continuar treino
-        </button>
-      </section>
-    } @else if (h.proximoDia; as dia) {
+    @if (cartao(); as c) {
       <section class="cartao">
         <div class="plano-topo">
           <p class="plano">
             <span class="icone" aria-hidden="true">calendar_today</span>
             <span class="plano-nome">{{ h.planoNome }}</span>
           </p>
-          <span class="badge-dia">Dia {{ dia.ordem + 1 }} de {{ h.totalDias }} na rotação</span>
+          <span class="badge-dia">Dia {{ c.ordem + 1 }} de {{ h.totalDias }} na rotação</span>
         </div>
-        <h2 class="titulo-md">{{ dia.nome }}</h2>
+        <div class="treino-titulo">
+          <h2 class="titulo-md">{{ c.titulo }}</h2>
+          @if (c.andamento) {
+            <p class="andamento-sub">
+              <span class="pulso" aria-hidden="true"></span>
+              <span class="em-andamento">Em andamento</span>
+              <span class="suave num">· há {{ duracaoMinutos(c.iniciadaEm!, null) }} min · {{ c.feitas }}/{{ c.totalSeries }} séries</span>
+            </p>
+          }
+        </div>
 
-        @if (dia.exercicios.length) {
+        @if (c.itens.length) {
           <ul class="exercicios">
-            @for (e of dia.exercicios.slice(0, 4); track e.id) {
+            @for (e of c.itens.slice(0, 4); track e.id; let i = $index) {
               <li>
-                <span class="nome">{{ e.exercicioNome }}</span>
-                <span class="meta num">{{ e.series }} × {{ e.repsMin }}–{{ e.repsMax }}</span>
+                <span class="nome">
+                  <span class="ponto" [class.ok]="c.andamento ? e.feitas === e.total : i === 0" [class.parcial]="c.andamento && e.feitas > 0 && e.feitas < e.total" aria-hidden="true"></span>
+                  {{ e.nome }}
+                </span>
+                <span class="meta num">{{ c.andamento ? e.feitas + '/' + e.total : e.series + ' × ' + e.repsMin + '–' + e.repsMax }}</span>
               </li>
             }
           </ul>
-          @if (dia.exercicios.length > 4) {
-            <p class="suave resto">+{{ dia.exercicios.length - 4 }} exercícios restantes na sessão</p>
+          @if (c.itens.length > 4) {
+            <p class="suave resto">+{{ c.itens.length - 4 }} exercícios restantes na sessão</p>
           }
-          <button type="button" class="btn btn-primario" [disabled]="ocupado()" (click)="iniciar()">
-            <span class="icone" aria-hidden="true">play_arrow</span> Iniciar treino
+          @if (c.andamento) {
+            <button type="button" class="btn btn-primario" (click)="continuar()">
+              <span class="icone" aria-hidden="true">play_arrow</span> Continuar treino
+            </button>
+          } @else {
+            <button type="button" class="btn btn-primario" [disabled]="ocupado()" (click)="iniciar()">
+              <span class="icone" aria-hidden="true">play_arrow</span> Iniciar treino
+            </button>
+          }
+
+          <button type="button" class="ver-resumo" [attr.aria-expanded]="resumoAberto()" (click)="resumoAberto.set(!resumoAberto())">
+            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo do treino ({{ c.itens.length }} {{ c.itens.length === 1 ? 'exercício' : 'exercícios' }})</span>
+            <span class="icone chevron" aria-hidden="true">{{ resumoAberto() ? 'expand_less' : 'expand_more' }}</span>
           </button>
+          @if (resumoAberto()) {
+            <ul class="resumo">
+              @for (e of c.itens; track e.id) {
+                <li>
+                  <span class="resumo-nome">{{ e.nome }}</span>
+                  <span class="resumo-detalhe num">
+                    {{ e.series }} × {{ e.repsMin }}–{{ e.repsMax }}
+                    @if (e.carga !== null) { · {{ kg(e.carga) }} kg }
+                    @if (e.descanso !== null) { · {{ e.descanso }}s }
+                    @if (c.andamento) { · {{ e.feitas }}/{{ e.total }} feitas }
+                  </span>
+                </li>
+              }
+            </ul>
+          }
         } @else {
           <p class="suave">Este dia ainda não tem exercícios.</p>
           <a class="btn btn-secundario" [routerLink]="['/planos', h.planoId]">
@@ -73,7 +102,7 @@
           </a>
         }
 
-        @if (h.totalDias > 1) {
+        @if (!c.andamento && h.totalDias > 1) {
           <button type="button" class="btn btn-secundario" [disabled]="ocupado()" (click)="pular()">
             <span class="icone" aria-hidden="true">skip_next</span> Pular este dia na rotação
           </button>
