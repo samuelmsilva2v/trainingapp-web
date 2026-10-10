@@ -30,8 +30,9 @@
       }
     </select>
     <label class="alternar">
-      <input type="checkbox" [checked]="apenasMeus()" (change)="apenasMeus.set(!apenasMeus())" />
-      <span>Meus exercícios</span>
+      <input type="checkbox" role="switch" [checked]="apenasMeus()" (change)="apenasMeus.set(!apenasMeus())" />
+      <span class="trilho" aria-hidden="true"></span>
+      <span class="legenda">Meus exercícios</span>
     </label>
   </div>
 
