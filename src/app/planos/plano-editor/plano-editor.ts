@@ -6,6 +6,7 @@ import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
+import { formatarCarga } from '../../core/formatos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
@@ -33,6 +34,7 @@ export class PlanoEditor implements OnInit {
   protected readonly objetivos = OBJETIVOS;
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
+  protected readonly formatarCarga = formatarCarga;
 
   protected readonly id = this.rota.snapshot.paramMap.get('id');
   protected readonly carregando = signal(this.id !== null);
@@ -187,10 +189,6 @@ export class PlanoEditor implements OnInit {
       }
       return novo;
     });
-  }
-
-  protected formatarCarga(valor: number | null): string {
-    return valor === null ? '—' : valor.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   }
 
   // --- salvar / sair ---
