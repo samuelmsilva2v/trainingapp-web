@@ -69,6 +69,10 @@ export class PlanosLista implements OnInit {
     return Array.from({ length: Math.min(quantidade, 26) }, (_, i) => String.fromCharCode(65 + i)).join('');
   }
 
+  protected totalSeries(dia: DiaPlano): number {
+    return dia.exercicios.reduce((total, e) => total + e.series, 0);
+  }
+
   protected nomesDosExercicios(dia: DiaPlano): string {
     return dia.exercicios.map(e => e.exercicioNome).join(', ');
   }

@@ -76,7 +76,7 @@
                   <li>
                     <div class="dia-topo">
                       <span class="dia-nome"><span class="ponto" aria-hidden="true"></span>{{ dia.nome }}</span>
-                      <span class="dia-qtd">{{ dia.exercicios.length }} {{ dia.exercicios.length === 1 ? 'exercício' : 'exercícios' }}</span>
+                      <span class="dia-qtd">{{ dia.exercicios.length }} {{ dia.exercicios.length === 1 ? 'exercício' : 'exercícios' }} · {{ totalSeries(dia) }} {{ totalSeries(dia) === 1 ? 'série' : 'séries' }}</span>
                     </div>
                     @if (dia.exercicios.length) {
                       <p class="dia-exercicios">{{ nomesDosExercicios(dia) }}</p>

@@ -77,9 +77,9 @@
 .resumo-dias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .resumo-dias li { padding: 10px; border-radius: var(--r-sm); background: var(--c-sup-2); }
 .dia-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.dia-nome { display: flex; align-items: center; gap: 6px; min-width: 0; font: 700 12px/16px 'Inter', sans-serif; }
+.dia-nome { display: flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; font: 700 12px/16px 'Inter', sans-serif; }
 .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--c-primaria); flex-shrink: 0; }
-.dia-qtd { flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }
+.dia-qtd { flex-shrink: 0; white-space: nowrap; padding: 2px 8px; border-radius: 9999px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }
 .dia-exercicios { margin: 0; padding-left: 14px; font-size: 12px; line-height: 16px; color: var(--c-texto-2); }
 
 .fixo { position: sticky; bottom: 80px; z-index: 30; padding: 16px 0 8px; }
