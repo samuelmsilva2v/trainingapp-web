@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Casca } from './layout/casca';
+import type { PlanoEditor } from './planos/plano-editor/plano-editor';
 
 export const routes: Routes = [
   {
@@ -32,10 +33,12 @@ export const routes: Routes = [
   {
     path: 'planos/novo',
     loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
+    canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
   },
   {
     path: 'planos/:id',
     loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
+    canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
   },
   { path: '**', redirectTo: 'hoje' },
 ];

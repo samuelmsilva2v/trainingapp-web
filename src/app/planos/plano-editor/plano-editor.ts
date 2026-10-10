@@ -2,6 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } fro
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
@@ -48,8 +49,31 @@ export class PlanoEditor implements OnInit {
     () => this.nome().trim().length > 0 && this.dias().length > 0 && this.dias().every(d => d.nome.trim().length > 0),
   );
 
+  // Foto do plano ao abrir (ou ao salvar): sair com algo diferente dela pergunta antes de descartar.
+  private baseline = this.fotografar();
+
   ngOnInit(): void {
     if (this.id) this.carregar(this.id);
+  }
+
+  /** Usado pelo guard canDeactivate das rotas do editor. */
+  podeSair(): boolean | Observable<boolean> {
+    if (this.fotografar() === this.baseline) return true;
+    return this.dialogo
+      .open(ConfirmarDialogo, {
+        panelClass: 'dialogo-confirmar',
+        data: {
+          titulo: 'Descartar alterações',
+          mensagem: 'As alterações deste plano ainda não foram salvas.',
+          confirmar: 'Descartar',
+        },
+      })
+      .afterClosed()
+      .pipe(map(ok => ok === true));
+  }
+
+  private fotografar(): string {
+    return JSON.stringify([this.nome(), this.objetivo(), this.dias()]);
   }
 
   protected carregar(id: string): void {
@@ -72,6 +96,7 @@ export class PlanoEditor implements OnInit {
     this.objetivo.set(plano.objetivo);
     this.dias.set(plano.dias.length ? plano.dias : [{ nome: 'Treino A', exercicios: [] }]);
     this.diaAtivo.set(0);
+    this.baseline = this.fotografar();
   }
 
   // --- dias ---
@@ -192,6 +217,7 @@ export class PlanoEditor implements OnInit {
     requisicao.subscribe({
       next: () => {
         this.aviso.open('Plano salvo.', undefined, { duration: 3000 });
+        this.baseline = this.fotografar();
         this.roteador.navigate(['/planos']);
       },
       error: e => {
