@@ -4,13 +4,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
-import { cronometro, formatarCarga, formatarKg, formatarRazao } from '../core/formatos';
+import { cronometro, formatarCarga, formatarKg } from '../core/formatos';
 import { Anterior, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { coeficienteDeCarga, comparacaoComUltimo, melhorSerie, seriesFeitas } from '../core/coeficiente';
+import { melhorSerie, seriesFeitas } from '../core/series';
+import { xpEstimado } from '../core/xp';
 import { ResultadoTreino } from './resultado-treino';
 
 const PASSO_CARGA = 1;
@@ -37,13 +38,12 @@ export class Treino implements OnInit, OnDestroy {
   /** Kg sem casas decimais quando a carga é inteira (30), com vírgula só se vier quebrada (32,5). */
   protected readonly kg = (v: number): string => (Number.isInteger(v) ? String(v) : formatarCarga(v));
   protected readonly formatarKg = formatarKg;
-  protected readonly formatarRazao = formatarRazao;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
   protected readonly melhorSerie = melhorSerie;
-  protected readonly coeficiente = computed(() => {
+  protected readonly xpPrevisto = computed(() => {
     const s = this.store.sessao();
-    return s ? coeficienteDeCarga(s) : null;
+    return s ? xpEstimado(s) : 0;
   });
 
   protected readonly carregando = signal(true);
@@ -308,10 +308,7 @@ export class Treino implements OnInit, OnDestroy {
   /** Abre a tela de resultado; devolve false se não deu para montá-la (o treino já está salvo). */
   private async mostrarResultado(sessao: SessaoLocal, antes: Gamificacao | null): Promise<boolean> {
     try {
-      const [depois, historico] = await Promise.all([
-        firstValueFrom(this.gamificacaoApi.resumo()),
-        firstValueFrom(this.api.historico(0, 30)).catch(() => []),
-      ]);
+      const depois = await firstValueFrom(this.gamificacaoApi.resumo());
       this.gamificacao.dados.set(depois);
       await firstValueFrom(
         this.dialogo
@@ -319,7 +316,7 @@ export class Treino implements OnInit, OnDestroy {
             panelClass: 'dialogo-confirmar',
             maxWidth: '95vw',
             width: '480px',
-            data: { sessao, antes, depois, comparacao: comparacaoComUltimo(sessao, historico) },
+            data: { sessao, antes, depois },
           })
           .afterClosed(),
         { defaultValue: undefined },

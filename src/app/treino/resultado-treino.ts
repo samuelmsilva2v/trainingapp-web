@@ -1,20 +1,18 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { melhorSerie, seriesFeitas, coeficienteDeCarga } from '../core/coeficiente';
-import { formatarCarga, formatarKg, formatarRazao } from '../core/formatos';
+import { melhorSerie, seriesFeitas, volumeTotal } from '../core/series';
+import { formatarCarga, formatarKg } from '../core/formatos';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
 export interface ResultadoDados {
   sessao: SessaoLocal;
   antes: Gamificacao | null;
   depois: Gamificacao | null;
-  /** Volume desta sessão ÷ último treino do mesmo dia da rotação. */
-  comparacao: number | null;
 }
 
 const MINIMO_SERIES_XP = 3;
 
-/** Tela de resultado ao concluir: XP, nível, recordes, sequência, conquistas e coeficiente de carga. */
+/** Tela de resultado ao concluir: XP, nível, recordes, sequência, conquistas e o resumo do treino. */
 @Component({
   selector: 'app-resultado-treino',
   templateUrl: './resultado-treino.html',
@@ -26,13 +24,12 @@ export class ResultadoTreino implements OnInit {
 
   protected readonly sessao = this.dados.sessao;
   protected readonly xp = this.sessao.xpGanho ?? 0;
-  protected readonly coeficiente = coeficienteDeCarga(this.sessao);
+  protected readonly volume = volumeTotal(this.sessao);
   protected readonly feitas = this.sessao.exercicios.reduce((n, e) => n + seriesFeitas(e), 0);
   protected readonly planejadas = this.sessao.exercicios.reduce((n, e) => n + e.metaSeries, 0);
 
   protected readonly formatarCarga = formatarCarga;
   protected readonly formatarKg = formatarKg;
-  protected readonly formatarRazao = formatarRazao;
   protected readonly seriesFeitas = seriesFeitas;
   protected readonly melhorSerie = melhorSerie;
 

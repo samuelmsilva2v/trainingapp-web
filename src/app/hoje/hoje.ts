@@ -5,8 +5,7 @@ import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
-import { coeficienteDeCarga } from '../core/coeficiente';
-import { duracaoMinutos, formatarDataRelativa, formatarRazao } from '../core/formatos';
+import { duracaoMinutos, formatarDataRelativa } from '../core/formatos';
 
 interface ItemCartao {
   id: string | undefined;
@@ -49,13 +48,11 @@ export class HojeTela implements OnInit {
   protected readonly nome = signal<string | null>(null);
   protected readonly hoje = signal<Hoje | null>(null);
   protected readonly ultimo = signal<SessaoResumo | null>(null);
-  protected readonly cargaUltimo = signal<number | null>(null);
   protected readonly carregando = signal(true);
   protected readonly ocupado = signal(false);
   protected readonly erro = signal<string | null>(null);
 
   protected readonly duracaoMinutos = duracaoMinutos;
-  protected readonly formatarRazao = formatarRazao;
   protected readonly resumoAberto = signal(false);
   /** Kg inteiros sem casas decimais; só mostra vírgula se a carga vier quebrada. */
   protected readonly kg = (v: number): string => (Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR'));
@@ -112,18 +109,7 @@ export class HojeTela implements OnInit {
     });
     // O último treino pode ser concluído ou abandonado; o cartão indica qual dos dois.
     this.api.historico(0, 1).subscribe({
-      next: lista => {
-        const ultimo = lista[0] ?? null;
-        this.ultimo.set(ultimo);
-        this.cargaUltimo.set(null);
-        if (ultimo) {
-          // O coeficiente de carga precisa das metas, que só vêm no detalhe da sessão.
-          this.api.obter(ultimo.id).subscribe({
-            next: detalhe => this.cargaUltimo.set(coeficienteDeCarga(detalhe)),
-            error: () => this.cargaUltimo.set(null),
-          });
-        }
-      },
+      next: lista => this.ultimo.set(lista[0] ?? null),
       error: () => this.ultimo.set(null),
     });
   }

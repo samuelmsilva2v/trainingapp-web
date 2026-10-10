@@ -8,8 +8,7 @@
     <section class="xp" aria-label="XP ganho">
       <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xp }} XP</p>
       <ul class="detalhe num">
-        @if (sessao.xpSessao) { <li><span>Treino concluído</span><span>+{{ sessao.xpSessao }}</span></li> }
-        @if (sessao.xpSeries) { <li><span>Séries</span><span>+{{ sessao.xpSeries }}</span></li> }
+        @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
         @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
       </ul>
     </section>
@@ -55,12 +54,12 @@
     </section>
   }
 
-  <section aria-label="Carga do treino">
-    <h3 class="rotulo suave">Carga do treino</h3>
+  <section aria-label="Resumo do treino">
+    <h3 class="rotulo suave">Resumo do treino</h3>
     <dl class="metricas num">
-      <div><dd>{{ formatarRazao(coeficiente) }}</dd><dt>do planejado</dt></div>
-      <div><dd>{{ formatarRazao(dados.comparacao, '×') }}</dd><dt>vs. último {{ sessao.diaNome }}</dt></div>
+      <div><dd>{{ xp }}</dd><dt>xp do treino</dt></div>
       <div><dd>{{ feitas }}/{{ planejadas }}</dd><dt>séries</dt></div>
+      <div><dd>{{ formatarKg(volume) }}</dd><dt>kg volume</dt></div>
     </dl>
     <ul class="exercicios">
       @for (e of sessao.exercicios; track e.id) {

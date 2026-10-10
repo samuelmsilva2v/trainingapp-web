@@ -36,7 +36,7 @@ function abrir(dados: ResultadoDados): HTMLElement {
 describe('ResultadoTreino', () => {
   it('mostra o XP com o detalhe, o nível novo, o recorde e a conquista nova', () => {
     const el = abrir({
-      sessao: sessao({ xpGanho: 90, xpSessao: 50, xpSeries: 15, xpRecordes: 25, recordes: ['x1'] }),
+      sessao: sessao({ xpGanho: 90, xpSeries: 65, xpRecordes: 25, recordes: ['x1'] }),
       antes: gamificacao({ xpTotal: 250, nivel: 1 }),
       depois: gamificacao({
         xpTotal: 340, nivel: 2, xpInicioDoNivel: 283, xpProximoNivel: 520,
@@ -45,31 +45,28 @@ describe('ResultadoTreino', () => {
           { codigo: 'PRIMEIRO_RECORDE', nome: 'Primeiro recorde', descricao: '', conquistada: true },
         ],
       }),
-      comparacao: 1.5,
     });
     const texto = el.textContent ?? '';
 
     expect(texto).toContain('+90 XP');
-    expect(texto).toContain('+50');
-    expect(texto).toContain('+15');
+    expect(texto).toContain('+65');
     expect(texto).toContain('+25');
     expect(texto).toContain('Subiu para o nível 2!');
     expect(texto).toContain('faltam 180 XP para o nível 3');
     expect(texto).toContain('Supino reto');
     expect(texto).toContain('Primeiro recorde');
     expect(texto).not.toContain('Nova conquista Primeiro treino');
-    expect(texto).toContain('1,50×');
-    expect(texto).toContain('1,17'); // 3 × 8 × 70 ÷ (3 × 60 × 8)
+    expect(texto).toContain('1.680'); // volume: 3 séries de 8 × 70 kg
   });
 
   it('explica por que não rendeu XP: poucas séries ou já treinou no dia', () => {
     const poucas = sessao({ xpGanho: 0 });
     poucas.exercicios[0].series = poucas.exercicios[0].series.slice(0, 2);
-    expect(abrir({ sessao: poucas, antes: null, depois: gamificacao({}), comparacao: null }).textContent)
+    expect(abrir({ sessao: poucas, antes: null, depois: gamificacao({}) }).textContent)
       .toContain('menos de 3 séries');
 
     TestBed.resetTestingModule();
-    expect(abrir({ sessao: sessao({ xpGanho: 0 }), antes: null, depois: gamificacao({}), comparacao: null }).textContent)
+    expect(abrir({ sessao: sessao({ xpGanho: 0 }), antes: null, depois: gamificacao({}) }).textContent)
       .toContain('Só o primeiro treino do dia rende XP.');
   });
 });
