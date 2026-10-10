@@ -213,6 +213,7 @@
   .icone { color: var(--c-primaria); }
   .tempo { flex: 1; font: 800 28px/32px var(--fonte-titulo); }
   .btn { min-height: 44px; padding: 0 12px; }
+  .pular { gap: 4px; .icone { color: inherit; font-size: 20px; } }
   // Em telas estreitas o rótulo sai para caber os três botões ao lado do tempo.
   @media (max-width: 420px) { .rotulo { display: none; } .btn { padding: 0 10px; } }
 }
