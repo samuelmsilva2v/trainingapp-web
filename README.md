@@ -19,6 +19,10 @@ ng serve
 
 Acesse `http://localhost:4200/`.
 
+## Fontes e ícones
+
+Inter, Outfit e Material Symbols ficam em `public/fonts` (subconjunto latin), para o app funcionar sem internet. O arquivo de ícones traz só os usados: ao usar um ícone novo, baixe de novo o CSS `https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&icon_names=<lista em ordem alfabética, separada por vírgula>` (com um User-Agent de navegador moderno), pegue o `.woff2` indicado no `src` e substitua `public/fonts/material-symbols.woff2`.
+
 ## Testes
 
 ```bash

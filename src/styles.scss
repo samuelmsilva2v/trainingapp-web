@@ -1,5 +1,30 @@
 @use '@angular/material' as mat;
 
+// Fontes locais (public/fonts), só o subconjunto latin: o app funciona sem internet.
+// Material Symbols traz apenas os ícones usados; ao usar um ícone novo, regerar o arquivo
+// (ver README).
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url('/fonts/outfit-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url('/fonts/material-symbols.woff2') format('woff2');
+}
+
 // Tema "Iron Pulse" (Stitch). Escuro, Electric Lime como primária e Vivid Orange como secundária.
 html {
   color-scheme: dark;
