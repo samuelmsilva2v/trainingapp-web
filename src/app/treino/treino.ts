@@ -13,7 +13,7 @@ import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { coeficienteDeCarga, comparacaoComUltimo, melhorSerie, seriesFeitas } from '../core/coeficiente';
 import { ResultadoTreino } from './resultado-treino';
 
-const PASSO_CARGA = 2.5;
+const PASSO_CARGA = 1;
 const CARGA_MAX = 9999;
 const REPS_MAX = 1000;
 
@@ -34,6 +34,8 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
   protected readonly formatarCarga = formatarCarga;
+  /** Kg sem casas decimais quando a carga é inteira (30), com vírgula só se vier quebrada (32,5). */
+  protected readonly kg = (v: number): string => (Number.isInteger(v) ? String(v) : formatarCarga(v));
   protected readonly formatarKg = formatarKg;
   protected readonly formatarRazao = formatarRazao;
   protected readonly cronometro = cronometro;
@@ -121,7 +123,7 @@ export class Treino implements OnInit, OnDestroy {
   protected textoAnterior(ex: ExercicioLocal, indice: number): string | null {
     const s = this.anteriores().get(ex.exercicioId)?.series[indice];
     if (!s || s.reps === null) return null;
-    return s.carga === null ? `${s.reps}` : `${s.reps} × ${formatarCarga(s.carga)}`;
+    return s.carga === null ? `${s.reps}` : `${s.reps} × ${this.kg(s.carga)}`;
   }
 
   /** Ex.: "4 × 10 @ 62,5 kg" (nº de séries × reps da melhor série @ carga). */
@@ -130,7 +132,7 @@ export class Treino implements OnInit, OnDestroy {
     const comCarga = series.filter(s => s.reps !== null && s.carga !== null);
     if (comCarga.length === 0) return null;
     const melhor = comCarga.reduce((m, s) => ((s.carga ?? 0) > (m.carga ?? 0) ? s : m));
-    return `${series.length} × ${melhor.reps} @ ${formatarCarga(melhor.carga)} kg`;
+    return `${series.length} × ${melhor.reps} @ ${this.kg(melhor.carga ?? 0)} kg`;
   }
 
   protected ativarSerie(indice: number): void {
@@ -194,7 +196,7 @@ export class Treino implements OnInit, OnDestroy {
   }
 
   private limparCarga(valor: number): number {
-    return Math.round(Math.min(CARGA_MAX, Math.max(0, valor)) * 100) / 100;
+    return Math.round(Math.min(CARGA_MAX, Math.max(0, valor))); // carga em kg inteiros
   }
 
   protected alternarConcluida(serie: number): void {
