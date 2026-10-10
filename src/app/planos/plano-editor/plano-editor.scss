@@ -71,6 +71,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  .arrastar { margin-left: -8px; font-size: 20px; opacity: 0.6; }
+  &:not(.novo-dia) { cursor: grab; }
   &.sel { background: var(--c-sup-3); color: var(--c-texto); font-weight: 700; box-shadow: inset 0 -3px 0 var(--c-primaria); }
   &.novo-dia { background: var(--c-sup-2); color: var(--c-primaria); .icone { font-size: 20px; } }
 }
@@ -96,6 +98,7 @@
 }
 .ex-topo { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 4px; }
 .ex-topo .miniatura { margin-top: 4px; }
+.ex-nome h3 { text-transform: uppercase; }
 .ex-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
 .alca { cursor: grab; touch-action: none; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }

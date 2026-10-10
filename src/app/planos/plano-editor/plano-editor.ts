@@ -133,6 +133,18 @@ export class PlanoEditor implements OnInit {
     this.diaAtivo.set(this.dias().length - 1);
   }
 
+  /** No toque, segurar um instante antes de arrastar: assim a faixa de dias ainda rola com o dedo. */
+  protected readonly atrasoArrasto = { touch: 250, mouse: 0 };
+
+  /** Reordena a rotação; a aba selecionada continua sendo o mesmo dia, onde quer que ele tenha parado. */
+  protected reordenarDias(evento: CdkDragDrop<DiaPlano[]>): void {
+    const ativo = this.dia();
+    const dias = [...this.dias()];
+    moveItemInArray(dias, evento.previousIndex, evento.currentIndex);
+    this.dias.set(dias);
+    this.diaAtivo.set(dias.indexOf(ativo));
+  }
+
   protected renomearDia(evento: Event): void {
     const valor = (evento.target as HTMLInputElement).value;
     this.atualizarDia(this.diaAtivo(), d => ({ ...d, nome: valor }));

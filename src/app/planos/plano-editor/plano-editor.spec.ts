@@ -1,5 +1,11 @@
+import { CdkDropList } from '@angular/cdk/drag-drop';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import { ItemPlano } from '../../core/modelos';
-import { definirCampo } from './plano-editor';
+import { PlanoEditor, definirCampo } from './plano-editor';
 
 const item = {
   exercicioId: 'x',
@@ -37,5 +43,29 @@ describe('definirCampo', () => {
     const desceu = definirCampo(item, 'repsMax', 5);
     expect(desceu.repsMax).toBe(5);
     expect(desceu.repsMin).toBe(5);
+  });
+});
+
+describe('PlanoEditor: reordenar dias', () => {
+  it('arrastar um dia reordena a rotação e a aba selecionada continua sendo o mesmo dia', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+    const fixture = TestBed.createComponent(PlanoEditor);
+    fixture.detectChanges();
+    const tela: HTMLElement = fixture.nativeElement;
+    const adicionar = tela.querySelector<HTMLButtonElement>('.novo-dia')!;
+    adicionar.click(); // Treino B
+    adicionar.click(); // Treino C, já selecionado
+    fixture.detectChanges();
+
+    const abas = () => [...tela.querySelectorAll('.dia .nome-aba')].map(a => a.textContent!.trim());
+    expect(abas()).toEqual(['Treino A', 'Treino B', 'Treino C']);
+
+    fixture.debugElement
+      .query(By.directive(CdkDropList))
+      .triggerEventHandler('cdkDropListDropped', { previousIndex: 2, currentIndex: 0 });
+    fixture.detectChanges();
+
+    expect(abas()).toEqual(['Treino C', 'Treino A', 'Treino B']);
+    expect(tela.querySelector('.dia.sel .nome-aba')!.textContent!.trim()).toBe('Treino C');
   });
 });
