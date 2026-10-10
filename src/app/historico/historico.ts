@@ -1,6 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { SessoesApi, mensagemDeErro } from '../core/api';
+import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa, formatarKg } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
 
@@ -22,6 +26,9 @@ interface Mes {
 })
 export class Historico implements OnInit {
   private readonly api = inject(SessoesApi);
+  private readonly dialogo = inject(MatDialog);
+  private readonly aviso = inject(MatSnackBar);
+  private readonly gamificacao = inject(GamificacaoStore);
 
   protected readonly sessoes = signal<SessaoResumo[]>([]);
   protected readonly carregando = signal(true);
@@ -96,6 +103,35 @@ export class Historico implements OnInit {
     this.api.obter(sessao.id).subscribe({
       next: detalhe => this.detalhes.update(m => new Map(m).set(sessao.id, detalhe)),
       error: e => this.erroDetalhe.set(mensagemDeErro(e)),
+    });
+  }
+
+  protected apagar(sessao: SessaoResumo): void {
+    const estorno = [
+      sessao.xpGanho > 0 ? `${sessao.xpGanho} XP` : '',
+      sessao.recordes > 0 ? `${sessao.recordes} ${sessao.recordes === 1 ? 'recorde' : 'recordes'}` : '',
+    ].filter(Boolean).join(' e ');
+    this.dialogo
+      .open(ConfirmarDialogo, {
+        panelClass: 'dialogo-confirmar',
+        data: {
+          titulo: 'Apagar treino',
+          mensagem: `"${sessao.diaNome}" sai do histórico${estorno ? ` e ${estorno} serão estornados` : ''}. Isso não pode ser desfeito.`,
+          confirmar: 'Apagar',
+        },
+      })
+      .afterClosed()
+      .subscribe(ok => ok && this.excluir(sessao));
+  }
+
+  private excluir(sessao: SessaoResumo): void {
+    this.api.excluir(sessao.id).subscribe({
+      next: () => {
+        this.sessoes.update(lista => lista.filter(s => s.id !== sessao.id));
+        this.gamificacao.atualizar();
+        this.aviso.open(`Treino apagado${sessao.xpGanho > 0 ? ` · −${sessao.xpGanho} XP` : ''}`, undefined, { duration: 4000 });
+      },
+      error: e => this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 }),
     });
   }
 

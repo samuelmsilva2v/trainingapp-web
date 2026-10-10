@@ -83,6 +83,11 @@ export class SessoesApi {
     return this.http.get<SessaoLocal>(`${API_URL}/sessoes/${id}`);
   }
 
+  /** Apaga um treino encerrado; a API estorna o XP e os recordes dele. */
+  excluir(id: string): Observable<void> {
+    return this.http.delete<void>(`${API_URL}/sessoes/${id}`);
+  }
+
   /** Upsert idempotente: o cliente gera os ids e reenvia a sessão inteira. */
   salvar(sessao: SessaoLocal): Observable<SessaoLocal> {
     // xpGanho e recordes são só de leitura: a API os calcula.
