@@ -71,10 +71,11 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0;
-  div { display: flex; flex-direction: column; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-md); background: var(--c-sup-3); }
-  dd { margin: 0; font: 700 20px/28px var(--fonte-titulo); }
+  // Rótulo e valor sempre numa linha só; a fonte do valor encolhe com a largura da tela.
+  div { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 8px 10px; border-radius: var(--r-md); background: var(--c-sup-3); }
+  dd { margin: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 clamp(14px, 4.8vw, 20px)/28px var(--fonte-titulo); }
   dd.alvo { color: var(--c-secundaria); }
-  dt { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.05em; }
+  dt { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 clamp(9px, 2.7vw, 11px)/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.04em; }
 }
 
 .series { display: flex; flex-direction: column; gap: 10px; }
