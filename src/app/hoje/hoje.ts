@@ -70,7 +70,7 @@ export class HojeTela implements OnInit {
   protected continuar(): void {
     const sessao = this.hoje()?.sessaoEmAndamento;
     if (!sessao) return;
-    this.store.retomar(sessao);
+    if (this.store.sessao()?.id !== sessao.id) this.store.retomar(sessao);
     this.roteador.navigate(['/treino']);
   }
 
