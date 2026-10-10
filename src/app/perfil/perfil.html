@@ -1,6 +1,6 @@
 <section class="cabecalho">
   <h1 class="titulo-md">Perfil</h1>
-  <p class="suave">Seus dados e o fuso usado para contar os dias de treino.</p>
+  <p class="suave">Seus dados e seu progresso.</p>
 </section>
 
 @if (gamificacao.dados(); as g) {
@@ -51,20 +51,6 @@
     <label class="campo">
       <span class="rotulo suave">Nome</span>
       <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
-    </label>
-
-    <label class="campo">
-      <span class="rotulo suave">Fuso horário</span>
-      <select [value]="fuso()" (change)="fuso.set($any($event.target).value)">
-        @for (z of fusos(); track z) {
-          <option [value]="z" [selected]="z === fuso()">{{ z }}</option>
-        }
-      </select>
-      @if (fuso() !== fusoDoAparelho) {
-        <button type="button" class="link" (click)="fuso.set(fusoDoAparelho)">
-          <span class="icone" aria-hidden="true">my_location</span> Usar o fuso deste aparelho ({{ fusoDoAparelho }})
-        </button>
-      }
     </label>
 
     <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">

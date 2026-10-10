@@ -15,7 +15,7 @@
 .form { display: flex; flex-direction: column; gap: 16px; }
 .campo { display: flex; flex-direction: column; gap: 6px; }
 
-input, select {
+input {
   width: 100%;
   min-height: 52px;
   padding: 0 16px;
@@ -27,17 +27,3 @@ input, select {
   &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
 }
 
-.link {
-  align-self: flex-start;
-  min-height: 44px;
-  padding: 0 4px;
-  border: 0;
-  background: transparent;
-  color: var(--c-primaria);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  text-align: left;
-  .icone { font-size: 18px; }
-}

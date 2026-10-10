@@ -163,7 +163,6 @@ export interface SessaoResumo {
 
 export interface Perfil {
   nome: string;
-  fusoHorario: string;
 }
 
 export interface Conquista {
