@@ -90,12 +90,22 @@
 
   @if (ultimo(); as u) {
     <section class="cartao ultimo">
-      <h2 class="rotulo suave">Último treino</h2>
-      <p class="titulo-sm">{{ formatarDataRelativa(u.iniciadaEm) }} · {{ u.diaNome }}</p>
+      <header class="ultimo-topo">
+        <h2 class="rotulo suave">Último treino</h2>
+        @if (u.estado === 'CONCLUIDA') {
+          <span class="selo concluido" title="Treino concluído"><span class="icone cheio" aria-hidden="true">verified</span><span class="so-leitor">Treino concluído</span></span>
+        } @else {
+          <span class="selo incompleto" title="Treino abandonado"><span class="icone" aria-hidden="true">cancel</span>Abandonado</span>
+        }
+      </header>
+      <p class="ultimo-titulo">
+        <span class="icone" aria-hidden="true">fitness_center</span>
+        {{ formatarDataRelativa(u.iniciadaEm) }} · {{ u.diaNome }}
+      </p>
       <dl class="totais">
-        <div><dd class="num">{{ duracaoMinutos(u.iniciadaEm, u.finalizadaEm) }}</dd><dt>minutos</dt></div>
-        <div><dd class="num">{{ u.seriesConcluidas }}</dd><dt>séries</dt></div>
-        <div><dd class="num">{{ formatarKg(u.volumeKg) }}</dd><dt>kg volume</dt></div>
+        <div><span class="icone" aria-hidden="true">timer</span><dd class="num">{{ duracaoMinutos(u.iniciadaEm, u.finalizadaEm) }}</dd><dt>minutos</dt></div>
+        <div><span class="icone" aria-hidden="true">format_list_numbered</span><dd class="num">{{ u.seriesConcluidas }}</dd><dt>séries</dt></div>
+        <div><span class="icone" aria-hidden="true">weight</span><dd class="num">{{ formatarRazao(cargaUltimo()) }}</dd><dt>carga</dt></div>
       </dl>
     </section>
   }

@@ -5,7 +5,8 @@ import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
-import { duracaoMinutos, formatarKg, formatarDataRelativa } from '../core/formatos';
+import { coeficienteDeCarga } from '../core/coeficiente';
+import { duracaoMinutos, formatarDataRelativa, formatarRazao } from '../core/formatos';
 
 @Component({
   selector: 'app-hoje',
@@ -24,12 +25,13 @@ export class HojeTela implements OnInit {
   protected readonly nome = signal<string | null>(null);
   protected readonly hoje = signal<Hoje | null>(null);
   protected readonly ultimo = signal<SessaoResumo | null>(null);
+  protected readonly cargaUltimo = signal<number | null>(null);
   protected readonly carregando = signal(true);
   protected readonly ocupado = signal(false);
   protected readonly erro = signal<string | null>(null);
 
   protected readonly duracaoMinutos = duracaoMinutos;
-  protected readonly formatarKg = formatarKg;
+  protected readonly formatarRazao = formatarRazao;
   protected readonly formatarDataRelativa = formatarDataRelativa;
 
   ngOnInit(): void {
@@ -53,9 +55,20 @@ export class HojeTela implements OnInit {
         this.carregando.set(false);
       },
     });
-    // O histórico inclui treinos abandonados; o cartão só mostra o último concluído.
-    this.api.historico(0, 5).subscribe({
-      next: lista => this.ultimo.set(lista.find(s => s.estado === 'CONCLUIDA') ?? null),
+    // O último treino pode ser concluído ou abandonado; o cartão indica qual dos dois.
+    this.api.historico(0, 1).subscribe({
+      next: lista => {
+        const ultimo = lista[0] ?? null;
+        this.ultimo.set(ultimo);
+        this.cargaUltimo.set(null);
+        if (ultimo) {
+          // O coeficiente de carga precisa das metas, que só vêm no detalhe da sessão.
+          this.api.obter(ultimo.id).subscribe({
+            next: detalhe => this.cargaUltimo.set(coeficienteDeCarga(detalhe)),
+            error: () => this.cargaUltimo.set(null),
+          });
+        }
+      },
       error: () => this.ultimo.set(null),
     });
   }
