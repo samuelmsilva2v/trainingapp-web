@@ -8,6 +8,13 @@ export function formatarCarga(valor: number | null): string {
   return valor === null ? '—' : valor.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
 }
 
+/** Razão com 2 casas (ex.: 1,08), ou — quando não há base de comparação. */
+export function formatarRazao(valor: number | null, sufixo = ''): string {
+  return valor === null
+    ? '—'
+    : valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + sufixo;
+}
+
 /** Minutos inteiros entre dois instantes ISO; sem fim, até agora. */
 export function duracaoMinutos(inicio: string, fim: string | null): number {
   const ms = (fim ? new Date(fim).getTime() : Date.now()) - new Date(inicio).getTime();

@@ -2,13 +2,16 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { SessoesApi, mensagemDeErro } from '../core/api';
-import { cronometro, formatarCarga, formatarKg } from '../core/formatos';
-import { SerieLocal } from '../core/modelos';
+import { firstValueFrom } from 'rxjs';
+import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
+import { cronometro, formatarCarga, formatarKg, formatarRazao } from '../core/formatos';
+import { Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
+import { coeficienteDeCarga, comparacaoComUltimo, melhorSerie, seriesFeitas } from '../core/coeficiente';
+import { ResultadoTreino } from './resultado-treino';
 
 const PASSO_CARGA = 2.5;
 const CARGA_MAX = 9999;
@@ -23,6 +26,7 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly store = inject(TreinoStore);
   private readonly api = inject(SessoesApi);
   private readonly gamificacao = inject(GamificacaoStore);
+  private readonly gamificacaoApi = inject(GamificacaoApi);
   private readonly roteador = inject(Router);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
@@ -31,7 +35,14 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly rotuloEquipamento = rotuloEquipamento;
   protected readonly formatarCarga = formatarCarga;
   protected readonly formatarKg = formatarKg;
+  protected readonly formatarRazao = formatarRazao;
   protected readonly cronometro = cronometro;
+  protected readonly seriesFeitas = seriesFeitas;
+  protected readonly melhorSerie = melhorSerie;
+  protected readonly coeficiente = computed(() => {
+    const s = this.store.sessao();
+    return s ? coeficienteDeCarga(s) : null;
+  });
 
   protected readonly carregando = signal(true);
   protected readonly indice = signal(0);
@@ -219,7 +230,12 @@ export class Treino implements OnInit, OnDestroy {
     if (this.encerrando()) return;
     this.encerrando.set(true);
     try {
+      const antes = this.gamificacao.dados();
       const resposta = await this.store.encerrar(estado);
+      if (estado === 'CONCLUIDA' && resposta && (await this.mostrarResultado(resposta, antes))) {
+        await this.roteador.navigate([destino]);
+        return;
+      }
       this.gamificacao.atualizar();
       this.aviso.open(this.mensagemFinal(mensagem, resposta?.xpGanho ?? 0, resposta?.recordes?.length ?? 0), undefined, {
         duration: 5000,
@@ -229,6 +245,31 @@ export class Treino implements OnInit, OnDestroy {
       this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
     } finally {
       this.encerrando.set(false);
+    }
+  }
+
+  /** Abre a tela de resultado; devolve false se não deu para montá-la (o treino já está salvo). */
+  private async mostrarResultado(sessao: SessaoLocal, antes: Gamificacao | null): Promise<boolean> {
+    try {
+      const [depois, historico] = await Promise.all([
+        firstValueFrom(this.gamificacaoApi.resumo()),
+        firstValueFrom(this.api.historico(0, 30)).catch(() => []),
+      ]);
+      this.gamificacao.dados.set(depois);
+      await firstValueFrom(
+        this.dialogo
+          .open(ResultadoTreino, {
+            panelClass: 'dialogo-confirmar',
+            maxWidth: '95vw',
+            width: '480px',
+            data: { sessao, antes, depois, comparacao: comparacaoComUltimo(sessao, historico) },
+          })
+          .afterClosed(),
+        { defaultValue: undefined },
+      );
+      return true;
+    } catch {
+      return false;
     }
   }
 

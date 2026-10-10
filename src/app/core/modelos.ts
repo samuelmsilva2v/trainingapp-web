@@ -119,6 +119,9 @@ export interface SessaoLocal {
   exercicios: ExercicioLocal[];
   /** Só a API preenche, depois de concluir a sessão. */
   xpGanho?: number;
+  xpSessao?: number;
+  xpSeries?: number;
+  xpRecordes?: number;
   recordes?: string[];
 }
 

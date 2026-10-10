@@ -91,7 +91,7 @@ export class SessoesApi {
   /** Upsert idempotente: o cliente gera os ids e reenvia a sessão inteira. */
   salvar(sessao: SessaoLocal): Observable<SessaoLocal> {
     // xpGanho e recordes são só de leitura: a API os calcula.
-    const { xpGanho, recordes, ...corpo } = sessao;
+    const { xpGanho, xpSessao, xpSeries, xpRecordes, recordes, ...corpo } = sessao;
     return this.http.put<SessaoLocal>(`${API_URL}/sessoes/${sessao.id}`, corpo);
   }
 }

@@ -1,0 +1,22 @@
+.corpo { padding: 24px; display: flex; flex-direction: column; gap: 20px; max-height: 85dvh; overflow-y: auto; }
+section { display: flex; flex-direction: column; gap: 8px; }
+.grande { font: 800 40px/48px var(--fonte-titulo); color: var(--c-primaria); display: flex; align-items: center; gap: 8px; margin: 0; }
+.detalhe { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; justify-content: space-between; color: var(--c-texto-2); } }
+.sem-xp { margin: 0; }
+.subiu { margin: 0; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-primaria); color: var(--c-sobre-primaria); font-weight: 700; text-align: center; }
+.nivel-topo { display: flex; justify-content: space-between; font-weight: 700; }
+.barra { height: 12px; border-radius: 6px; background: var(--c-sup-4); overflow: hidden; }
+.preenchida { height: 100%; background: var(--c-primaria); transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.sequencia { display: flex; align-items: center; gap: 4px; margin: 0; }
+.lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; align-items: center; gap: 6px; } }
+.metricas {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0;
+  div { padding: 12px 8px; border-radius: var(--r-sm); background: var(--c-sup-2); text-align: center; }
+  dd { margin: 0; font: 700 20px/24px var(--fonte-titulo); }
+  dt { font-size: 11px; color: var(--c-texto-2); }
+}
+.exercicios {
+  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
+  li { display: flex; justify-content: space-between; gap: 12px; }
+  .nome { font-weight: 600; }
+}

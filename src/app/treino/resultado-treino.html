@@ -1,0 +1,81 @@
+<div class="corpo">
+  <header>
+    <p class="rotulo suave">Treino concluído</p>
+    <h2 class="titulo-md">{{ sessao.diaNome }}</h2>
+  </header>
+
+  @if (xp > 0) {
+    <section class="xp" aria-label="XP ganho">
+      <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xp }} XP</p>
+      <ul class="detalhe num">
+        @if (sessao.xpSessao) { <li><span>Treino concluído</span><span>+{{ sessao.xpSessao }}</span></li> }
+        @if (sessao.xpSeries) { <li><span>Séries</span><span>+{{ sessao.xpSeries }}</span></li> }
+        @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
+      </ul>
+    </section>
+  } @else {
+    <p class="sem-xp suave">{{ motivoSemXp }}</p>
+  }
+
+  @if (dados.depois; as g) {
+    <section aria-label="Nível">
+      @if (subiu) {
+        <p class="subiu">Subiu para o nível {{ g.nivel }}!</p>
+      }
+      <div class="nivel-topo num">
+        <span>Nível {{ g.nivel }}</span>
+        <span class="suave">faltam {{ faltam }} XP para o nível {{ g.nivel + 1 }}</span>
+      </div>
+      <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal" [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
+        <div class="preenchida" [style.width.%]="largura() * 100"></div>
+      </div>
+      <p class="suave num sequencia">
+        <span class="icone" aria-hidden="true">local_fire_department</span>{{ g.streakAtual }} {{ g.streakAtual === 1 ? 'dia' : 'dias' }} de sequência
+      </p>
+    </section>
+  }
+
+  @if (recordes.length > 0) {
+    <section aria-label="Recordes">
+      <h3 class="rotulo suave">Recordes batidos</h3>
+      <ul class="lista">
+        @for (nome of recordes; track nome) { <li>🏆 {{ nome }}</li> }
+      </ul>
+    </section>
+  }
+
+  @if (conquistasNovas.length > 0) {
+    <section aria-label="Conquistas">
+      <h3 class="rotulo suave">Nova conquista</h3>
+      <ul class="lista">
+        @for (c of conquistasNovas; track c.codigo) {
+          <li><span class="icone cheio" aria-hidden="true">emoji_events</span> {{ c.nome }}</li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section aria-label="Carga do treino">
+    <h3 class="rotulo suave">Carga do treino</h3>
+    <dl class="metricas num">
+      <div><dd>{{ formatarRazao(coeficiente) }}</dd><dt>do planejado</dt></div>
+      <div><dd>{{ formatarRazao(dados.comparacao, '×') }}</dd><dt>vs. último {{ sessao.diaNome }}</dt></div>
+      <div><dd>{{ feitas }}/{{ planejadas }}</dd><dt>séries</dt></div>
+    </dl>
+    <ul class="exercicios">
+      @for (e of sessao.exercicios; track e.id) {
+        <li>
+          <span class="nome">{{ e.nome }}</span>
+          <span class="num suave">
+            {{ seriesFeitas(e) }}/{{ e.metaSeries }}
+            @if (melhorSerie(e); as m) {
+              · melhor {{ m.carga === null ? '—' : formatarCarga(m.carga) + ' kg' }} × {{ m.reps }}
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <button type="button" class="btn btn-primario" (click)="ref.close()">Ver histórico</button>
+</div>

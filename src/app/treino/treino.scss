@@ -199,3 +199,14 @@
   dt { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.05em; }
 }
 .aviso { color: var(--c-secundaria); text-align: center; }
+
+.resumo-exercicios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  li { display: flex; justify-content: space-between; gap: 12px; }
+  .nome { font-weight: 600; }
+}

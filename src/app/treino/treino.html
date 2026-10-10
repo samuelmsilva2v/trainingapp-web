@@ -154,9 +154,24 @@
       </header>
       <dl class="totais">
         <div><dd class="num">{{ store.seriesConcluidas() }}</dd><dt>séries</dt></div>
-        <div><dd class="num">{{ formatarKg(store.volumeKg()) }}</dd><dt>kg total</dt></div>
+        <div><dd class="num">{{ coeficiente() === null ? '—' : formatarRazao(coeficiente()!) }}</dd><dt>carga do plano</dt></div>
         <div><dd class="num">{{ cronometro(decorrido()) }}</dd><dt>tempo</dt></div>
       </dl>
+      <ul class="resumo-exercicios">
+        @for (e of store.sessao()!.exercicios; track e.id) {
+          <li>
+            <span class="nome">{{ e.nome }}</span>
+            <span class="num suave">
+              {{ seriesFeitas(e) }}/{{ e.series.length }}
+              @if (melhorSerie(e); as m) {
+                · melhor {{ m.carga === null ? '—' : formatarCarga(m.carga) + ' kg' }} × {{ m.reps }}
+              } @else {
+                · nenhuma feita
+              }
+            </span>
+          </li>
+        }
+      </ul>
       @if (store.seriesConcluidas() === 0) {
         <p class="aviso">Nenhuma série concluída. Conclua pelo menos uma ou abandone o treino.</p>
       }
