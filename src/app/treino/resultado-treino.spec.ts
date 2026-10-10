@@ -61,7 +61,6 @@ describe('ResultadoTreino', () => {
     expect(texto).toContain('Supino reto');
     expect(texto).toContain('Primeiro recorde');
     expect(texto).not.toContain('Nova conquista Primeiro treino');
-    expect(texto).toContain('1.680'); // volume: 3 séries de 8 × 70 kg
     expect(texto).toContain('3/3 · 65 XP'); // XP do exercício, em vez da melhor carga
     expect(texto).toContain('🏆');
     expect(texto).not.toContain('melhor');

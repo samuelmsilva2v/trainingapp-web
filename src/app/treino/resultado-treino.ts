@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { linhasComRecorde, seriesFeitas, volumeTotal } from '../core/series';
-import { formatarKg } from '../core/formatos';
+import { linhasComRecorde, seriesFeitas } from '../core/series';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
 export interface ResultadoDados {
@@ -24,11 +23,9 @@ export class ResultadoTreino implements OnInit {
 
   protected readonly sessao = this.dados.sessao;
   protected readonly xp = this.sessao.xpGanho ?? 0;
-  protected readonly volume = volumeTotal(this.sessao);
   protected readonly feitas = this.sessao.exercicios.reduce((n, e) => n + seriesFeitas(e), 0);
   protected readonly planejadas = this.sessao.exercicios.reduce((n, e) => n + e.metaSeries, 0);
 
-  protected readonly formatarKg = formatarKg;
   protected readonly seriesFeitas = seriesFeitas;
 
   /** Largura (0-1) da barra de nível; começa no "antes" e anima até o "depois". */

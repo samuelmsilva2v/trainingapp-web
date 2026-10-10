@@ -12,7 +12,7 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .trofeu { margin-left: 4px; }
 .lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; align-items: center; gap: 6px; } }
 .metricas {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0;
   div { padding: 12px 8px; border-radius: var(--r-sm); background: var(--c-sup-2); text-align: center; }
   dd { margin: 0; font: 700 20px/24px var(--fonte-titulo); }
   dt { font-size: 11px; color: var(--c-texto-2); }

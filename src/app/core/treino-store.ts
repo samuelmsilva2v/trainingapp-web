@@ -32,13 +32,6 @@ export class TreinoStore {
   readonly totalSeries = computed(() =>
     (this.sessao()?.exercicios ?? []).reduce((n, e) => n + e.series.length, 0),
   );
-  readonly volumeKg = computed(() =>
-    (this.sessao()?.exercicios ?? []).reduce(
-      (total, e) =>
-        total + e.series.filter(s => s.concluida).reduce((v, s) => v + (s.carga ?? 0) * (s.reps ?? 0), 0),
-      0,
-    ),
-  );
 
   private temporizador: ReturnType<typeof setTimeout> | null = null;
   private temporizadorReenvio: ReturnType<typeof setTimeout> | null = null;
