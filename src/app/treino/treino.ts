@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { cronometro, formatarCarga, formatarKg, formatarRazao } from '../core/formatos';
-import { Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
+import { Anterior, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
@@ -46,6 +46,16 @@ export class Treino implements OnInit, OnDestroy {
 
   protected readonly carregando = signal(true);
   protected readonly indice = signal(0);
+  /** Série aberta para edição; null = a primeira ainda não feita. */
+  private readonly serieAberta = signal<number | null>(null);
+  private readonly anteriores = signal<ReadonlyMap<string, Anterior>>(new Map());
+  protected readonly indiceAtivo = computed(() => {
+    const series = this.exercicio()?.series ?? [];
+    const aberta = this.serieAberta();
+    if (aberta !== null && aberta < series.length) return aberta;
+    const pendente = series.findIndex(s => !s.concluida);
+    return pendente === -1 ? series.length - 1 : pendente;
+  });
   protected readonly resumoAberto = signal(false);
   protected readonly encerrando = signal(false);
 
@@ -76,6 +86,7 @@ export class Treino implements OnInit, OnDestroy {
     this.intervalo = setInterval(() => this.tique(), 1000);
     if (this.store.sessao()) {
       this.carregando.set(false);
+      this.carregarAnteriores();
       return;
     }
     // Recarregou a página no meio do treino: a API guarda a sessão em andamento.
@@ -84,6 +95,7 @@ export class Treino implements OnInit, OnDestroy {
         if (hoje.sessaoEmAndamento) {
           this.store.retomar(hoje.sessaoEmAndamento);
           this.carregando.set(false);
+          this.carregarAnteriores();
         } else {
           this.roteador.navigate(['/hoje']);
         }
@@ -93,6 +105,36 @@ export class Treino implements OnInit, OnDestroy {
         this.roteador.navigate(['/hoje']);
       },
     });
+  }
+
+  /** Busca, de uma vez, as séries do último treino de cada exercício (coluna "Anterior"). */
+  private carregarAnteriores(): void {
+    const ids = [...new Set((this.store.sessao()?.exercicios ?? []).map(e => e.exercicioId))];
+    if (ids.length === 0) return;
+    this.api.anteriores(ids).subscribe({
+      next: lista => this.anteriores.set(new Map(lista.map(a => [a.exercicioId, a]))),
+      error: () => this.anteriores.set(new Map()), // sem histórico a coluna fica com —
+    });
+  }
+
+  /** reps × carga da mesma série no último treino, ou null. */
+  protected textoAnterior(ex: ExercicioLocal, indice: number): string | null {
+    const s = this.anteriores().get(ex.exercicioId)?.series[indice];
+    if (!s || s.reps === null) return null;
+    return s.carga === null ? `${s.reps}` : `${s.reps} × ${formatarCarga(s.carga)}`;
+  }
+
+  /** Ex.: "4 × 10 @ 62,5 kg" (nº de séries × reps da melhor série @ carga). */
+  protected resumoAnterior(ex: ExercicioLocal): string | null {
+    const series = this.anteriores().get(ex.exercicioId)?.series ?? [];
+    const comCarga = series.filter(s => s.reps !== null && s.carga !== null);
+    if (comCarga.length === 0) return null;
+    const melhor = comCarga.reduce((m, s) => ((s.carga ?? 0) > (m.carga ?? 0) ? s : m));
+    return `${series.length} × ${melhor.reps} @ ${formatarCarga(melhor.carga)} kg`;
+  }
+
+  protected ativarSerie(indice: number): void {
+    this.serieAberta.set(indice);
   }
 
   ngOnDestroy(): void {
@@ -114,6 +156,7 @@ export class Treino implements OnInit, OnDestroy {
   protected irPara(delta: -1 | 1): void {
     const total = this.sessao()?.exercicios.length ?? 0;
     this.indice.update(i => Math.min(total - 1, Math.max(0, i + delta)));
+    this.serieAberta.set(null);
   }
 
   // --- séries ---
@@ -163,6 +206,7 @@ export class Treino implements OnInit, OnDestroy {
       return;
     }
     this.store.atualizarSerie(this.indice(), serie, s => ({ ...s, concluida: !s.concluida }));
+    this.serieAberta.set(null); // a próxima série pendente passa a ser a atual
     if (!atual.concluida && ex.metaDescansoSegundos) {
       this.iniciarDescanso(ex.metaDescansoSegundos);
     }
@@ -174,10 +218,12 @@ export class Treino implements OnInit, OnDestroy {
       const nova = this.store.serieNova(ultima?.reps ?? e.metaRepsMin, ultima?.carga ?? e.metaCarga);
       return { ...e, series: [...e.series, nova] };
     });
+    this.serieAberta.set((this.exercicio()?.series.length ?? 1) - 1);
   }
 
   protected removerSerie(serie: number): void {
     this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: e.series.filter((_, i) => i !== serie) }));
+    this.serieAberta.set(null);
   }
 
   // --- descanso ---

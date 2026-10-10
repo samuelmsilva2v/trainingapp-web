@@ -79,21 +79,55 @@
 }
 
 .series { display: flex; flex-direction: column; gap: 10px; }
-.serie {
-  padding: 12px;
-  border-radius: var(--r-lg);
-  background: var(--c-sup-2);
-  border: 1.5px solid transparent;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  &.feita { opacity: 0.75; border-color: rgba(202, 243, 0, 0.25); }
+.series-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ultimo-resumo { font-size: 12px; white-space: nowrap; }
+
+// Tabela: Série | Anterior | Reps | Carga | Feito
+.tabela { display: flex; flex-direction: column; gap: 6px; --colunas: 32px minmax(0, 1fr) 52px 64px 40px; }
+.cabecalho-tabela, .linha {
+  display: grid;
+  grid-template-columns: var(--colunas);
+  align-items: center;
+  column-gap: 8px;
 }
-.serie-topo { display: flex; align-items: center; gap: 8px; }
-.numero { width: 32px; height: 32px; border-radius: 50%; background: var(--c-sup-4); display: flex; align-items: center; justify-content: center; font: 700 14px/1 var(--fonte-titulo); }
-.serie-meta { flex: 1; font-size: 12px; }
+.cabecalho-tabela {
+  padding: 0 12px;
+  font: 600 10px/12px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; color: var(--c-texto-2);
+  span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  span:nth-child(n + 3) { text-align: center; }
+}
+.linha {
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  background: var(--c-sup-2);
+  cursor: pointer;
+  &.feita { background: rgba(202, 243, 0, 0.06); }
+  &.feita .valor, &.feita .anterior { color: var(--c-texto-2); }
+  &:focus-visible { outline: 2px solid var(--c-primaria); }
+}
+.numero { width: 28px; height: 28px; border-radius: 50%; background: var(--c-sup-4); display: flex; align-items: center; justify-content: center; font: 700 13px/1 var(--fonte-titulo); }
+.numero.atual { background: var(--c-primaria); color: var(--c-sobre-primaria); }
+.anterior { min-width: 0; font-size: 13px; color: var(--c-texto-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.valor { text-align: center; font: 700 16px/24px var(--fonte-titulo); white-space: nowrap; }
 .pequeno { width: 40px; height: 40px; .icone { font-size: 20px; } }
+
+.linha-atual {
+  display: flex; flex-direction: column; gap: 10px; padding: 12px;
+  border-radius: var(--r-lg); background: var(--c-sup-2);
+  border: 1.5px solid var(--c-primaria);
+  box-shadow: 0 0 16px rgba(212, 255, 0, 0.12);
+  &.feita { border-color: rgba(202, 243, 0, 0.45); }
+}
+.atual-topo { display: flex; align-items: center; gap: 8px; }
+.atual-titulo { font: 700 13px/16px 'Inter', sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
+.atual-prev { flex: 1; text-align: right; font-size: 12px; white-space: nowrap; }
+.atual-corpo { display: flex; align-items: stretch; gap: 8px; .steppers { flex: 1; min-width: 0; } .check { align-self: center; } }
+.atual-anterior { margin: 0; font-size: 12px; }
+// Na linha atual os controles são mais estreitos para caber os dois steppers e o check na largura do celular.
+.atual-corpo .controle { gap: 2px; button { width: 36px; height: 44px; } input { height: 44px; font-size: 20px; } }
+.atual-corpo .stepper { padding: 6px; }
 .check {
+  flex-shrink: 0;
   width: 52px;
   height: 52px;
   border-radius: var(--r-md);
@@ -106,6 +140,7 @@
   transition: transform 0.12s;
   &:active { transform: scale(0.94); }
   &.ok { background: var(--c-primaria); border-color: var(--c-primaria); color: var(--c-sobre-primaria); }
+  &.mini { width: 40px; height: 40px; border-width: 1.5px; .icone { font-size: 22px; } }
 }
 
 .steppers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }

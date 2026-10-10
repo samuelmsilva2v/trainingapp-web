@@ -125,6 +125,14 @@ export interface SessaoLocal {
   recordes?: string[];
 }
 
+/** Séries concluídas de um exercício no último treino concluído em que ele apareceu. */
+export interface Anterior {
+  exercicioId: string;
+  sessaoId: string;
+  iniciadaEm: string;
+  series: { ordem: number; reps: number | null; carga: number | null }[];
+}
+
 export interface SessaoResumo {
   id: string;
   planoNome: string;

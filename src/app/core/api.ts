@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
-  Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
+  Anterior, Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
 } from './modelos';
 
 export const API_URL = environment.apiUrl;
@@ -77,6 +77,12 @@ export class SessoesApi {
   historico(pagina: number, tamanho: number): Observable<SessaoResumo[]> {
     const params = new HttpParams().set('pagina', pagina).set('tamanho', tamanho);
     return this.http.get<SessaoResumo[]>(`${API_URL}/sessoes`, { params });
+  }
+
+  /** Séries do último treino concluído de cada exercício (coluna "Anterior"). */
+  anteriores(exercicioIds: string[]): Observable<Anterior[]> {
+    const params = new HttpParams().set('exercicioIds', exercicioIds.join(','));
+    return this.http.get<Anterior[]>(`${API_URL}/sessoes/anteriores`, { params });
   }
 
   obter(id: string): Observable<SessaoLocal> {
