@@ -46,7 +46,6 @@ export class Treino implements OnInit, OnDestroy {
 
   protected readonly carregando = signal(true);
   protected readonly indice = signal(0);
-  protected readonly menuAberto = signal(false);
   protected readonly resumoAberto = signal(false);
   protected readonly encerrando = signal(false);
 
@@ -203,7 +202,6 @@ export class Treino implements OnInit, OnDestroy {
   // --- encerrar ---
 
   protected abrirResumo(): void {
-    this.menuAberto.set(false);
     this.resumoAberto.set(true);
   }
 
@@ -212,7 +210,6 @@ export class Treino implements OnInit, OnDestroy {
   }
 
   protected abandonar(): void {
-    this.menuAberto.set(false);
     this.dialogo
       .open(ConfirmarDialogo, {
         panelClass: 'dialogo-confirmar',

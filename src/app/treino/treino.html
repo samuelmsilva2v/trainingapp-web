@@ -28,19 +28,9 @@
         <button type="button" class="btn btn-primario finalizar" (click)="abrirResumo()">
           Finalizar <span class="icone" aria-hidden="true">flag</span>
         </button>
-        <div class="menu-ancora">
-          <button type="button" class="btn-icone" aria-label="Mais opções" [attr.aria-expanded]="menuAberto()"
-                  (click)="menuAberto.set(!menuAberto())">
-            <span class="icone" aria-hidden="true">more_vert</span>
-          </button>
-          @if (menuAberto()) {
-            <div class="menu" role="menu">
-              <button type="button" role="menuitem" class="perigo" (click)="abandonar()">
-                <span class="icone" aria-hidden="true">cancel</span> Abandonar treino
-              </button>
-            </div>
-          }
-        </div>
+        <button type="button" class="abandonar" aria-label="Abandonar treino" (click)="abandonar()">
+          <span class="icone" aria-hidden="true">cancel</span>
+        </button>
       </div>
     </section>
 
