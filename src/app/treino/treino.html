@@ -10,7 +10,7 @@
         @case ('salvando') { <span class="icone" aria-hidden="true">sync</span> Salvando… }
         @case ('erro') {
           <button type="button" class="tentar" (click)="store.reenviar()">
-            <span class="icone" aria-hidden="true">cloud_off</span> Falha ao salvar · tentar de novo
+            <span class="icone" aria-hidden="true">cloud_off</span> {{ store.erro() }} · tentar de novo
           </button>
         }
       }

@@ -1,11 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { SessoesApi } from './api';
+import { SessoesApi, mensagemDeErro } from './api';
 import { DiaHoje, EstadoSessao, ExercicioLocal, SerieLocal, SessaoLocal } from './modelos';
 
 export type StatusSincronia = 'salvo' | 'salvando' | 'erro';
 
 const ATRASO_SALVAR_MS = 400;
+const ATRASO_REENVIO_MS = 5000;
 
 export function novoId(): string {
   return crypto.randomUUID();
@@ -22,6 +23,8 @@ export class TreinoStore {
 
   readonly sessao = signal<SessaoLocal | null>(null);
   readonly status = signal<StatusSincronia>('salvo');
+  /** Motivo da última falha de envio; só vale enquanto o status for 'erro'. */
+  readonly erro = signal<string | null>(null);
 
   readonly seriesConcluidas = computed(() =>
     (this.sessao()?.exercicios ?? []).reduce((n, e) => n + e.series.filter(s => s.concluida).length, 0),
@@ -38,6 +41,8 @@ export class TreinoStore {
   );
 
   private temporizador: ReturnType<typeof setTimeout> | null = null;
+  private temporizadorReenvio: ReturnType<typeof setTimeout> | null = null;
+  private reenviou = false;
   private enviando = false;
   private pendente = false;
 
@@ -89,6 +94,8 @@ export class TreinoStore {
     if (!atual) return;
     this.sessao.set({ ...mudanca(atual), atualizadoEm: new Date().toISOString() });
     this.status.set('salvando');
+    this.reenviou = false;
+    if (this.temporizadorReenvio) clearTimeout(this.temporizadorReenvio);
     if (this.temporizador) clearTimeout(this.temporizador);
     this.temporizador = setTimeout(() => void this.enviar(), ATRASO_SALVAR_MS);
   }
@@ -116,6 +123,7 @@ export class TreinoStore {
   async encerrar(estado: Exclude<EstadoSessao, 'EM_ANDAMENTO'>): Promise<SessaoLocal | null> {
     const agora = new Date().toISOString();
     if (this.temporizador) clearTimeout(this.temporizador);
+    if (this.temporizadorReenvio) clearTimeout(this.temporizadorReenvio);
     // Espera um envio em curso terminar para não competir com o estado final.
     while (this.enviando) await new Promise(r => setTimeout(r, 50));
     const atual = this.sessao();
@@ -127,11 +135,21 @@ export class TreinoStore {
       resposta = await firstValueFrom(this.api.salvar(final));
     } catch (erro) {
       this.status.set('erro');
+      this.erro.set(mensagemDeErro(erro));
       throw erro;
     }
     this.sessao.set(null);
     this.status.set('salvo');
     return resposta;
+  }
+
+  /** Uma única nova tentativa automática, para quedas curtas de rede. */
+  private reenviarDepois(): void {
+    if (this.reenviou) return;
+    this.reenviou = true;
+    this.temporizadorReenvio = setTimeout(() => {
+      if (this.status() === 'erro') void this.enviar();
+    }, ATRASO_REENVIO_MS);
   }
 
   private async enviar(): Promise<void> {
@@ -145,9 +163,11 @@ export class TreinoStore {
     try {
       await firstValueFrom(this.api.salvar(atual));
       this.status.set(this.pendente ? 'salvando' : 'salvo');
-    } catch {
+    } catch (erro) {
       this.status.set('erro');
+      this.erro.set(mensagemDeErro(erro));
       this.pendente = false;
+      this.reenviarDepois();
     } finally {
       this.enviando = false;
     }
