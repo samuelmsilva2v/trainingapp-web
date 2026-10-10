@@ -95,6 +95,7 @@
   &::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--c-primaria); }
 }
 .ex-topo { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 4px; }
+.ex-topo .miniatura { margin-top: 4px; }
 .ex-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
 .alca { cursor: grab; touch-action: none; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }

@@ -51,6 +51,12 @@
           <h2 class="titulo-md">{{ ex.nome }}</h2>
           <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} · {{ rotuloEquipamento(ex.equipamento) }}</p>
         </div>
+        <div class="fotos">
+          @for (foto of ex.imagens ?? []; track foto) {
+            <img [src]="foto" [alt]="'Execução de ' + ex.nome + ', posição ' + ($index === 0 ? 'inicial' : 'final')"
+                 (error)="$any($event.target).remove()" />
+          }
+        </div>
         <dl class="metas">
           <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }}</dd></div>
           <div><dt>Alvo</dt><dd class="num alvo">{{ ex.metaCarga === null ? '—' : kg(ex.metaCarga) + ' kg' }}</dd></div>

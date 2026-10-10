@@ -65,6 +65,13 @@
   &:disabled { opacity: 0.3; cursor: default; }
 }
 .ex-titulo { display: flex; flex-direction: column; gap: 2px; .titulo-md { font-weight: 800; margin: 0; text-transform: uppercase; } }
+.fotos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  &:not(:has(img)) { display: none; }
+  img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--r-sm); background: var(--c-sup-3); }
+}
 .ex-sub { margin: 0; font: 400 14px/20px 'Inter', sans-serif; color: var(--c-texto-2); }
 .metas {
   display: grid;

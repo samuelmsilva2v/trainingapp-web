@@ -14,6 +14,8 @@ export interface Exercicio {
   grupoMuscular: GrupoMuscular;
   equipamento: Equipamento;
   personalizado: boolean;
+  /** Fotos da posição inicial e final; vazio nos exercícios do usuário. */
+  imagens: string[];
 }
 
 export interface PlanoResumo {
@@ -30,6 +32,8 @@ export interface ItemPlano {
   exercicioNome: string;
   grupoMuscular: GrupoMuscular;
   equipamento: Equipamento;
+  /** Só a API preenche (ou o seletor, ao adicionar um exercício). */
+  imagens?: string[];
   series: number;
   repsMin: number;
   repsMax: number;
@@ -97,6 +101,8 @@ export interface ExercicioLocal {
   nome: string;
   grupoMuscular: GrupoMuscular;
   equipamento: Equipamento;
+  /** Só a API preenche; o cliente apenas repassa. */
+  imagens?: string[];
   metaSeries: number;
   metaRepsMin: number;
   metaRepsMax: number;

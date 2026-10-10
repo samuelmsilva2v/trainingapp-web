@@ -107,6 +107,22 @@ input, select { font: inherit; color: inherit; }
   &.cheio { font-variation-settings: 'FILL' 1, 'wght' 400; }
 }
 
+/* Foto do exercício (3:2); sem foto, ou se ela falhar ao carregar, aparece o ícone por baixo. */
+.miniatura {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 48px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--c-sup-3);
+  color: var(--c-texto-2);
+  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+}
+
 .titulo-md { font: 700 24px/32px var(--fonte-titulo); letter-spacing: -0.01em; }
 .titulo-sm { font: 600 20px/28px var(--fonte-titulo); }
 .rotulo { font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }

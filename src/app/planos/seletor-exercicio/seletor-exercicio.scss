@@ -66,6 +66,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-shrink: 0;
   width: 100%;
   min-height: 64px;
   padding: 12px 16px;
@@ -75,7 +76,7 @@
   text-align: left;
   &:active { background: var(--c-sup-4); }
 }
-.texto { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.texto { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .nome { font: 600 16px/24px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { padding: 2px 8px; border-radius: 4px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }

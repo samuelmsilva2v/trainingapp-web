@@ -48,6 +48,12 @@
     } @else {
       @for (e of exibidos(); track e.id) {
         <button type="button" class="item" (click)="escolher(e)">
+          <span class="miniatura">
+            <span class="icone" aria-hidden="true">fitness_center</span>
+            @if (e.imagens[0]; as foto) {
+              <img [src]="foto" alt="" loading="lazy" (error)="$any($event.target).remove()" />
+            }
+          </span>
           <span class="texto">
             <span class="nome">{{ e.nome }}</span>
             <span class="tags">

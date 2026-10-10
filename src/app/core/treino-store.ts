@@ -71,6 +71,7 @@ export class TreinoStore {
         nome: item.exercicioNome,
         grupoMuscular: item.grupoMuscular,
         equipamento: item.equipamento,
+        imagens: item.imagens,
         metaSeries: item.series,
         metaRepsMin: item.repsMin,
         metaRepsMax: item.repsMax,
