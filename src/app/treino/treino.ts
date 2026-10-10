@@ -10,8 +10,8 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { melhorSerie, seriesFeitas } from '../core/series';
-import { xpEstimado } from '../core/xp';
+import { seriesFeitas } from '../core/series';
+import { xpDoExercicio, xpEstimado } from '../core/xp';
 import { ResultadoTreino } from './resultado-treino';
 
 const PASSO_CARGA = 1;
@@ -40,7 +40,10 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly formatarKg = formatarKg;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
-  protected readonly melhorSerie = melhorSerie;
+  /** XP previsto do exercício; é zero quando o treino todo ainda não rende XP (menos de 3 séries). */
+  protected xpPrevistoDoExercicio(e: ExercicioLocal): number {
+    return this.xpPrevisto() > 0 ? xpDoExercicio(e) : 0;
+  }
   protected readonly xpPrevisto = computed(() => {
     const s = this.store.sessao();
     return s ? xpEstimado(s) : 0;

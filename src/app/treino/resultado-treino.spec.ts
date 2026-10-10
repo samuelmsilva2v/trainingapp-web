@@ -21,6 +21,11 @@ const sessao = (over: Partial<SessaoLocal>): SessaoLocal => ({
   ...over,
 });
 
+const comXpPorExercicio = (s: SessaoLocal, xp: number): SessaoLocal => {
+  s.exercicios[0].xp = xp;
+  return s;
+};
+
 function abrir(dados: ResultadoDados): HTMLElement {
   TestBed.configureTestingModule({
     providers: [
@@ -36,7 +41,7 @@ function abrir(dados: ResultadoDados): HTMLElement {
 describe('ResultadoTreino', () => {
   it('mostra o XP com o detalhe, o nível novo, o recorde e a conquista nova', () => {
     const el = abrir({
-      sessao: sessao({ xpGanho: 90, xpSeries: 65, xpRecordes: 25, recordes: ['x1'] }),
+      sessao: comXpPorExercicio(sessao({ xpGanho: 90, xpSeries: 65, xpRecordes: 25, recordes: ['x1'] }), 65),
       antes: gamificacao({ xpTotal: 250, nivel: 1 }),
       depois: gamificacao({
         xpTotal: 340, nivel: 2, xpInicioDoNivel: 283, xpProximoNivel: 520,
@@ -57,6 +62,15 @@ describe('ResultadoTreino', () => {
     expect(texto).toContain('Primeiro recorde');
     expect(texto).not.toContain('Nova conquista Primeiro treino');
     expect(texto).toContain('1.680'); // volume: 3 séries de 8 × 70 kg
+    expect(texto).toContain('3/3 · 65 XP'); // XP do exercício, em vez da melhor carga
+    expect(texto).toContain('🏆');
+    expect(texto).not.toContain('melhor');
+  });
+
+  it('sem recorde não mostra o troféu', () => {
+    const el = abrir({ sessao: comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36), antes: null, depois: gamificacao({}) });
+    expect(el.textContent).toContain('3/3 · 36 XP');
+    expect(el.textContent).not.toContain('🏆');
   });
 
   it('explica por que não rendeu XP: poucas séries ou já treinou no dia', () => {

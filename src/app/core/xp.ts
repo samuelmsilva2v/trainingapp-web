@@ -1,4 +1,4 @@
-import { SessaoLocal } from './modelos';
+import { ExercicioLocal, SessaoLocal } from './modelos';
 
 const VOLUME_POR_XP = 40;
 const XP_MINIMO_SERIE = 5;
@@ -10,6 +10,11 @@ export function xpDaSerie(carga: number | null, reps: number | null): number {
   if (reps === null || reps < 1) return 0;
   const xp = Math.round(((carga ?? 0) * reps) / VOLUME_POR_XP);
   return Math.min(XP_MAXIMO_SERIE, Math.max(XP_MINIMO_SERIE, xp));
+}
+
+/** XP estimado das séries concluídas de um exercício. */
+export function xpDoExercicio(exercicio: ExercicioLocal): number {
+  return exercicio.series.filter(s => s.concluida).reduce((total, s) => total + xpDaSerie(s.carga, s.reps), 0);
 }
 
 /** XP estimado das séries concluídas; não conta recorde nem o limite de um treino por dia (isso é da API). */

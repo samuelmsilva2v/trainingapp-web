@@ -187,12 +187,7 @@
           <li>
             <span class="nome">{{ e.nome }}</span>
             <span class="num suave">
-              {{ seriesFeitas(e) }}/{{ e.series.length }}
-              @if (melhorSerie(e); as m) {
-                · melhor {{ m.carga === null ? '—' : kg(m.carga) + ' kg' }} × {{ m.reps }}
-              } @else {
-                · nenhuma feita
-              }
+              {{ seriesFeitas(e) }}/{{ e.series.length }} · ~{{ xpPrevistoDoExercicio(e) }} XP
             </span>
           </li>
         }

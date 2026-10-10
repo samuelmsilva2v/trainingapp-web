@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { melhorSerie, seriesFeitas, volumeTotal } from '../core/series';
-import { formatarCarga, formatarKg } from '../core/formatos';
+import { seriesFeitas, volumeTotal } from '../core/series';
+import { formatarKg } from '../core/formatos';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
 export interface ResultadoDados {
@@ -28,10 +28,8 @@ export class ResultadoTreino implements OnInit {
   protected readonly feitas = this.sessao.exercicios.reduce((n, e) => n + seriesFeitas(e), 0);
   protected readonly planejadas = this.sessao.exercicios.reduce((n, e) => n + e.metaSeries, 0);
 
-  protected readonly formatarCarga = formatarCarga;
   protected readonly formatarKg = formatarKg;
   protected readonly seriesFeitas = seriesFeitas;
-  protected readonly melhorSerie = melhorSerie;
 
   /** Largura (0-1) da barra de nível; começa no "antes" e anima até o "depois". */
   protected readonly largura = signal(0);
@@ -40,6 +38,14 @@ export class ResultadoTreino implements OnInit {
   protected readonly faltam = this.dados.depois
     ? Math.max(0, this.dados.depois.xpProximoNivel - this.dados.depois.xpTotal)
     : 0;
+
+  /** Exercícios com o XP de cada um; o recorde (🏆) marca só a primeira vez que o exercício aparece. */
+  protected readonly itens = this.sessao.exercicios.map((e, i) => ({
+    e,
+    recorde:
+      (this.sessao.recordes ?? []).includes(e.exercicioId) &&
+      this.sessao.exercicios.findIndex(x => x.exercicioId === e.exercicioId) === i,
+  }));
 
   protected readonly recordes = (this.sessao.recordes ?? [])
     .map(id => this.sessao.exercicios.find(e => e.exercicioId === id)?.nome)

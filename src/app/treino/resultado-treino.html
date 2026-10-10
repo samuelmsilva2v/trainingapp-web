@@ -62,14 +62,12 @@
       <div><dd>{{ formatarKg(volume) }}</dd><dt>kg volume</dt></div>
     </dl>
     <ul class="exercicios">
-      @for (e of sessao.exercicios; track e.id) {
+      @for (item of itens; track item.e.id) {
         <li>
-          <span class="nome">{{ e.nome }}</span>
+          <span class="nome">{{ item.e.nome }}</span>
           <span class="num suave">
-            {{ seriesFeitas(e) }}/{{ e.metaSeries }}
-            @if (melhorSerie(e); as m) {
-              · melhor {{ m.carga === null ? '—' : formatarCarga(m.carga) + ' kg' }} × {{ m.reps }}
-            }
+            {{ seriesFeitas(item.e) }}/{{ item.e.metaSeries }} · {{ item.e.xp ?? 0 }} XP
+            @if (item.recorde) { <span class="trofeu" role="img" aria-label="Recorde">🏆</span> }
           </span>
         </li>
       }

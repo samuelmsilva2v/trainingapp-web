@@ -103,6 +103,8 @@ export interface ExercicioLocal {
   metaCarga: number | null;
   metaDescansoSegundos: number | null;
   series: SerieLocal[];
+  /** Só a API preenche: XP das séries concluídas deste exercício. */
+  xp?: number;
 }
 
 /** Sessão como o cliente a mantém: é o mesmo documento que a API aceita (PUT) e devolve. */
