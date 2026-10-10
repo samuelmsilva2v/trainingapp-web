@@ -56,7 +56,7 @@
             @for (e of c.itens.slice(0, 4); track e.id; let i = $index) {
               <li>
                 <span class="nome">
-                  <span class="ponto" [class.ok]="c.andamento ? e.feitas === e.total : i === 0" [class.parcial]="c.andamento && e.feitas > 0 && e.feitas < e.total" aria-hidden="true"></span>
+                  <span class="ponto" [class.atual]="i === c.atual" [class.feito]="c.andamento && e.feitas === e.total" aria-hidden="true"></span>
                   {{ e.nome }}
                 </span>
                 <span class="meta num">{{ c.andamento ? e.feitas + '/' + e.total : e.series + ' × ' + e.repsMin + '–' + e.repsMax }}</span>

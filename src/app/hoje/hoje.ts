@@ -28,6 +28,8 @@ interface CartaoTreino {
   feitas: number;
   totalSeries: number;
   itens: ItemCartao[];
+  /** Índice do exercício em que o treino está (primeiro com série pendente); no próximo treino, o primeiro. */
+  atual: number;
 }
 
 @Component({
@@ -71,13 +73,14 @@ export class HojeTela implements OnInit {
       }));
       return {
         andamento: true, titulo: s.diaNome, ordem: s.diaOrdem, iniciadaEm: s.iniciadaEm, itens,
+        atual: itens.findIndex(e => e.feitas < e.total),
         feitas: itens.reduce((n, e) => n + e.feitas, 0), totalSeries: itens.reduce((n, e) => n + e.total, 0),
       };
     }
     const dia = h.proximoDia;
     if (!dia) return null;
     return {
-      andamento: false, titulo: dia.nome, ordem: dia.ordem, iniciadaEm: null, feitas: 0, totalSeries: 0,
+      andamento: false, titulo: dia.nome, ordem: dia.ordem, iniciadaEm: null, feitas: 0, totalSeries: 0, atual: 0,
       itens: dia.exercicios.map(e => ({
         id: e.id, nome: e.exercicioNome, series: e.series, repsMin: e.repsMin, repsMax: e.repsMax,
         carga: e.cargaAlvo, descanso: e.descansoSegundos, feitas: 0, total: e.series,
