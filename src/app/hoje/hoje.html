@@ -1,17 +1,18 @@
 <h1 class="titulo-md saudacao">Olá{{ nome() ? ', ' + nome() : '' }} 👋</h1>
 
-@if (gamificacao.dados(); as g) {
-  <section class="status" aria-label="Seu progresso">
-    <span class="chip-status streak" [class.viva]="g.streakAtual > 0">
-      <span class="icone cheio" aria-hidden="true">local_fire_department</span>
-      {{ g.streakAtual }} {{ g.streakAtual === 1 ? 'dia de sequência' : 'dias de sequência' }}
-    </span>
-    <span class="chip-status nivel">
-      <span class="icone cheio" aria-hidden="true">bolt</span>
-      Nível {{ g.nivel }} · {{ g.xpTotal.toLocaleString('pt-BR') }} XP
-    </span>
-  </section>
-}
+<!-- As badges sempre aparecem; sem dados (usuário novo ou API fora do ar) valem "sem sequência" e "nível 1 · 0 XP". -->
+@let g = gamificacao.dados();
+@let sequencia = g?.streakAtual ?? 0;
+<section class="status" aria-label="Seu progresso">
+  <span class="chip-status streak" [class.viva]="sequencia > 0">
+    <span class="icone cheio" aria-hidden="true">local_fire_department</span>
+    {{ sequencia === 0 ? 'Sem sequência' : sequencia + (sequencia === 1 ? ' dia de sequência' : ' dias de sequência') }}
+  </span>
+  <span class="chip-status nivel">
+    <span class="icone cheio" aria-hidden="true">bolt</span>
+    Nível {{ g?.nivel ?? 1 }} · {{ (g?.xpTotal ?? 0).toLocaleString('pt-BR') }} XP
+  </span>
+</section>
 
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando…</p>

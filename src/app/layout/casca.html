@@ -1,11 +1,10 @@
 <header class="topo">
   <span class="marca titulo-sm">TrainingApp</span>
-  @if (gamificacao.dados(); as g) {
-    <a class="xp" routerLink="/perfil" [attr.aria-label]="'Nível ' + g.nivel + ', ' + formatar(g.xpTotal) + ' XP'">
-      <span class="icone cheio" aria-hidden="true">bolt</span>
-      <span class="num">{{ formatar(g.xpTotal) }} XP</span>
-    </a>
-  }
+  @let g = gamificacao.dados();
+  <a class="xp" routerLink="/perfil" [attr.aria-label]="'Nível ' + (g?.nivel ?? 1) + ', ' + formatar(g?.xpTotal ?? 0) + ' XP'">
+    <span class="icone cheio" aria-hidden="true">bolt</span>
+    <span class="num">{{ formatar(g?.xpTotal ?? 0) }} XP</span>
+  </a>
 </header>
 
 <main class="conteudo">
