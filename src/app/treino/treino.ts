@@ -109,10 +109,10 @@ export class Treino implements OnInit, OnDestroy {
   // --- séries ---
 
   protected ajustarReps(serie: number, delta: 1 | -1): void {
-    this.store.atualizarSerie(this.indice(), serie, s => ({
-      ...s,
-      reps: Math.min(REPS_MAX, Math.max(0, (s.reps ?? 0) + delta)),
-    }));
+    this.store.atualizarSerie(this.indice(), serie, s => {
+      const reps = Math.min(REPS_MAX, Math.max(0, (s.reps ?? 0) + delta));
+      return { ...s, reps, concluida: s.concluida && reps >= 1 };
+    });
   }
 
   protected ajustarCarga(serie: number, delta: 1 | -1): void {
@@ -124,9 +124,11 @@ export class Treino implements OnInit, OnDestroy {
 
   protected digitarReps(serie: number, evento: Event): void {
     const valor = parseInt((evento.target as HTMLInputElement).value, 10);
+    const reps = Number.isNaN(valor) ? null : Math.min(REPS_MAX, Math.max(0, valor));
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
-      reps: Number.isNaN(valor) ? null : Math.min(REPS_MAX, Math.max(0, valor)),
+      reps,
+      concluida: s.concluida && (reps ?? 0) >= 1,
     }));
   }
 
