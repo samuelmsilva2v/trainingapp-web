@@ -44,7 +44,7 @@
         <div class="acoes">
           @if (plano.ativo) {
             <button type="button" class="resumo-botao" [attr.aria-expanded]="abertos().has(plano.id)" (click)="alternar(plano)">
-              <span class="resumo-rotulo"><span class="icone destaque" aria-hidden="true">format_list_bulleted</span>Resumo da Rotina</span>
+              <span class="resumo-rotulo"><span class="icone destaque" aria-hidden="true">format_list_bulleted</span><span class="resumo-texto">Resumo da Rotina</span></span>
               <span class="icone chevron" aria-hidden="true">{{ abertos().has(plano.id) ? 'expand_less' : 'expand_more' }}</span>
             </button>
             <a class="btn btn-primario editar-ativo" [routerLink]="['/planos', plano.id]">
