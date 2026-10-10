@@ -241,6 +241,18 @@ export class Treino implements OnInit, OnDestroy {
     this.totalDescanso.update(t => t + 15);
   }
 
+  protected menosDescanso(): void {
+    const fim = this.fimDescanso();
+    if (fim === null) return;
+    // Tirar 15 s de um descanso que tem menos que isso a correr encerra o descanso.
+    if (fim - Date.now() <= 15_000) {
+      this.fimDescanso.set(null);
+      return;
+    }
+    this.fimDescanso.set(fim - 15_000);
+    this.totalDescanso.update(t => Math.max(1, t - 15));
+  }
+
   protected pularDescanso(): void {
     this.fimDescanso.set(null);
   }

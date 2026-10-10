@@ -212,7 +212,9 @@
   gap: 8px;
   .icone { color: var(--c-primaria); }
   .tempo { flex: 1; font: 800 28px/32px var(--fonte-titulo); }
-  .btn { min-height: 44px; padding: 0 14px; }
+  .btn { min-height: 44px; padding: 0 12px; }
+  // Em telas estreitas o rótulo sai para caber os três botões ao lado do tempo.
+  @media (max-width: 420px) { .rotulo { display: none; } .btn { padding: 0 10px; } }
 }
 
 .fundo { position: fixed; inset: 0; z-index: 60; background: rgba(13, 15, 17, 0.8); backdrop-filter: blur(8px); }

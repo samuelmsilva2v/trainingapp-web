@@ -158,7 +158,8 @@
         <span class="icone" aria-hidden="true">hourglass_top</span>
         <span class="rotulo">Descanso</span>
         <span class="tempo num">{{ cronometro(restante) }}</span>
-        <button type="button" class="btn btn-secundario" (click)="maisDescanso()">+15s</button>
+        <button type="button" class="btn btn-secundario" aria-label="Menos 15 segundos" (click)="menosDescanso()">−15s</button>
+        <button type="button" class="btn btn-secundario" aria-label="Mais 15 segundos" (click)="maisDescanso()">+15s</button>
         <button type="button" class="btn btn-secundario" (click)="pularDescanso()">Pular</button>
       </div>
     </aside>
