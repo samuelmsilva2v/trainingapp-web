@@ -83,7 +83,8 @@
 .titulo-lista { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .contagem { background: var(--c-sup-4); color: var(--c-primaria); }
 
-.exercicios { display: flex; flex-direction: column; gap: 12px; }
+/* O card responde à largura da lista (não da tela): Séries e Carga sempre lado a lado (3 colunas com o Descanso em telas largas). */
+.exercicios { display: flex; flex-direction: column; gap: 12px; container-type: inline-size; }
 
 .exercicio {
   position: relative;
@@ -92,13 +93,12 @@
   border-radius: var(--r-md);
   background: var(--c-sup-2);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   &::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--c-primaria); }
 }
 .ex-topo { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 4px; }
-.ex-topo .miniatura { margin-top: 4px; }
-.ex-nome h3 { text-transform: uppercase; }
+.ex-nome h3 { text-transform: uppercase; overflow-wrap: anywhere; }
 .ex-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
 .alca { cursor: grab; touch-action: none; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -111,10 +111,10 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  &.largo { grid-column: 1 / -1; }
+  &.largo, &.descanso { grid-column: 1 / -1; }
 }
 
-.reps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.reps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 
 .controle {
   display: flex;
@@ -123,8 +123,8 @@
   gap: 4px;
   button {
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    width: clamp(36px, 25cqw - 43px, 48px);
+    height: clamp(36px, 25cqw - 43px, 48px);
     border: 0;
     border-radius: var(--r-sm);
     background: var(--c-sup-4);
@@ -148,7 +148,32 @@ input.valor {
   &::placeholder { color: var(--c-texto-2); }
   &:focus-visible { outline: 2px solid var(--c-primaria); }
 }
-.faixa { display: flex; flex-direction: column; align-items: center; small { font: 600 10px/12px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; } .valor { font-size: 20px; line-height: 24px; } }
+.faixa { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; input.valor { width: 100%; } small { font: 600 10px/12px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; } .valor { font-size: 20px; line-height: 24px; } }
+
+/* Repetições (mín/máx) em caixas embutidas e descanso em linha, como no Stitch. */
+.reps .controle { padding: 6px; border-radius: var(--r-sm); background: var(--c-sup-0); }
+.reps .controle button, .descanso .controle button { width: 40px; height: 40px; }
+.reps .controle button { background: var(--c-sup-3); &:active { background: var(--c-primaria); } }
+.descanso {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  .controle { gap: 4px; }
+  input.valor { width: 56px; }
+}
+
+/* Telas muito estreitas: menos respiro e valor menor para Séries/Carga continuarem lado a lado. */
+@container (max-width: 329px) {
+  .stepper { padding: 8px 6px; }
+  .stepper:not(.largo):not(.descanso) input.valor { font-size: 20px; }
+  .ex-nome h3 { font-size: 16px; line-height: 22px; }
+}
+@container (min-width: 520px) {
+  .exercicio { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stepper.largo { order: 1; }
+  .stepper.descanso { grid-column: auto; flex-direction: column; align-items: stretch; }
+  .stepper.descanso .controle button { width: 48px; height: 48px; }
+}
 
 .vazio { padding: 24px 8px; text-align: center; }
 .adicionar { width: 100%; margin-top: 4px; }

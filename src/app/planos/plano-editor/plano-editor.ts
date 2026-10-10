@@ -178,7 +178,6 @@ export class PlanoEditor implements OnInit {
           exercicioNome: exercicio.nome,
           grupoMuscular: exercicio.grupoMuscular,
           equipamento: exercicio.equipamento,
-          imagens: exercicio.imagens,
           series: 3,
           repsMin: 8,
           repsMax: 12,

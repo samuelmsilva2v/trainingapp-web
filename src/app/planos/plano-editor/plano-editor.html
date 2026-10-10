@@ -71,12 +71,6 @@
                 <button type="button" class="btn-icone alca" cdkDragHandle [attr.aria-label]="'Mover ' + item.exercicioNome">
                   <span class="icone" aria-hidden="true">drag_indicator</span>
                 </button>
-                <span class="miniatura">
-                  <span class="icone" aria-hidden="true">fitness_center</span>
-                  @if (item.imagens?.[0]; as foto) {
-                    <img [src]="foto" alt="" loading="lazy" (error)="$any($event.target).remove()" />
-                  }
-                </span>
                 <div class="ex-nome">
                   <h3 class="titulo-sm">{{ item.exercicioNome }}</h3>
                   <span class="tags">
@@ -123,7 +117,7 @@
                 </div>
               </div>
 
-              <div class="stepper largo">
+              <div class="stepper descanso">
                 <span class="rotulo suave">Descanso (s)</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos descanso" (click)="ajustar(i, 'descansoSegundos', -1)"><span class="icone" aria-hidden="true">remove</span></button>
