@@ -252,5 +252,5 @@
   flex-direction: column;
   gap: 6px;
   li { display: flex; justify-content: space-between; gap: 12px; }
-  .nome { font-weight: 600; }
+  .nome { font-weight: 600; text-transform: uppercase; min-width: 0; }
 }

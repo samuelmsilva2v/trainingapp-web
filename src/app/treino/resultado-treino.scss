@@ -8,6 +8,7 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .barra { height: 12px; border-radius: 6px; background: var(--c-sup-4); overflow: hidden; }
 .preenchida { height: 100%; background: var(--c-primaria); transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .sequencia { display: flex; align-items: center; gap: 4px; margin: 0; }
+.recordes { text-transform: uppercase; }
 .lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; align-items: center; gap: 6px; } }
 .metricas {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0;
@@ -18,5 +19,5 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .exercicios {
   list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
   li { display: flex; justify-content: space-between; gap: 12px; }
-  .nome { font-weight: 600; }
+  .nome { font-weight: 600; text-transform: uppercase; min-width: 0; }
 }

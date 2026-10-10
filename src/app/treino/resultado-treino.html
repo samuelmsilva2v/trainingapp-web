@@ -38,7 +38,7 @@
   @if (recordes.length > 0) {
     <section aria-label="Recordes">
       <h3 class="rotulo suave">Recordes batidos</h3>
-      <ul class="lista">
+      <ul class="lista recordes">
         @for (nome of recordes; track nome) { <li>🏆 {{ nome }}</li> }
       </ul>
     </section>
