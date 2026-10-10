@@ -1,0 +1,112 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, Subject, of, throwError } from 'rxjs';
+import { vi } from 'vitest';
+import { SessoesApi } from './api';
+import { SessaoLocal } from './modelos';
+import { TreinoStore } from './treino-store';
+
+const sessao: SessaoLocal = {
+  id: 's1',
+  planoId: null,
+  planoNome: 'Plano',
+  diaNome: 'A',
+  diaOrdem: 0,
+  estado: 'EM_ANDAMENTO',
+  iniciadaEm: '2026-01-01T10:00:00Z',
+  finalizadaEm: null,
+  atualizadoEm: '2026-01-01T10:00:00Z',
+  exercicios: [
+    {
+      id: 'e1',
+      exercicioId: 'x1',
+      nome: 'Supino',
+      grupoMuscular: 'PEITO',
+      equipamento: 'BARRA',
+      metaSeries: 1,
+      metaRepsMin: 8,
+      metaRepsMax: 10,
+      metaCarga: null,
+      metaDescansoSegundos: null,
+      series: [{ id: 'r1', reps: 8, carga: 60, concluida: false }],
+    },
+  ],
+};
+
+describe('TreinoStore', () => {
+  let salvar: ReturnType<typeof vi.fn<(s: SessaoLocal) => Observable<SessaoLocal>>>;
+  let store: TreinoStore;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    salvar = vi.fn((s: SessaoLocal) => of(s));
+    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar } }] });
+    store = TestBed.inject(TreinoStore);
+    store.retomar(sessao);
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  const marcarReps = (reps: number) => store.atualizarSerie(0, 0, s => ({ ...s, reps }));
+
+  it('várias mudanças rápidas geram um envio com o último estado', async () => {
+    marcarReps(9);
+    marcarReps(10);
+    marcarReps(11);
+    expect(store.status()).toBe('salvando');
+
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(salvar).toHaveBeenCalledTimes(1);
+    expect(salvar.mock.calls[0][0].exercicios[0].series[0].reps).toBe(11);
+    expect(store.status()).toBe('salvo');
+  });
+
+  it('encerrar espera o envio em andamento terminar e envia o estado final', async () => {
+    const resposta = new Subject<SessaoLocal>();
+    salvar.mockReturnValueOnce(resposta);
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(salvar).toHaveBeenCalledTimes(1);
+
+    const encerrando = store.encerrar('CONCLUIDA');
+    await vi.advanceTimersByTimeAsync(200);
+    expect(salvar).toHaveBeenCalledTimes(1); // ainda esperando o envio em curso
+
+    resposta.next(sessao);
+    resposta.complete();
+    await vi.advanceTimersByTimeAsync(100);
+    await encerrando;
+
+    expect(salvar).toHaveBeenCalledTimes(2);
+    expect(salvar.mock.calls[1][0].estado).toBe('CONCLUIDA');
+    expect(store.sessao()).toBeNull();
+  });
+
+  it('guarda o motivo da falha e tenta de novo uma vez depois de 5 s', async () => {
+    const falha = () => throwError(() => new HttpErrorResponse({ status: 422, error: { detail: 'Regra violada' } }));
+    salvar.mockImplementationOnce(falha);
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(store.status()).toBe('erro');
+    expect(store.erro()).toBe('Regra violada');
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(salvar).toHaveBeenCalledTimes(2);
+    expect(store.status()).toBe('salvo');
+  });
+
+  it('não insiste além de uma nova tentativa automática', async () => {
+    salvar.mockImplementation(() => throwError(() => new HttpErrorResponse({ status: 0 })));
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(30000);
+
+    expect(salvar).toHaveBeenCalledTimes(2);
+    expect(store.status()).toBe('erro');
+    expect(store.erro()).toBe('Não foi possível conectar à API.');
+  });
+});
