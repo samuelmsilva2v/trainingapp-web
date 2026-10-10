@@ -1,0 +1,46 @@
+<form class="folha" (submit)="enviar($event)">
+  <header class="cabecalho">
+    <h2 class="titulo-sm"><span class="icone" aria-hidden="true">edit</span> Novo exercício</h2>
+    <button type="button" class="btn-icone" aria-label="Fechar" (click)="fechar()">
+      <span class="icone" aria-hidden="true">close</span>
+    </button>
+  </header>
+
+  <label class="campo">
+    <span class="rotulo suave">Nome do exercício</span>
+    <input type="text" cdkFocusInitial autocomplete="off" [attr.maxlength]="nomeMax"
+           placeholder="Ex.: Supino reto com halteres no chão"
+           [value]="nome()" (input)="nome.set($any($event.target).value)" />
+  </label>
+
+  <label class="campo">
+    <span class="rotulo suave">Grupo muscular principal</span>
+    <select (change)="escolher(grupo, $event)">
+      <option value="" [selected]="grupo() === null">Selecione…</option>
+      @for (g of grupos; track g.valor) {
+        <option [value]="g.valor" [selected]="grupo() === g.valor">{{ g.rotulo }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="campo">
+    <span class="rotulo suave">Equipamento</span>
+    <select (change)="escolher(equipamento, $event)">
+      <option value="" [selected]="equipamento() === null">Selecione…</option>
+      @for (e of equipamentos; track e.valor) {
+        <option [value]="e.valor" [selected]="equipamento() === e.valor">{{ e.rotulo }}</option>
+      }
+    </select>
+  </label>
+
+  @if (erro()) {
+    <p class="erro" role="alert">{{ erro() }}</p>
+  }
+
+  <div class="acoes">
+    <button type="button" class="btn btn-secundario" (click)="fechar()">Cancelar</button>
+    <button type="submit" class="btn btn-primario" [disabled]="!podeSalvar() || salvando()">
+      {{ salvando() ? 'Salvando…' : 'Salvar' }}
+    </button>
+  </div>
+</form>

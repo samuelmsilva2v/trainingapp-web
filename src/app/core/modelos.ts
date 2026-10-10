@@ -18,6 +18,13 @@ export interface Exercicio {
   imagens: string[];
 }
 
+/** Corpo do POST /api/exercicios (exercício próprio do usuário). */
+export interface ExercicioRequest {
+  nome: string;
+  grupoMuscular: GrupoMuscular;
+  equipamento: Equipamento;
+}
+
 export interface PlanoResumo {
   id: string;
   nome: string;

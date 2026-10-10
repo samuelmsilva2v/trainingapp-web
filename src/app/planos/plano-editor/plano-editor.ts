@@ -8,6 +8,7 @@ import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
+import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
 
 const SERIES = { min: 1, max: 20 };
@@ -171,21 +172,39 @@ export class PlanoEditor implements OnInit {
         height: '100dvh',
       })
       .afterClosed()
+      .subscribe(exercicio => exercicio && this.incluirExercicio(exercicio));
+  }
+
+  /** Cria um exercício próprio (folha na base da tela) e já o coloca no dia aberto. */
+  protected criarExercicio(): void {
+    this.dialogo
+      .open<NovoExercicio, void, Exercicio>(NovoExercicio, {
+        panelClass: 'dialogo-folha',
+        position: { bottom: '0' },
+        width: '512px',
+        maxWidth: '100vw',
+      })
+      .afterClosed()
       .subscribe(exercicio => {
         if (!exercicio) return;
-        const item: ItemPlano = {
-          exercicioId: exercicio.id,
-          exercicioNome: exercicio.nome,
-          grupoMuscular: exercicio.grupoMuscular,
-          equipamento: exercicio.equipamento,
-          series: 3,
-          repsMin: 8,
-          repsMax: 12,
-          cargaAlvo: null,
-          descansoSegundos: 90,
-        };
-        this.atualizarDia(this.diaAtivo(), d => ({ ...d, exercicios: [...d.exercicios, item] }));
+        this.incluirExercicio(exercicio);
+        this.aviso.open('Exercício criado e adicionado ao dia.', undefined, { duration: 3000 });
       });
+  }
+
+  private incluirExercicio(exercicio: Exercicio): void {
+    const item: ItemPlano = {
+      exercicioId: exercicio.id,
+      exercicioNome: exercicio.nome,
+      grupoMuscular: exercicio.grupoMuscular,
+      equipamento: exercicio.equipamento,
+      series: 3,
+      repsMin: 8,
+      repsMax: 12,
+      cargaAlvo: null,
+      descansoSegundos: 90,
+    };
+    this.atualizarDia(this.diaAtivo(), d => ({ ...d, exercicios: [...d.exercicios, item] }));
   }
 
   protected remover(indice: number): void {

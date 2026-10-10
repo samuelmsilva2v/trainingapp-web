@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
-  Anterior, Exercicio, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
+  Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
 } from './modelos';
 
 export const API_URL = environment.apiUrl;
@@ -58,6 +58,10 @@ export class ExerciciosApi {
     if (grupo) params = params.set('grupo', grupo);
     if (busca.trim()) params = params.set('busca', busca.trim());
     return this.http.get<Exercicio[]>(`${API_URL}/exercicios`, { params });
+  }
+
+  criar(exercicio: ExercicioRequest): Observable<Exercicio> {
+    return this.http.post<Exercicio>(`${API_URL}/exercicios`, exercicio);
   }
 }
 
