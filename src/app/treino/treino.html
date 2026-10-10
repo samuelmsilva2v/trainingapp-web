@@ -35,26 +35,25 @@
     </section>
 
     @if (exercicio(); as ex) {
-      <section class="navegador">
-        <button type="button" class="btn-icone" aria-label="Exercício anterior" [disabled]="indice() === 0" (click)="irPara(-1)">
-          <span class="icone" aria-hidden="true">chevron_left</span>
-        </button>
-        <span class="rotulo suave">Exercício {{ indice() + 1 }} de {{ s.exercicios.length }}</span>
-        <button type="button" class="btn-icone" aria-label="Próximo exercício"
-                [disabled]="indice() === s.exercicios.length - 1" (click)="irPara(1)">
-          <span class="icone" aria-hidden="true">chevron_right</span>
-        </button>
-      </section>
-
       <section class="cartao-ex">
-        <h2 class="titulo-md">{{ ex.nome }}</h2>
-        <span class="tags">
-          <span class="tag">{{ rotuloGrupo(ex.grupoMuscular) }}</span>
-          <span class="tag">{{ rotuloEquipamento(ex.equipamento) }}</span>
-        </span>
+        <div class="cartao-topo">
+          <span class="badge-ex">Exercício {{ indice() + 1 }} de {{ s.exercicios.length }}</span>
+          <div class="navegar">
+            <button type="button" aria-label="Exercício anterior" [disabled]="indice() === 0" (click)="irPara(-1)">
+              <span class="icone" aria-hidden="true">chevron_left</span>
+            </button>
+            <button type="button" aria-label="Próximo exercício" [disabled]="indice() === s.exercicios.length - 1" (click)="irPara(1)">
+              <span class="icone" aria-hidden="true">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        <div class="ex-titulo">
+          <h2 class="titulo-md">{{ ex.nome }}</h2>
+          <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} · {{ rotuloEquipamento(ex.equipamento) }}</p>
+        </div>
         <dl class="metas">
           <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }}</dd></div>
-          <div><dt>Alvo</dt><dd class="num">{{ ex.metaCarga === null ? '—' : formatarCarga(ex.metaCarga) + ' kg' }}</dd></div>
+          <div><dt>Alvo</dt><dd class="num alvo">{{ ex.metaCarga === null ? '—' : formatarCarga(ex.metaCarga) + ' kg' }}</dd></div>
           <div><dt>Descanso</dt><dd class="num">{{ ex.metaDescansoSegundos === null ? '—' : ex.metaDescansoSegundos + 's' }}</dd></div>
         </dl>
       </section>
