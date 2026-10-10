@@ -1,44 +1,3 @@
-<section class="cabecalho">
-  <h1 class="titulo-md">Perfil</h1>
-  <p class="suave">Seus dados e seu progresso.</p>
-</section>
-
-@if (gamificacao.dados(); as g) {
-  <section class="progresso" aria-label="Progresso">
-    <div class="nivel">
-      <div class="selo-nivel"><span class="rotulo">Nível</span><span class="num">{{ g.nivel }}</span></div>
-      <div class="nivel-info">
-        <p class="titulo-sm num">{{ formatar(g.xpTotal) }} XP</p>
-        <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal"
-             [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
-          <span [style.width.%]="gamificacao.progresso() * 100"></span>
-        </div>
-        <p class="suave num">Faltam {{ gamificacao.xpFaltante() }} XP para o nível {{ g.nivel + 1 }}</p>
-      </div>
-    </div>
-
-    <dl class="totais">
-      <div><dd class="num">{{ g.streakAtual }}</dd><dt>sequência</dt></div>
-      <div><dd class="num">{{ g.melhorStreak }}</dd><dt>melhor</dt></div>
-      <div><dd class="num">{{ g.treinos }}</dd><dt>treinos</dt></div>
-      <div><dd class="num">{{ g.recordes }}</dd><dt>recordes</dt></div>
-    </dl>
-
-    <h2 class="rotulo suave">Conquistas</h2>
-    <ul class="conquistas">
-      @for (c of g.conquistas; track c.codigo) {
-        <li [class.ganha]="c.conquistada">
-          <span class="icone" [class.cheio]="c.conquistada" aria-hidden="true">{{ c.conquistada ? 'emoji_events' : 'lock' }}</span>
-          <span class="texto">
-            <span class="nome">{{ c.nome }}</span>
-            <span class="suave">{{ c.descricao }}</span>
-          </span>
-        </li>
-      }
-    </ul>
-  </section>
-}
-
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando…</p>
 } @else if (erro()) {
@@ -47,14 +6,121 @@
     <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
   </div>
 } @else {
-  <form class="form" (submit)="$event.preventDefault(); salvar()">
-    <label class="campo">
-      <span class="rotulo suave">Nome</span>
-      <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
-    </label>
+  <div class="pagina">
+    <section class="card usuario" aria-label="Seus dados">
+      <div class="identidade">
+        <h1 class="nome">{{ nomeSalvo() }}</h1>
+        <p class="suave">{{ titulo }}</p>
+      </div>
 
-    <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
-      <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar perfil' }}
-    </button>
-  </form>
+      @if (gamificacao.dados(); as g) {
+        <div class="metricas">
+          <div class="metrica">
+            <span class="caixa fogo"><span class="icone" aria-hidden="true">local_fire_department</span></span>
+            <span class="texto">
+              <span class="rotulo suave">Sequência</span>
+              <span class="valor num">{{ g.streakAtual }} {{ g.streakAtual === 1 ? 'dia' : 'dias' }}</span>
+            </span>
+          </div>
+          <div class="metrica">
+            <span class="caixa raio"><span class="icone" aria-hidden="true">bolt</span></span>
+            <span class="texto">
+              <span class="rotulo suave">Nível atual</span>
+              <span class="valor num">Nível {{ g.nivel }}</span>
+            </span>
+          </div>
+          <div class="xp">
+            <div class="xp-topo">
+              <span class="suave">Progresso de XP</span>
+              <span class="num destaque">{{ formatar(g.xpTotal) }} / {{ formatar(g.xpProximoNivel) }} XP</span>
+            </div>
+            <div class="barra" role="progressbar" [attr.aria-valuenow]="g.xpTotal"
+                 [attr.aria-valuemin]="g.xpInicioDoNivel" [attr.aria-valuemax]="g.xpProximoNivel">
+              <span [style.width.%]="gamificacao.progresso() * 100"></span>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+    <form class="card" (submit)="$event.preventDefault(); salvar()">
+      <header class="card-topo">
+        <h2 class="titulo"><span class="icone" aria-hidden="true">tune</span> Preferências</h2>
+        <span class="rotulo suave">Ajustes</span>
+      </header>
+
+      <label class="campo">
+        <span class="legenda">Nome de exibição</span>
+        <span class="entrada">
+          <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
+          <span class="icone" aria-hidden="true">edit</span>
+        </span>
+      </label>
+
+      <div class="peso">
+        <span class="icone" aria-hidden="true">scale</span>
+        <span class="texto">
+          <span class="legenda-forte">Unidade de peso</span>
+          <span class="suave">Padrão biométrico métrico</span>
+        </span>
+        <span class="selo"><span class="icone" aria-hidden="true">lock</span> Kg</span>
+      </div>
+
+      <div class="campo">
+        <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
+        <div class="tema" role="group" aria-labelledby="rotulo-tema">
+          <button type="button" class="opcao sel" aria-pressed="true">
+            <span class="icone" aria-hidden="true">dark_mode</span> Escuro
+          </button>
+          <button type="button" class="opcao" aria-pressed="false" disabled>
+            <span class="icone" aria-hidden="true">light_mode</span> Claro
+          </button>
+        </div>
+        <p class="suave dica">O tema claro chega em breve.</p>
+      </div>
+
+      <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
+        <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar alterações' }}
+      </button>
+    </form>
+
+    <section class="card" aria-label="Dados do treino">
+      <header class="card-topo">
+        <h2 class="titulo"><span class="icone" aria-hidden="true">database</span> Dados do treino</h2>
+      </header>
+      <button type="button" class="acao" disabled>
+        <span class="caixa"><span class="icone" aria-hidden="true">download</span></span>
+        <span class="texto">
+          <span class="legenda-forte">Exportar relatório</span>
+          <span class="suave">Seu histórico de treinos em arquivo</span>
+        </span>
+        <span class="breve">Em breve</span>
+      </button>
+    </section>
+
+    @if (gamificacao.dados(); as g) {
+      <section class="card conquistas-card" aria-label="Conquistas">
+        <button type="button" class="conquistas-topo" [attr.aria-expanded]="conquistasAbertas()"
+                aria-controls="lista-conquistas" (click)="conquistasAbertas.set(!conquistasAbertas())">
+          <span class="titulo"><span class="icone cheio laranja" aria-hidden="true">emoji_events</span> Conquistas</span>
+          <span class="contagem num">{{ conquistadas() }}/{{ g.conquistas.length }}</span>
+          <span class="icone" aria-hidden="true">{{ conquistasAbertas() ? 'expand_less' : 'expand_more' }}</span>
+        </button>
+
+        @if (conquistasAbertas()) {
+          <ul class="conquistas" id="lista-conquistas">
+            @for (c of g.conquistas; track c.codigo) {
+              <li [class.ganha]="c.conquistada">
+                <span class="icone" [class.cheio]="c.conquistada" aria-hidden="true">{{ c.conquistada ? 'emoji_events' : 'lock' }}</span>
+                <span class="texto">
+                  <span class="nome-conquista">{{ c.nome }}</span>
+                  <span class="suave">{{ c.descricao }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </div>
 }

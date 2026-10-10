@@ -5,6 +5,9 @@ import { formatarKg } from '../core/formatos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
 
+/** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
+const TITULO_PADRAO = 'Praticante de musculação';
+
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.html',
@@ -15,6 +18,7 @@ export class PerfilTela implements OnInit {
   private readonly aviso = inject(MatSnackBar);
   protected readonly gamificacao = inject(GamificacaoStore);
   protected readonly formatar = formatarKg;
+  protected readonly titulo = TITULO_PADRAO;
 
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
@@ -22,6 +26,9 @@ export class PerfilTela implements OnInit {
 
   protected readonly nome = signal('');
   private readonly salvo = signal<Perfil | null>(null);
+  protected readonly nomeSalvo = computed(() => this.salvo()?.nome ?? '');
+  protected readonly conquistasAbertas = signal(false);
+  protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
