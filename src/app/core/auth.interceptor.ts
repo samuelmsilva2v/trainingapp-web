@@ -5,7 +5,7 @@ import { API_URL } from './api';
 import { AuthStore } from './auth';
 
 // Os endpoints de login são públicos: mandar um token vencido neles faz a API responder 401 sem necessidade.
-const PRIVADAS_DO_AUTH = [`${API_URL}/auth/sair-todos`, `${API_URL}/auth/trocar-senha`];
+const PRIVADAS_DO_AUTH = [`${API_URL}/auth/sair-todos`, `${API_URL}/auth/trocar-senha`, `${API_URL}/auth/excluir-conta`];
 
 function precisaDeToken(url: string): boolean {
   return url.startsWith(API_URL) && (!url.startsWith(`${API_URL}/auth/`) || PRIVADAS_DO_AUTH.includes(url));

@@ -78,6 +78,10 @@ input {
 .email { overflow-wrap: anywhere; }
 .campos { display: flex; flex-direction: column; gap: 12px; }
 .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.acao.perigo .legenda-forte { color: #ff4d4d; }
+.exclusao { padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); box-shadow: inset 0 0 0 1px rgba(255, 77, 77, 0.4); display: flex; flex-direction: column; gap: 12px; }
+.exclusao-titulo { margin: 0; font: 700 14px/20px 'Inter', sans-serif; color: #ff4d4d; }
+.btn-excluir { background: #93000a; color: #ffdad6; &:hover:not(:disabled) { background: #b3000f; } }
 
 /* Dados do treino */
 .acao {

@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthApi, PerfilApi, mensagemDeErro } from '../core/api';
 import { AuthStore, SENHA_MINIMA } from '../core/auth';
 import { formatarKg } from '../core/formatos';
+import { GoogleCodigo, criarClienteGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
 
@@ -36,6 +37,11 @@ export class PerfilTela implements OnInit {
   protected readonly senhaAtual = signal('');
   protected readonly novaSenha = signal('');
   protected readonly senhaValida = computed(() => this.senhaAtual().length > 0 && this.novaSenha().length >= SENHA_MINIMA);
+  protected readonly excluindo = signal(false);
+  protected readonly senhaDaExclusao = signal('');
+  /** Conta só do Google: o botão de confirmar só habilita quando o popup do Google está pronto para abrir. */
+  protected readonly googlePronto = signal(false);
+  private clienteGoogle: GoogleCodigo | null = null;
   protected readonly conquistasAbertas = signal(false);
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
@@ -101,11 +107,62 @@ export class PerfilTela implements OnInit {
     });
   }
 
-  protected sair(): void {
-    this.auth.sair().subscribe();
+  /** Abre a confirmação. Na conta só do Google já prepara o popup, que o navegador só deixa abrir direto de um clique. */
+  protected abrirExclusao(): void {
+    this.excluindo.set(true);
+    if (this.temSenha() || this.clienteGoogle) return;
+    this.authApi.config().subscribe({
+      next: ({ googleClientId }) => {
+        if (!googleClientId) return;
+        criarClienteGoogle(googleClientId, codigo => this.excluirComCodigo(codigo), tipo => {
+          if (tipo === 'popup_failed_to_open') {
+            this.aviso.open('Não foi possível abrir a janela do Google. Libere os pop-ups e tente de novo.', 'OK', { duration: 6000 });
+          }
+        })
+          .then(cliente => {
+            this.clienteGoogle = cliente;
+            this.googlePronto.set(true);
+          })
+          .catch(() => undefined);
+      },
+      error: () => undefined,
+    });
   }
 
-  protected sairDeTodos(): void {
-    this.auth.sairDeTodos().subscribe({ error: e => this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 }) });
+  protected cancelarExclusao(): void {
+    this.excluindo.set(false);
+    this.senhaDaExclusao.set('');
+  }
+
+  protected excluirComSenha(): void {
+    if (!this.senhaDaExclusao() || this.salvando()) return;
+    this.excluir({ senha: this.senhaDaExclusao() });
+  }
+
+  protected confirmarComGoogle(): void {
+    this.clienteGoogle?.requestCode();
+  }
+
+  private excluirComCodigo(codigo?: string): void {
+    if (!codigo) {
+      this.aviso.open('O Google não autorizou a confirmação. Tente de novo.', 'OK', { duration: 6000 });
+      return;
+    }
+    this.excluir({ codigo });
+  }
+
+  private excluir(prova: { senha?: string; codigo?: string }): void {
+    this.salvando.set(true);
+    // Deu certo: o app recarrega na tela de login e nada da conta fica na memória.
+    this.auth.excluirConta(prova).subscribe({
+      error: e => {
+        this.salvando.set(false);
+        this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
+      },
+    });
+  }
+
+  protected sair(): void {
+    this.auth.sair().subscribe();
   }
 }

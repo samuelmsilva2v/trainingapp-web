@@ -84,46 +84,6 @@
       </button>
     </form>
 
-    <section class="card" aria-label="Conta">
-      <header class="card-topo">
-        <h2 class="titulo"><span class="icone" aria-hidden="true">lock</span> Conta</h2>
-      </header>
-      <p class="suave email">{{ email() }}</p>
-
-      @if (temSenha()) {
-        @if (trocandoSenha()) {
-          <form class="campos" (submit)="$event.preventDefault(); trocarSenha()">
-            <label class="campo">
-              <span class="legenda">Senha atual</span>
-              <input type="password" maxlength="72" autocomplete="current-password" [value]="senhaAtual()" (input)="senhaAtual.set($any($event.target).value)" />
-            </label>
-            <label class="campo">
-              <span class="legenda">Nova senha</span>
-              <input type="password" maxlength="72" autocomplete="new-password" [value]="novaSenha()" (input)="novaSenha.set($any($event.target).value)" />
-              <span class="suave dica">Mínimo de 8 caracteres.</span>
-            </label>
-            <div class="linha">
-              <button type="button" class="btn btn-secundario" (click)="trocandoSenha.set(false)">Cancelar</button>
-              <button type="submit" class="btn btn-primario" [disabled]="!senhaValida() || salvando()">Salvar senha</button>
-            </div>
-          </form>
-        } @else {
-          <button type="button" class="acao" (click)="trocandoSenha.set(true)">
-            <span class="texto"><span class="legenda-forte">Trocar senha</span></span>
-          </button>
-        }
-      }
-      <button type="button" class="acao" (click)="sair()">
-        <span class="texto"><span class="legenda-forte">Sair</span></span>
-      </button>
-      <button type="button" class="acao" (click)="sairDeTodos()">
-        <span class="texto">
-          <span class="legenda-forte">Sair de todos os aparelhos</span>
-          <span class="suave">Desconecta este e os outros aparelhos</span>
-        </span>
-      </button>
-    </section>
-
     <section class="card" aria-label="Dados do treino">
       <header class="card-topo">
         <h2 class="titulo"><span class="icone" aria-hidden="true">database</span> Dados do treino</h2>
@@ -162,5 +122,72 @@
         }
       </section>
     }
+
+    <section class="card" aria-label="Conta">
+      <header class="card-topo">
+        <h2 class="titulo"><span class="icone" aria-hidden="true">lock</span> Conta</h2>
+      </header>
+      <p class="suave email">{{ email() }}</p>
+
+      @if (temSenha()) {
+        @if (trocandoSenha()) {
+          <form class="campos" (submit)="$event.preventDefault(); trocarSenha()">
+            <label class="campo">
+              <span class="legenda">Senha atual</span>
+              <input type="password" maxlength="72" autocomplete="current-password" [value]="senhaAtual()" (input)="senhaAtual.set($any($event.target).value)" />
+            </label>
+            <label class="campo">
+              <span class="legenda">Nova senha</span>
+              <input type="password" maxlength="72" autocomplete="new-password" [value]="novaSenha()" (input)="novaSenha.set($any($event.target).value)" />
+              <span class="suave dica">Mínimo de 8 caracteres.</span>
+            </label>
+            <div class="linha">
+              <button type="button" class="btn btn-secundario" (click)="trocandoSenha.set(false)">Cancelar</button>
+              <button type="submit" class="btn btn-primario" [disabled]="!senhaValida() || salvando()">Salvar senha</button>
+            </div>
+          </form>
+        } @else {
+          <button type="button" class="acao" (click)="trocandoSenha.set(true)">
+            <span class="texto"><span class="legenda-forte">Trocar senha</span></span>
+          </button>
+        }
+      }
+      @if (excluindo()) {
+        <div class="exclusao" role="group" aria-labelledby="titulo-exclusao">
+          <p class="exclusao-titulo" id="titulo-exclusao">Excluir conta definitivamente?</p>
+          <p class="suave">Seus planos, treinos, histórico, XP e conquistas serão apagados para sempre. Não dá para desfazer.</p>
+          @if (temSenha()) {
+            <form class="campos" (submit)="$event.preventDefault(); excluirComSenha()">
+              <label class="campo">
+                <span class="legenda">Digite sua senha para confirmar</span>
+                <input type="password" maxlength="72" autocomplete="current-password" [value]="senhaDaExclusao()"
+                       (input)="senhaDaExclusao.set($any($event.target).value)" />
+              </label>
+              <div class="linha">
+                <button type="button" class="btn btn-secundario" (click)="cancelarExclusao()">Cancelar</button>
+                <button type="submit" class="btn btn-excluir" [disabled]="!senhaDaExclusao() || salvando()">
+                  {{ salvando() ? 'Excluindo…' : 'Excluir minha conta' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <p class="suave">Confirme com a sua conta do Google para continuar.</p>
+            <div class="linha">
+              <button type="button" class="btn btn-secundario" (click)="cancelarExclusao()">Cancelar</button>
+              <button type="button" class="btn btn-excluir" [disabled]="!googlePronto() || salvando()" (click)="confirmarComGoogle()">
+                {{ salvando() ? 'Excluindo…' : 'Confirmar com o Google' }}
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <button type="button" class="acao perigo" (click)="abrirExclusao()">
+          <span class="texto"><span class="legenda-forte">Excluir conta e apagar dados</span></span>
+        </button>
+      }
+      <button type="button" class="acao" (click)="sair()">
+        <span class="texto"><span class="legenda-forte">Sair</span></span>
+      </button>
+    </section>
   </div>
 }

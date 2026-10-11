@@ -141,8 +141,9 @@ export class AuthApi {
     return this.http.post<Acesso>(`${API_URL}/auth/login`, { email, senha });
   }
 
-  entrarComGoogle(credencial: string): Observable<Acesso> {
-    return this.http.post<Acesso>(`${API_URL}/auth/google`, { credencial });
+  /** O código de uso único que o popup do Google entregou; a API o troca por tokens. */
+  entrarComGoogle(codigo: string): Observable<Acesso> {
+    return this.http.post<Acesso>(`${API_URL}/auth/google`, { codigo });
   }
 
   renovar(): Observable<Acesso> {
@@ -153,16 +154,17 @@ export class AuthApi {
     return this.http.post<void>(`${API_URL}/auth/sair`, {});
   }
 
-  sairDeTodos(): Observable<void> {
-    return this.http.post<void>(`${API_URL}/auth/sair-todos`, {});
-  }
-
   esqueciSenha(email: string): Observable<void> {
     return this.http.post<void>(`${API_URL}/auth/esqueci-senha`, { email });
   }
 
   redefinirSenha(token: string, senha: string): Observable<void> {
     return this.http.post<void>(`${API_URL}/auth/redefinir-senha`, { token, senha });
+  }
+
+  /** Apaga a conta e tudo que é dela. A prova de identidade é a senha ou, em conta só do Google, o código do popup. */
+  excluirConta(prova: { senha?: string; codigo?: string }): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/excluir-conta`, prova);
   }
 
   trocarSenha(senhaAtual: string, novaSenha: string): Observable<void> {

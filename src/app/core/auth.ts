@@ -51,16 +51,17 @@ export class AuthStore {
     return this.api.entrar(email, senha).pipe(map(a => void this.definir(a)));
   }
 
-  entrarComGoogle(credencial: string): Observable<void> {
-    return this.api.entrarComGoogle(credencial).pipe(map(a => void this.definir(a)));
+  entrarComGoogle(codigo: string): Observable<void> {
+    return this.api.entrarComGoogle(codigo).pipe(map(a => void this.definir(a)));
   }
 
   sair(): Observable<void> {
     return this.api.sair().pipe(catchError(() => of(undefined)), tap(() => this.irParaEntrar()));
   }
 
-  sairDeTodos(): Observable<void> {
-    return this.api.sairDeTodos().pipe(tap(() => this.irParaEntrar()));
+  /** Depois de apagada, a conta não existe mais: volta ao login com tudo limpo. */
+  excluirConta(prova: { senha?: string; codigo?: string }): Observable<void> {
+    return this.api.excluirConta(prova).pipe(tap(() => this.irParaEntrar()));
   }
 
   /** Recarrega o app na tela de login: nada da conta anterior (planos, treino em andamento) fica na memória. */
