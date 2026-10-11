@@ -3,7 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
-  Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, Plano, PlanoRequest, PlanoResumo, SessaoLocal, SessaoResumo,
+  Acesso, Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Plano, PlanoRequest, PlanoResumo,
+  SessaoLocal, SessaoResumo,
 } from './modelos';
 
 export const API_URL = environment.apiUrl;
@@ -114,8 +115,58 @@ export class PerfilApi {
     return this.http.get<Perfil>(`${API_URL}/perfil`);
   }
 
-  atualizar(perfil: Perfil): Observable<Perfil> {
+  atualizar(perfil: PerfilRequest): Observable<Perfil> {
     return this.http.put<Perfil>(`${API_URL}/perfil`, perfil);
+  }
+}
+
+/** Endpoints de login. O refresh token vai e volta no cookie HttpOnly, que o navegador cuida sozinho. */
+@Injectable({ providedIn: 'root' })
+export class AuthApi {
+  private readonly http = inject(HttpClient);
+
+  config(): Observable<{ googleClientId: string }> {
+    return this.http.get<{ googleClientId: string }>(`${API_URL}/auth/config`);
+  }
+
+  cadastrar(dados: { nome: string; email: string; senha: string }): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/cadastro`, dados);
+  }
+
+  confirmarEmail(token: string): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/confirmar-email`, { token });
+  }
+
+  entrar(email: string, senha: string): Observable<Acesso> {
+    return this.http.post<Acesso>(`${API_URL}/auth/login`, { email, senha });
+  }
+
+  entrarComGoogle(credencial: string): Observable<Acesso> {
+    return this.http.post<Acesso>(`${API_URL}/auth/google`, { credencial });
+  }
+
+  renovar(): Observable<Acesso> {
+    return this.http.post<Acesso>(`${API_URL}/auth/refresh`, {});
+  }
+
+  sair(): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/sair`, {});
+  }
+
+  sairDeTodos(): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/sair-todos`, {});
+  }
+
+  esqueciSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/esqueci-senha`, { email });
+  }
+
+  redefinirSenha(token: string, senha: string): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/redefinir-senha`, { token, senha });
+  }
+
+  trocarSenha(senhaAtual: string, novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${API_URL}/auth/trocar-senha`, { senhaAtual, novaSenha });
   }
 }
 

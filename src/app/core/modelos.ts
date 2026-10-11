@@ -163,6 +163,19 @@ export interface SessaoResumo {
 
 export interface Perfil {
   nome: string;
+  email: string;
+  /** Falso em conta criada só pelo Google: não há senha para trocar. */
+  temSenha: boolean;
+}
+
+export interface PerfilRequest {
+  nome: string;
+}
+
+/** Token de acesso (Bearer) e quantos segundos ele ainda vale. O refresh fica num cookie HttpOnly. */
+export interface Acesso {
+  acesso: string;
+  expiraEmSegundos: number;
 }
 
 export interface Conquista {

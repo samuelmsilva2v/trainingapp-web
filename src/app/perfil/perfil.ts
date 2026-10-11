@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PerfilApi, mensagemDeErro } from '../core/api';
+import { AuthApi, PerfilApi, mensagemDeErro } from '../core/api';
+import { AuthStore, SENHA_MINIMA } from '../core/auth';
 import { formatarKg } from '../core/formatos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -16,6 +17,8 @@ const TITULO_PADRAO = 'Praticante de musculação';
 export class PerfilTela implements OnInit {
   private readonly api = inject(PerfilApi);
   private readonly aviso = inject(MatSnackBar);
+  private readonly auth = inject(AuthStore);
+  private readonly authApi = inject(AuthApi);
   protected readonly gamificacao = inject(GamificacaoStore);
   protected readonly formatar = formatarKg;
   protected readonly titulo = TITULO_PADRAO;
@@ -27,6 +30,12 @@ export class PerfilTela implements OnInit {
   protected readonly nome = signal('');
   private readonly salvo = signal<Perfil | null>(null);
   protected readonly nomeSalvo = computed(() => this.salvo()?.nome ?? '');
+  protected readonly email = computed(() => this.salvo()?.email ?? '');
+  protected readonly temSenha = computed(() => this.salvo()?.temSenha ?? false);
+  protected readonly trocandoSenha = signal(false);
+  protected readonly senhaAtual = signal('');
+  protected readonly novaSenha = signal('');
+  protected readonly senhaValida = computed(() => this.senhaAtual().length > 0 && this.novaSenha().length >= SENHA_MINIMA);
   protected readonly conquistasAbertas = signal(false);
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
@@ -72,5 +81,31 @@ export class PerfilTela implements OnInit {
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
       },
     });
+  }
+
+  protected trocarSenha(): void {
+    if (!this.senhaValida() || this.salvando()) return;
+    this.salvando.set(true);
+    this.authApi.trocarSenha(this.senhaAtual(), this.novaSenha()).subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.trocandoSenha.set(false);
+        this.senhaAtual.set('');
+        this.novaSenha.set('');
+        this.aviso.open('Senha alterada. Os outros aparelhos foram desconectados.', undefined, { duration: 4000 });
+      },
+      error: e => {
+        this.salvando.set(false);
+        this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
+      },
+    });
+  }
+
+  protected sair(): void {
+    this.auth.sair().subscribe();
+  }
+
+  protected sairDeTodos(): void {
+    this.auth.sairDeTodos().subscribe({ error: e => this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 }) });
   }
 }

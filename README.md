@@ -17,7 +17,11 @@ npm install
 ng serve
 ```
 
-Acesse `http://localhost:4200/`.
+Acesse `http://localhost:4200/`. A API (`trainingapp-api`) precisa estar rodando em `http://localhost:8080`: o `ng serve` encaminha `/api` para ela (`proxy.conf.json`), então o app e a API ficam na mesma origem, como em produção (sem CORS, e o cookie do login funciona). Reinicie o `ng serve` ao mudar o `proxy.conf.json`.
+
+## Login
+
+As telas `/entrar`, `/cadastrar`, `/esqueci-senha`, `/redefinir-senha` e `/confirmar-email` (esta e a anterior são abertas pelo link do e-mail) ficam em `src/app/auth`; as demais rotas exigem login (`autenticadoGuard`). O access token (15 min) fica só em memória e o interceptor o renova sozinho; a sessão longa é o cookie HttpOnly de refresh, então fechar o app não desloga. O botão "Entrar com Google" só aparece se a API tiver `trainingapp.auth.google-client-id` configurado.
 
 ## Fontes e ícones
 

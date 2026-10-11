@@ -1,0 +1,61 @@
+:host { display: block; min-height: 100dvh; }
+
+.pagina {
+  min-height: 100dvh;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: calc(32px + env(safe-area-inset-top, 0)) 16px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.marca { text-align: center; text-transform: uppercase; letter-spacing: -0.01em; color: var(--c-primaria); }
+
+.card {
+  padding: 20px 16px;
+  border-radius: var(--r-md);
+  background: var(--c-sup-2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+form { display: flex; flex-direction: column; gap: 16px; }
+
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.legenda { font: 600 12px/16px 'Inter', sans-serif; color: var(--c-texto-2); }
+.dica { font-size: 11px; line-height: 14px; }
+
+input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--c-sup-3);
+  color: var(--c-texto);
+  font: 400 16px/24px 'Inter', sans-serif;
+  &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+}
+
+.erro { color: var(--c-erro); }
+.sucesso { color: var(--c-primaria); }
+a.btn { text-decoration: none; }
+
+.ou {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  &::before, &::after { content: ''; flex: 1; height: 1px; background: var(--c-borda); }
+}
+.google { display: flex; justify-content: center; min-height: 0; }
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  a { padding: 8px 0; color: var(--c-texto-2); font-weight: 600; text-decoration: none; &:hover { color: var(--c-primaria); } }
+}

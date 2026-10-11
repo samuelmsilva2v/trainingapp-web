@@ -1,0 +1,90 @@
+<main class="pagina">
+  <span class="marca titulo-sm">TrainingApp</span>
+
+  <section class="card" aria-live="polite">
+    <h1 class="titulo-md">
+      @switch (modo) {
+        @case ('entrar') { Entrar }
+        @case ('cadastrar') { Criar conta }
+        @case ('esqueci') { Esqueci a senha }
+        @case ('redefinir') { Nova senha }
+        @case ('confirmar') { Confirmar e-mail }
+      }
+    </h1>
+
+    @if (aviso(); as mensagem) {
+      <p class="sucesso" role="status">{{ mensagem }}</p>
+      @if (modo !== 'cadastrar' && modo !== 'esqueci') {
+        <a class="btn btn-primario" routerLink="/entrar">Ir para o login</a>
+      }
+    } @else if (modo === 'confirmar') {
+      @if (enviando()) {
+        <p class="suave" role="status">Confirmando…</p>
+      } @else if (erro()) {
+        <p class="erro" role="alert">{{ erro() }}</p>
+        <a class="btn btn-secundario" routerLink="/entrar">Ir para o login</a>
+      }
+    } @else {
+      @if (modo === 'esqueci') {
+        <p class="suave">Informe o e-mail da conta e enviaremos um link para criar uma nova senha.</p>
+      }
+
+      <form (submit)="$event.preventDefault(); enviar()">
+        @if (modo === 'cadastrar') {
+          <label class="campo">
+            <span class="legenda">Nome</span>
+            <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
+          </label>
+        }
+        @if (modo !== 'redefinir') {
+          <label class="campo">
+            <span class="legenda">E-mail</span>
+            <input type="email" maxlength="254" autocomplete="email" inputmode="email" [value]="email()"
+                   (input)="email.set($any($event.target).value)" />
+          </label>
+        }
+        @if (modo !== 'esqueci') {
+          <label class="campo">
+            <span class="legenda">{{ modo === 'redefinir' ? 'Nova senha' : 'Senha' }}</span>
+            <input type="password" maxlength="72" [attr.autocomplete]="modo === 'entrar' ? 'current-password' : 'new-password'"
+                   [value]="senha()" (input)="senha.set($any($event.target).value)" />
+            @if (modo !== 'entrar') {
+              <span class="dica suave">Mínimo de 8 caracteres.</span>
+            }
+          </label>
+        }
+
+        @if (erro()) {
+          <p class="erro" role="alert">{{ erro() }}</p>
+        }
+
+        <button type="submit" class="btn btn-primario" [disabled]="!valido() || enviando()">
+          @switch (modo) {
+            @case ('entrar') { {{ enviando() ? 'Entrando…' : 'Entrar' }} }
+            @case ('cadastrar') { {{ enviando() ? 'Criando…' : 'Criar conta' }} }
+            @case ('esqueci') { {{ enviando() ? 'Enviando…' : 'Enviar link' }} }
+            @case ('redefinir') { {{ enviando() ? 'Salvando…' : 'Salvar nova senha' }} }
+          }
+        </button>
+      </form>
+    }
+
+    @if (!aviso() && (modo === 'entrar' || modo === 'cadastrar')) {
+      @if (googleAtivo()) {
+        <p class="ou suave" aria-hidden="true"><span>ou</span></p>
+      }
+      <div #google class="google"></div>
+    }
+
+    <nav class="links">
+      @switch (modo) {
+        @case ('entrar') {
+          <a routerLink="/esqueci-senha">Esqueci a senha</a>
+          <a routerLink="/cadastrar">Criar conta</a>
+        }
+        @case ('cadastrar') { <a routerLink="/entrar">Já tenho conta</a> }
+        @default { <a routerLink="/entrar">Voltar ao login</a> }
+      }
+    </nav>
+  </section>
+</main>
