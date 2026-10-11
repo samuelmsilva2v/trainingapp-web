@@ -1,15 +1,18 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthApi, mensagemDeErro } from '../core/api';
-import { AuthStore, SENHA_MINIMA } from '../core/auth';
+import { ForcaSenha } from '../compartilhado/forca-senha';
+import { AuthStore } from '../core/auth';
 import { GoogleCodigo, criarClienteGoogle } from '../core/google';
+import { senhaForte } from '../core/senha';
 
 /** A rota define o modo (`data.modo`); as cinco telas compartilham o cartão, os campos e o tratamento de erro. */
 type Modo = 'entrar' | 'cadastrar' | 'esqueci' | 'redefinir' | 'confirmar';
 
 @Component({
   selector: 'app-auth',
-  imports: [RouterLink],
+  imports: [RouterLink, NgTemplateOutlet, ForcaSenha],
   templateUrl: './auth-tela.html',
   styleUrl: './auth-tela.scss',
 })
@@ -25,7 +28,11 @@ export class AuthTela implements OnInit {
   protected readonly nome = signal('');
   protected readonly email = signal('');
   protected readonly senha = signal('');
+  protected readonly confirmacao = signal('');
   protected readonly mostrarSenha = signal(false);
+  protected readonly mostrarConfirmacao = signal(false);
+  /** Enfeite por enquanto (não há páginas de termos nem registro do aceite): só impede avançar sem marcar. */
+  protected readonly termos = signal(false);
   protected readonly enviando = signal(false);
   protected readonly erro = signal<string | null>(null);
   /** Mensagem de sucesso; quando existe, ela substitui o formulário. */
@@ -34,12 +41,15 @@ export class AuthTela implements OnInit {
   protected readonly entrandoComGoogle = signal(false);
   private clienteGoogle: GoogleCodigo | null = null;
 
+  protected readonly conferem = computed(() => this.senha() === this.confirmacao());
+
   protected readonly valido = computed(() => {
     switch (this.modo) {
       case 'entrar': return this.email().includes('@') && this.senha().length > 0;
-      case 'cadastrar': return this.nome().trim().length > 0 && this.email().includes('@') && this.senha().length >= SENHA_MINIMA;
+      case 'cadastrar':
+        return this.nome().trim().length > 0 && this.email().includes('@') && senhaForte(this.senha()) && this.conferem() && this.termos();
       case 'esqueci': return this.email().includes('@');
-      case 'redefinir': return this.senha().length >= SENHA_MINIMA;
+      case 'redefinir': return senhaForte(this.senha()) && this.conferem();
       default: return false;
     }
   });

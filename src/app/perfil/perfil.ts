@@ -1,17 +1,20 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthApi, PerfilApi, mensagemDeErro } from '../core/api';
-import { AuthStore, SENHA_MINIMA } from '../core/auth';
+import { ForcaSenha } from '../compartilhado/forca-senha';
+import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
 import { GoogleCodigo, criarClienteGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
+import { senhaForte } from '../core/senha';
 
 /** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
 const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
+  imports: [ForcaSenha],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -36,7 +39,7 @@ export class PerfilTela implements OnInit {
   protected readonly trocandoSenha = signal(false);
   protected readonly senhaAtual = signal('');
   protected readonly novaSenha = signal('');
-  protected readonly senhaValida = computed(() => this.senhaAtual().length > 0 && this.novaSenha().length >= SENHA_MINIMA);
+  protected readonly senhaValida = computed(() => this.senhaAtual().length > 0 && senhaForte(this.novaSenha()));
   protected readonly excluindo = signal(false);
   protected readonly senhaDaExclusao = signal('');
   /** Conta só do Google: o botão de confirmar só habilita quando o popup do Google está pronto para abrir. */

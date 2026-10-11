@@ -5,8 +5,6 @@ import { Observable, catchError, finalize, firstValueFrom, map, of, share, tap, 
 import { AuthApi } from './api';
 import { Acesso } from './modelos';
 
-export const SENHA_MINIMA = 8;
-
 /**
  * Estado do login. O access token (15 min) fica só em memória; a sessão longa é o cookie HttpOnly de refresh,
  * que o navegador manda sozinho em /api/auth/refresh. Por isso fechar a aba ou o app não desloga.

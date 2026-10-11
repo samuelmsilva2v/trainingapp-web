@@ -139,7 +139,7 @@
             <label class="campo">
               <span class="legenda">Nova senha</span>
               <input type="password" maxlength="72" autocomplete="new-password" [value]="novaSenha()" (input)="novaSenha.set($any($event.target).value)" />
-              <span class="suave dica">Mínimo de 8 caracteres.</span>
+              <app-forca-senha [senha]="novaSenha()" />
             </label>
             <div class="linha">
               <button type="button" class="btn btn-secundario" (click)="trocandoSenha.set(false)">Cancelar</button>

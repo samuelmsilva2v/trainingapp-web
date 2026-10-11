@@ -1,23 +1,45 @@
-<main class="pagina">
+<ng-template #botaoGoogle>
+  <button type="button" class="botao-google" [class.compacto]="modo === 'cadastrar'" [disabled]="entrandoComGoogle()"
+          (click)="entrarComGoogle()">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" fill="#EA4335"/>
+      <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" fill="#4285F4"/>
+      <path d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.1-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z" fill="#FBBC05"/>
+      <path d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 17C3.7 20.7 7.5 24 12 24z" fill="#34A853"/>
+    </svg>
+    <span>{{ entrandoComGoogle() ? 'Entrando…' : modo === 'cadastrar' ? 'Cadastrar com Google' : 'Continuar com Google' }}</span>
+  </button>
+</ng-template>
+
+<main class="pagina" [class.cadastro]="modo === 'cadastrar'">
   <div class="brilho" aria-hidden="true"></div>
 
-  <header class="marca">
-    <span class="logo" aria-hidden="true"><span class="icone cheio">bolt</span></span>
-    <span class="selo"><span class="icone" aria-hidden="true">fitness_center</span> Tank Top Protocol</span>
-    <h1 class="nome">Training<span>App</span></h1>
-    <p class="suave">Seu diário de alta performance na musculação e controle milimétrico de carga.</p>
-  </header>
+  @if (modo === 'cadastrar') {
+    <header class="topo-cadastro">
+      <span class="marca-pequena">Training<span>App</span></span>
+      <h1 class="titulo-cadastro">Criar nova conta</h1>
+      <p class="suave">Registre cada quilo, supere suas cargas e atinja novos recordes pessoais.</p>
+    </header>
+  } @else {
+    <header class="marca">
+      <span class="logo" aria-hidden="true"><span class="icone cheio">bolt</span></span>
+      <span class="selo"><span class="icone" aria-hidden="true">fitness_center</span> Tank Top Protocol</span>
+      <h1 class="nome">Training<span>App</span></h1>
+      <p class="suave">Seu diário de alta performance na musculação e controle milimétrico de carga.</p>
+    </header>
+  }
 
   <section class="conteudo" aria-live="polite">
-    <h2 class="titulo" [class.so-leitor]="modo === 'entrar'">
-      @switch (modo) {
-        @case ('entrar') { Entrar }
-        @case ('cadastrar') { Criar conta }
-        @case ('esqueci') { Esqueci a senha }
-        @case ('redefinir') { Nova senha }
-        @case ('confirmar') { Confirmar e-mail }
-      }
-    </h2>
+    @if (modo !== 'cadastrar') {
+      <h2 class="titulo" [class.so-leitor]="modo === 'entrar'">
+        @switch (modo) {
+          @case ('entrar') { Entrar }
+          @case ('esqueci') { Esqueci a senha }
+          @case ('redefinir') { Nova senha }
+          @case ('confirmar') { Confirmar e-mail }
+        }
+      </h2>
+    }
 
     @if (aviso(); as mensagem) {
       <p class="sucesso" role="status">{{ mensagem }}</p>
@@ -36,14 +58,19 @@
         <p class="suave">Informe o e-mail da conta e enviaremos um link para criar uma nova senha.</p>
       }
 
+      @if (modo === 'cadastrar' && googleAtivo()) {
+        <ng-container [ngTemplateOutlet]="botaoGoogle" />
+        <p class="ou" aria-hidden="true"><span>ou cadastre com seu e-mail</span></p>
+      }
+
       <form (submit)="$event.preventDefault(); enviar()">
         @if (modo === 'cadastrar') {
           <div class="campo">
-            <label class="legenda" for="campo-nome">Nome</label>
+            <label class="legenda" for="campo-nome">Como quer ser chamado</label>
             <div class="entrada">
               <span class="icone" aria-hidden="true">person</span>
-              <input id="campo-nome" type="text" maxlength="100" autocomplete="name" [value]="nome()"
-                     (input)="nome.set($any($event.target).value)" />
+              <input id="campo-nome" type="text" maxlength="100" autocomplete="name" placeholder="Ex.: Lucas Barbell"
+                     [value]="nome()" (input)="nome.set($any($event.target).value)" />
             </div>
           </div>
         }
@@ -51,9 +78,10 @@
           <div class="campo">
             <label class="legenda" for="campo-email">E-mail</label>
             <div class="entrada">
-              <span class="icone" aria-hidden="true">alternate_email</span>
+              <span class="icone" aria-hidden="true">{{ modo === 'cadastrar' ? 'mail' : 'alternate_email' }}</span>
               <input id="campo-email" type="email" maxlength="254" autocomplete="email" inputmode="email"
-                     placeholder="atleta@trainingapp.com" [value]="email()" (input)="email.set($any($event.target).value)" />
+                     [placeholder]="modo === 'cadastrar' ? 'seu@email.com' : 'atleta@trainingapp.com'"
+                     [value]="email()" (input)="email.set($any($event.target).value)" />
             </div>
           </div>
         }
@@ -69,23 +97,50 @@
               <span class="icone" aria-hidden="true">lock</span>
               <input id="campo-senha" [type]="mostrarSenha() ? 'text' : 'password'" maxlength="72"
                      [attr.autocomplete]="modo === 'entrar' ? 'current-password' : 'new-password'"
-                     placeholder="••••••••••••" [value]="senha()" (input)="senha.set($any($event.target).value)" />
+                     [placeholder]="modo === 'entrar' ? '••••••••••••' : 'Mínimo 8 caracteres'"
+                     [value]="senha()" (input)="senha.set($any($event.target).value)" />
               <button type="button" class="olho" [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Revelar senha'"
                       [attr.aria-pressed]="mostrarSenha()" (click)="mostrarSenha.set(!mostrarSenha())">
                 <span class="icone" aria-hidden="true">{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</span>
               </button>
             </div>
             @if (modo !== 'entrar') {
-              <span class="dica suave">Mínimo de 8 caracteres.</span>
+              <app-forca-senha [senha]="senha()" />
             }
           </div>
+        }
+        @if (modo === 'cadastrar' || modo === 'redefinir') {
+          <div class="campo">
+            <label class="legenda" for="campo-confirmacao">Confirmar senha</label>
+            <div class="entrada">
+              <span class="icone" aria-hidden="true">lock_reset</span>
+              <input id="campo-confirmacao" [type]="mostrarConfirmacao() ? 'text' : 'password'" maxlength="72"
+                     autocomplete="new-password" placeholder="Digite a senha novamente"
+                     [value]="confirmacao()" (input)="confirmacao.set($any($event.target).value)" />
+              <button type="button" class="olho" [attr.aria-label]="mostrarConfirmacao() ? 'Ocultar confirmação da senha' : 'Revelar confirmação da senha'"
+                      [attr.aria-pressed]="mostrarConfirmacao()" (click)="mostrarConfirmacao.set(!mostrarConfirmacao())">
+                <span class="icone" aria-hidden="true">{{ mostrarConfirmacao() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+            @if (confirmacao() && !conferem()) {
+              <p class="nao-confere" role="alert"><span class="icone" aria-hidden="true">warning</span> As senhas não conferem.</p>
+            }
+          </div>
+        }
+        @if (modo === 'cadastrar') {
+          <!-- Enfeite por enquanto: ainda não há páginas de termos e privacidade nem registro do aceite; só impede avançar sem marcar. -->
+          <label class="termos">
+            <input type="checkbox" class="so-leitor" [checked]="termos()" (change)="termos.set($any($event.target).checked)" />
+            <span class="caixa-termos" aria-hidden="true"><span class="icone">check</span></span>
+            <span>Concordo com os <span class="link-falso">Termos de Uso</span> e <span class="link-falso">Política de Privacidade</span>.</span>
+          </label>
         }
 
         @if (erro()) {
           <p class="erro" role="alert">{{ erro() }}</p>
         }
 
-        <button type="submit" class="btn btn-primario enviar" [disabled]="!valido() || enviando()">
+        <button type="submit" class="btn btn-primario enviar" [class.grande]="modo === 'cadastrar'" [disabled]="!valido() || enviando()">
           @if (enviando()) {
             <span class="icone girando" aria-hidden="true">progress_activity</span>
           } @else if (modo === 'entrar') {
@@ -93,25 +148,20 @@
           }
           @switch (modo) {
             @case ('entrar') { <span>{{ enviando() ? 'Autenticando…' : 'Entrar' }}</span> }
-            @case ('cadastrar') { <span>{{ enviando() ? 'Criando…' : 'Criar conta' }}</span> }
+            @case ('cadastrar') { <span>{{ enviando() ? 'Configurando perfil…' : 'Criar minha conta' }}</span> }
             @case ('esqueci') { <span>{{ enviando() ? 'Enviando…' : 'Enviar link' }}</span> }
             @case ('redefinir') { <span>{{ enviando() ? 'Salvando…' : 'Salvar nova senha' }}</span> }
+          }
+          @if (modo === 'cadastrar' && !enviando()) {
+            <span class="icone" aria-hidden="true">arrow_forward</span>
           }
         </button>
       </form>
     }
 
-    @if (!aviso() && googleAtivo() && (modo === 'entrar' || modo === 'cadastrar')) {
+    @if (!aviso() && googleAtivo() && modo === 'entrar') {
       <p class="ou" aria-hidden="true"><span>ou continue com</span></p>
-      <button type="button" class="botao-google" [disabled]="entrandoComGoogle()" (click)="entrarComGoogle()">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" fill="#EA4335"/>
-          <path d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" fill="#4285F4"/>
-          <path d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.1-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z" fill="#FBBC05"/>
-          <path d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 17C3.7 20.7 7.5 24 12 24z" fill="#34A853"/>
-        </svg>
-        <span>{{ entrandoComGoogle() ? 'Entrando…' : 'Continuar com Google' }}</span>
-      </button>
+      <ng-container [ngTemplateOutlet]="botaoGoogle" />
     }
 
     @if (modo === 'entrar') {
@@ -122,12 +172,14 @@
         </span>
         <a class="cadastre" routerLink="/cadastrar">Cadastre-se</a>
       </div>
+    } @else if (modo === 'cadastrar') {
+      <p class="ja-tem-conta">Já possui uma conta? <a routerLink="/entrar">Fazer Login</a></p>
     } @else {
       <nav class="links">
-        <a routerLink="/entrar">{{ modo === 'cadastrar' ? 'Já tenho conta' : 'Voltar ao login' }}</a>
+        <a routerLink="/entrar">Voltar ao login</a>
       </nav>
     }
   </section>
 
-  <footer class="rodape">TrainingApp • Umbrella Corp.</footer>
+  <footer class="rodape">TrainingApp • Umbrella Corp. ™</footer>
 </main>

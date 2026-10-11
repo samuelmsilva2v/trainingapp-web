@@ -100,7 +100,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   > .icone { position: absolute; left: 16px; font-size: 20px; color: var(--c-texto-2); pointer-events: none; }
 }
 
-input {
+.entrada input {
   width: 100%;
   height: 56px;
   padding: 0 52px 0 48px;
@@ -218,4 +218,58 @@ a.btn { text-decoration: none; }
   letter-spacing: 0.05em;
   color: var(--c-texto-2);
   opacity: 0.5;
+}
+
+/* Cadastro (Stitch "Criar Conta"). */
+.cadastro .legenda { text-transform: none; letter-spacing: normal; font-weight: 500; }
+
+.topo-cadastro { position: relative; display: flex; flex-direction: column; gap: 4px; p { margin-top: 4px; } }
+.marca-pequena { margin-bottom: 8px; font: 600 16px/24px var(--fonte-titulo); letter-spacing: -0.01em; text-transform: uppercase; span { color: var(--c-primaria); } }
+.titulo-cadastro { margin: 0; font: 700 32px/40px var(--fonte-titulo); letter-spacing: -0.02em; text-transform: uppercase; }
+
+.nao-confere { margin: 0; display: flex; align-items: center; gap: 4px; color: var(--c-secundaria); font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; .icone { font-size: 14px; } }
+
+.termos {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font: 400 14px/20px 'Inter', sans-serif;
+  color: var(--c-texto);
+}
+.caixa-termos {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border-radius: 8px;
+  background: var(--c-sup-3);
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  .icone { font-size: 18px; }
+}
+.termos input:checked + .caixa-termos { background: var(--c-primaria); color: var(--c-fundo); }
+.termos input:focus-visible + .caixa-termos { outline: 2px solid var(--c-primaria); outline-offset: 2px; }
+.link-falso { color: var(--c-primaria); font-weight: 600; }
+
+.enviar.grande { gap: 8px; font: 600 20px/28px var(--fonte-titulo); letter-spacing: 0.02em; .icone { font-size: 24px; } }
+
+.botao-google.compacto {
+  background: var(--c-sup-3);
+  gap: 8px;
+  font: 700 14px/20px 'Inter', sans-serif;
+  letter-spacing: 0.02em;
+  &:hover:not(:disabled), &:active:not(:disabled) { background: var(--c-sup-4); }
+  &:active:not(:disabled) { transform: scale(0.98); }
+}
+
+.ja-tem-conta {
+  margin: 8px 0 0;
+  text-align: center;
+  color: var(--c-texto-2);
+  a { margin-left: 4px; color: var(--c-primaria); font: 700 16px/24px 'Inter', sans-serif; text-decoration: none; &:hover { text-decoration: underline; } }
 }
