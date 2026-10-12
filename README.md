@@ -6,9 +6,10 @@ Gerado com [Angular CLI](https://github.com/angular/angular-cli) 21.2.6.
 
 ## Stack
 
-- Angular 21 (standalone, routing, SCSS)
+- Angular 21 (standalone, routing, SCSS) e Angular Material
 - TypeScript
 - Vitest (testes unitários)
+- Só pt-BR, mobile-first (design Iron Pulse, do Stitch)
 
 ## Desenvolvimento
 
@@ -23,6 +24,23 @@ Acesse `http://localhost:4200/`. A API (`trainingapp-api`) precisa estar rodando
 
 As telas `/entrar`, `/cadastrar`, `/esqueci-senha`, `/redefinir-senha` e `/confirmar-email` (esta e a anterior são abertas pelo link do e-mail) ficam em `src/app/auth`; as demais rotas exigem login (`autenticadoGuard`). O access token (15 min) fica só em memória e o interceptor o renova sozinho; a sessão longa é o cookie HttpOnly de refresh, então fechar o app não desloga. O botão "Entrar com Google" só aparece se a API tiver `trainingapp.auth.google-client-id` configurado.
 
+## Telas
+
+Rotas em `src/app/app.routes.ts`, todas carregadas sob demanda. As quatro primeiras ficam dentro da casca com a navegação por abas (`layout/casca`).
+
+| Rota | Pasta | O que mostra |
+| --- | --- | --- |
+| `/hoje` | `hoje` | Próximo dia da rotação do plano ativo: iniciar, retomar o treino em andamento ou pular o dia |
+| `/planos` | `planos/lista` | Seus planos; ativar um |
+| `/historico` | `historico` | Treinos concluídos e abandonados, por período, com volume e recordes |
+| `/perfil` | `perfil` | Nome, nível, XP e conquistas; trocar senha, excluir conta e sair |
+| `/planos/novo`, `/planos/:id` | `planos/plano-editor` | Editor do plano (dias, exercícios, séries, reps e carga), com o seletor de exercícios do catálogo e o cadastro de exercício próprio |
+| `/treino` | `treino` | Execução da sessão: registra as cargas e reps reais e, ao concluir, mostra o XP ganho e os recordes |
+
+Estado e acesso à API ficam em `src/app/core` (stores com signals, interceptor de autenticação, modelos). Os modelos são escritos à mão em `core/modelos.ts`; ainda não há cliente gerado do OpenAPI.
+
+O treino em andamento fica só em memória, com o indicador Salvo/Salvando/Falha: uma mudança que ainda não foi enviada se perde ao fechar a aba. Persistir localmente e enviar em fila fica para a fase de PWA/offline.
+
 ## Fontes e ícones
 
 Inter, Outfit e Material Symbols ficam em `public/fonts` (subconjunto latin), para o app funcionar sem internet. O arquivo de ícones traz só os usados: ao usar um ícone novo, baixe de novo o CSS `https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&icon_names=<lista em ordem alfabética, separada por vírgula>` (com um User-Agent de navegador moderno), pegue o `.woff2` indicado no `src` e substitua `public/fonts/material-symbols.woff2`.
@@ -33,13 +51,21 @@ Inter, Outfit e Material Symbols ficam em `public/fonts` (subconjunto latin), pa
 ng test
 ```
 
+Para rodar uma vez e sair (como na CI): `npx ng test --watch=false`.
+
 ## Build
 
 ```bash
-ng build
+npm run build
 ```
 
-Os artefatos de build vão para `dist/`.
+Os artefatos de build vão para `dist/trainingapp-web/browser`. O build de produção tem orçamento de tamanho: um estilo grande demais quebra o build (e, por consequência, a imagem de deploy).
+
+A API serve esse diretório no perfil `online` e na imagem de produção, por isso o front e a API ficam na mesma origem.
+
+## CI
+
+`.github/workflows/ci.yml` roda os testes e o build a cada push na `master`. Um push aqui **não** implanta: o deploy é da esteira do `trainingapp-api` (`gh workflow run deploy.yml -R samuelmsilva2v/trainingapp-api`).
 
 ## Projeto irmão
 
