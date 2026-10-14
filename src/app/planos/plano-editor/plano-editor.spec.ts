@@ -31,7 +31,12 @@ describe('definirCampo', () => {
     expect(definirCampo(item, 'drops', null).drops).toBe(1);
   });
 
-  it('carga vazia ou zero vira sem carga alvo', () => {
+  it('no drop-set as reps são um número só (as da primeira etapa)', () => {
+    const r = definirCampo({ ...item, repsMin: 8, repsMax: 12 }, 'reps', 10);
+    expect([r.repsMin, r.repsMax]).toEqual([10, 10]);
+  });
+
+    it('carga vazia ou zero vira sem carga alvo', () => {
     expect(definirCampo(item, 'cargaAlvo', null).cargaAlvo).toBeNull();
     expect(definirCampo(item, 'cargaAlvo', 0).cargaAlvo).toBeNull();
   });

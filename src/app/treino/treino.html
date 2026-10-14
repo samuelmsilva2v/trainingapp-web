@@ -58,7 +58,7 @@
           }
         </div>
         <dl class="metas">
-          <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }}</dd></div>
+          <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }}</dd></div>
           <div><dt>Alvo</dt><dd class="num alvo">{{ ex.metaCarga === null ? '—' : kg(ex.metaCarga) + ' kg' }}</dd></div>
           <div><dt>Descanso</dt><dd class="num">{{ ex.metaDescansoSegundos === null ? '—' : ex.metaDescansoSegundos + 's' }}</dd></div>
         </dl>
@@ -88,7 +88,7 @@
                 <header class="atual-topo">
                   <span class="numero atual num">{{ k + 1 }}</span>
                   <span class="atual-titulo">Série atual</span>
-                  <span class="suave num atual-prev">Meta: {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }} reps</span>
+                  <span class="suave num atual-prev">Meta: {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }} reps</span>
                   @if (blocos().length > 1 && !serie.concluida) {
                     <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (k + 1)" (click)="removerSerie(b)">
                       <span class="icone" aria-hidden="true">delete</span>

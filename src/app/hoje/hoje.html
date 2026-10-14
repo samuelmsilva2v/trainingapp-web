@@ -60,7 +60,7 @@
                   <span class="ponto" [class.atual]="i === c.atual" [class.feito]="c.andamento && e.feitas === e.total" aria-hidden="true"></span>
                   {{ e.nome }}
                 </span>
-                <span class="meta num">{{ c.andamento ? e.feitas + '/' + e.total : e.series + ' × ' + e.repsMin + '–' + e.repsMax }}</span>
+                <span class="meta num">{{ c.andamento ? e.feitas + '/' + e.total : e.series + ' × ' + faixaReps(e.repsMin, e.repsMax) }}</span>
               </li>
             }
           </ul>
@@ -87,7 +87,7 @@
                 <li>
                   <span class="resumo-nome">{{ e.nome }}</span>
                   <span class="resumo-detalhe num">
-                    {{ e.series }} × {{ e.repsMin }}–{{ e.repsMax }}
+                    {{ e.series }} × {{ faixaReps(e.repsMin, e.repsMax) }}
                     @if (e.carga !== null) { · {{ kg(e.carga) }} kg }
                     @if (e.descanso !== null) { · {{ e.descanso }}s }
                     @if (c.andamento) { · {{ e.feitas }}/{{ e.total }} feitas }

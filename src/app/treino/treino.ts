@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
-import { cronometro, formatarCarga, formatarKg } from '../core/formatos';
+import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
 import { Anterior, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
@@ -38,6 +38,7 @@ export class Treino implements OnInit, OnDestroy {
   /** Kg sem casas decimais quando a carga é inteira (30), com vírgula só se vier quebrada (32,5). */
   protected readonly kg = (v: number): string => (Number.isInteger(v) ? String(v) : formatarCarga(v));
   protected readonly formatarKg = formatarKg;
+  protected readonly faixaReps = faixaReps;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
   protected readonly totalSeries = totalSeries;

@@ -4,6 +4,11 @@ export function formatarKg(valor: number): string {
   return KG.format(valor);
 }
 
+/** Faixa de reps da meta: "8–12", ou "10" quando mínimo e máximo são iguais (drop-set). */
+export function faixaReps(min: number, max: number): string {
+  return min === max ? String(min) : `${min}–${max}`;
+}
+
 export function formatarCarga(valor: number | null): string {
   return valor === null ? '—' : valor.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
 }

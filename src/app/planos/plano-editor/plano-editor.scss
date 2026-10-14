@@ -192,3 +192,5 @@ input.valor {
 /* Drop-set: interruptor à esquerda e, ligado, o número de drops à direita (linha inteira em qualquer largura). */
 .drops { min-height: 56px; .faixa { flex: 0 0 56px; } }
 .drops .alternar input:not(:checked) + .trilho { background: var(--c-sup-4); }
+.reps.unica { grid-template-columns: minmax(0, 1fr); }
+.dica-drops { font-size: 12px; }

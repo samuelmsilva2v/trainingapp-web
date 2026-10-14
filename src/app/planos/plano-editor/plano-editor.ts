@@ -8,7 +8,7 @@ import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
-import { MAX_DROPS } from '../../core/series';
+import { MAX_DROPS, repsDoDrop } from '../../core/series';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
@@ -33,6 +33,10 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       if (valor !== null) novo.repsMax = limitar(valor, REPS.min, REPS.max);
       novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
       break;
+    case 'reps':
+      // Drop-set: um número só (as reps da primeira etapa); os drops caem de 2 em 2 a partir dele.
+      if (valor !== null) novo.repsMin = novo.repsMax = limitar(valor, REPS.min, REPS.max);
+      break;
     case 'cargaAlvo':
       novo.cargaAlvo = valor === null || limparCarga(valor) <= 0 ? null : limparCarga(valor);
       break;
@@ -47,7 +51,7 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
   return novo;
 }
 
-type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'cargaAlvo' | 'descansoSegundos' | 'drops';
+type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'reps' | 'cargaAlvo' | 'descansoSegundos' | 'drops';
 
 @Component({
   selector: 'app-plano-editor',
@@ -225,9 +229,25 @@ export class PlanoEditor implements OnInit {
   }
 
   /** Incrementa/decrementa um campo (botões + e −). */
-  /** Interruptor "Drop-set": ligar começa com 1 drop em cada série; desligar volta às séries normais. */
+  /**
+   * Interruptor "Drop-set": ligar começa com 1 drop em cada série e troca a faixa de reps por um número só (o mínimo
+   * da faixa vira as reps da primeira etapa); desligar volta às séries normais.
+   */
   protected alternarDropSet(indice: number): void {
-    this.atualizarItem(indice, item => ({ ...item, drops: (item.drops ?? 0) > 0 ? 0 : 1 }));
+    this.atualizarItem(indice, item =>
+      (item.drops ?? 0) > 0 ? { ...item, drops: 0 } : { ...item, drops: 1, repsMax: item.repsMin },
+    );
+  }
+
+  /** Reps sugeridas de cada drop, para mostrar no card: 10 reps com 2 drops dá "8 e 6". */
+  protected repsDosDrops(item: ItemPlano): string {
+    const reps: number[] = [];
+    let atual: number | null = item.repsMin;
+    for (let d = 0; d < (item.drops ?? 0); d++) {
+      atual = repsDoDrop(atual);
+      if (atual !== null) reps.push(atual);
+    }
+    return reps.length > 1 ? reps.slice(0, -1).join(', ') + ' e ' + reps.at(-1) : String(reps[0] ?? '');
   }
 
   protected ajustar(indice: number, campo: CampoNumerico, sinal: 1 | -1): void {
@@ -241,6 +261,8 @@ export class PlanoEditor implements OnInit {
           return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
         case 'drops':
           return definirCampo(item, campo, (item.drops ?? 0) + sinal);
+        case 'reps':
+          return definirCampo(item, campo, item.repsMin + sinal);
         default:
           return definirCampo(item, campo, item[campo] + sinal);
       }
@@ -263,7 +285,8 @@ export class PlanoEditor implements OnInit {
   }
 
   private valorAtual(indice: number, campo: CampoNumerico): string {
-    const valor = this.dia().exercicios[indice][campo] ?? (campo === 'drops' ? 0 : null);
+    const item = this.dia().exercicios[indice];
+    const valor = (campo === 'reps' ? item.repsMin : item[campo]) ?? (campo === 'drops' ? 0 : null);
     return valor === null ? '' : this.texto(valor);
   }
 

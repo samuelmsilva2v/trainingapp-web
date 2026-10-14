@@ -6,7 +6,7 @@ import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { seriesFeitas, totalSeries } from '../core/series';
-import { duracaoMinutos, formatarDataRelativa } from '../core/formatos';
+import { duracaoMinutos, faixaReps, formatarDataRelativa } from '../core/formatos';
 
 interface ItemCartao {
   id: string | undefined;
@@ -86,6 +86,7 @@ export class HojeTela implements OnInit {
     };
   });
   protected readonly formatarDataRelativa = formatarDataRelativa;
+  protected readonly faixaReps = faixaReps;
 
   ngOnInit(): void {
     this.perfilApi.obter().subscribe({
