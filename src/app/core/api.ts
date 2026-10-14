@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { CofreRefresh } from './cofre';
 import {
   Acesso, Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Plano, PlanoRequest, PlanoResumo,
   SessaoLocal, SessaoResumo,
@@ -120,10 +121,22 @@ export class PerfilApi {
   }
 }
 
-/** Endpoints de login. O refresh token vai e volta no cookie HttpOnly, que o navegador cuida sozinho. */
+/**
+ * Endpoints de login. Na web o refresh token vai e volta no cookie HttpOnly, que o navegador cuida sozinho. No app
+ * Android não há cookie: o login pede o refresh no corpo (X-Cliente) e as outras chamadas o mandam no corpo.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   private readonly http = inject(HttpClient);
+  private readonly cofre = inject(CofreRefresh);
+
+  private get opcoesDoLogin(): { headers?: Record<string, string> } {
+    return this.cofre.noApp ? { headers: { 'X-Cliente': 'android' } } : {};
+  }
+
+  private get refresh(): { refresh?: string | null } {
+    return this.cofre.noApp ? { refresh: this.cofre.valor } : {};
+  }
 
   config(): Observable<{ googleClientId: string }> {
     return this.http.get<{ googleClientId: string }>(`${API_URL}/auth/config`);
@@ -138,20 +151,20 @@ export class AuthApi {
   }
 
   entrar(email: string, senha: string): Observable<Acesso> {
-    return this.http.post<Acesso>(`${API_URL}/auth/login`, { email, senha });
+    return this.http.post<Acesso>(`${API_URL}/auth/login`, { email, senha }, this.opcoesDoLogin);
   }
 
   /** O código de uso único que o popup do Google entregou; a API o troca por tokens. */
   entrarComGoogle(codigo: string): Observable<Acesso> {
-    return this.http.post<Acesso>(`${API_URL}/auth/google`, { codigo });
+    return this.http.post<Acesso>(`${API_URL}/auth/google`, { codigo }, this.opcoesDoLogin);
   }
 
   renovar(): Observable<Acesso> {
-    return this.http.post<Acesso>(`${API_URL}/auth/refresh`, {});
+    return this.http.post<Acesso>(`${API_URL}/auth/refresh`, this.refresh);
   }
 
   sair(): Observable<void> {
-    return this.http.post<void>(`${API_URL}/auth/sair`, {});
+    return this.http.post<void>(`${API_URL}/auth/sair`, this.refresh);
   }
 
   esqueciSenha(email: string): Observable<void> {
@@ -168,7 +181,7 @@ export class AuthApi {
   }
 
   trocarSenha(senhaAtual: string, novaSenha: string): Observable<void> {
-    return this.http.post<void>(`${API_URL}/auth/trocar-senha`, { senhaAtual, novaSenha });
+    return this.http.post<void>(`${API_URL}/auth/trocar-senha`, { senhaAtual, novaSenha, ...this.refresh });
   }
 }
 

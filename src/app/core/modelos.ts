@@ -187,6 +187,8 @@ export interface PerfilRequest {
 export interface Acesso {
   acesso: string;
   expiraEmSegundos: number;
+  /** Só no app Android (no navegador o refresh vem no cookie). */
+  refresh?: string;
 }
 
 export interface Conquista {

@@ -5,6 +5,7 @@ import { Router, UrlTree, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
 import { AuthStore, autenticadoGuard } from './auth';
 import { autenticacaoInterceptor } from './auth.interceptor';
+import { CofreRefresh } from './cofre';
 
 const NAO_AUTORIZADO = { status: 401, statusText: 'Unauthorized' };
 
@@ -114,6 +115,70 @@ describe('login (AuthStore + interceptor)', () => {
     const restaurando = auth.iniciar();
     mock.expectOne('/api/auth/refresh').error(new ProgressEvent('error'));
     await restaurando;
+    expect(auth.logado()).toBe(false);
+  });
+});
+
+describe('login no app Android (refresh no corpo e no cofre)', () => {
+  let mock: HttpTestingController;
+  let auth: AuthStore;
+  let cofre: { noApp: boolean; valor: string | null; carregar: () => Promise<void>; gravar: (v: string) => Promise<void>; apagar: () => Promise<void> };
+  let guardado: string | null;
+
+  beforeEach(() => {
+    guardado = null;
+    cofre = {
+      noApp: true,
+      valor: null,
+      carregar: async () => void (cofre.valor = guardado),
+      gravar: async v => void (cofre.valor = guardado = v),
+      apagar: async () => void (cofre.valor = guardado = null),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([autenticacaoInterceptor])),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: CofreRefresh, useValue: cofre },
+      ],
+    });
+    mock = TestBed.inject(HttpTestingController);
+    auth = TestBed.inject(AuthStore);
+  });
+
+  afterEach(() => mock.verify());
+
+  it('o login pede o refresh no corpo (X-Cliente), guarda no cofre e a renovação o manda no corpo', () => {
+    auth.entrar('a@b.com', 'senha').subscribe();
+    const login = mock.expectOne('/api/auth/login');
+    expect(login.request.headers.get('X-Cliente')).toBe('android');
+    login.flush({ acesso: 't1', expiraEmSegundos: 900, refresh: 'r1' });
+    expect(guardado).toBe('r1');
+
+    auth.renovar().subscribe();
+    const renovar = mock.expectOne('/api/auth/refresh');
+    expect(renovar.request.body).toEqual({ refresh: 'r1' });
+    renovar.flush({ acesso: 't2', expiraEmSegundos: 900 });
+    expect(guardado).toBe('r1'); // o refresh não rotaciona
+  });
+
+  it('ao abrir sem refresh guardado nem chama a API; com refresh, restaura o login', async () => {
+    await auth.iniciar();
+    expect(auth.logado()).toBe(false);
+
+    guardado = 'r1';
+    const restaurando = auth.iniciar();
+    await vi.waitFor(() => mock.expectOne('/api/auth/refresh').flush({ acesso: 't9', expiraEmSegundos: 900 }));
+    await restaurando;
+    expect(auth.logado()).toBe(true);
+  });
+
+  it('refresh recusado apaga o que estava no cofre', async () => {
+    guardado = 'vencido';
+    const restaurando = auth.iniciar();
+    await vi.waitFor(() => mock.expectOne('/api/auth/refresh').flush({}, NAO_AUTORIZADO));
+    await restaurando;
+    await vi.waitFor(() => expect(guardado).toBeNull());
     expect(auth.logado()).toBe(false);
   });
 });

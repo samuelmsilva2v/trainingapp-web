@@ -4,6 +4,7 @@ import { AuthApi, PerfilApi, mensagemDeErro } from '../core/api';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
+import { NO_APP } from '../core/cofre';
 import { GoogleCodigo, criarClienteGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -113,7 +114,8 @@ export class PerfilTela implements OnInit {
   /** Abre a confirmação. Na conta só do Google já prepara o popup, que o navegador só deixa abrir direto de um clique. */
   protected abrirExclusao(): void {
     this.excluindo.set(true);
-    if (this.temSenha() || this.clienteGoogle) return;
+    // No app o popup do Google não abre (web#34): conta só do Google ainda não consegue confirmar a exclusão por lá.
+    if (this.temSenha() || this.clienteGoogle || NO_APP) return;
     this.authApi.config().subscribe({
       next: ({ googleClientId }) => {
         if (!googleClientId) return;

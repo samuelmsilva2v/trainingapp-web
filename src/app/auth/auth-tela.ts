@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthApi, mensagemDeErro } from '../core/api';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
+import { NO_APP } from '../core/cofre';
 import { GoogleCodigo, criarClienteGoogle } from '../core/google';
 import { senhaForte } from '../core/senha';
 
@@ -131,6 +132,7 @@ export class AuthTela implements OnInit {
 
   /** O botão do Google só aparece se a API tiver client id e segredo configurados e o script do Google carregar. */
   private iniciarGoogle(): void {
+    if (NO_APP) return; // o Google bloqueia o popup dentro do app (WebView); o login nativo vem na web#34
     this.api.config().subscribe({
       next: ({ googleClientId }) => {
         if (!googleClientId) return;
