@@ -1,4 +1,4 @@
-import { blocos, cargaDoDrop, espelharDrops, linhasComRecorde, seriesFeitas, totalSeries } from './series';
+import { blocos, cargaDoDrop, espelharDrops, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries } from './series';
 import { ExercicioLocal, SerieLocal, SessaoLocal } from './modelos';
 
 const exercicio = (series: SerieLocal[]): ExercicioLocal => ({
@@ -28,6 +28,13 @@ describe('séries', () => {
   it('o drop segue o check da série normal, e drop sem repetição não conta', () => {
     const [, d1, d2, , d3] = espelharDrops([s(true, 10), s(false, 8, 'DROP'), s(false, null, 'DROP'), s(false, 10), s(true, 6, 'DROP')]);
     expect([d1.concluida, d2.concluida, d3.concluida]).toEqual([true, false, false]);
+  });
+
+  it('reps do drop: 2 a menos que a etapa anterior, no mínimo 1', () => {
+    expect(repsDoDrop(8)).toBe(6);
+    expect(repsDoDrop(6)).toBe(4);
+    expect(repsDoDrop(2)).toBe(1);
+    expect(repsDoDrop(null)).toBeNull();
   });
 
   it('carga do drop: 80% da anterior no múltiplo de 5 mais próximo, sempre abaixo dela', () => {

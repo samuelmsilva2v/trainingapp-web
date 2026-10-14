@@ -12,7 +12,7 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, seriesFeitas, totalSeries } from '../core/series';
+import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 
 const REPS_MAX = 1000;
@@ -249,12 +249,12 @@ export class Treino implements OnInit, OnDestroy {
     this.serieAberta.set(null);
   }
 
-  /** Drop novo no fim do bloco, com 80% da carga da última etapa (múltiplo de 5) e as reps mínimas da meta. */
+  /** Drop novo no fim do bloco, com 80% da carga da última etapa (múltiplo de 5) e 2 reps a menos que ela. */
   protected adicionarDrop(bloco: Bloco): void {
     if (bloco.drops.length >= MAX_DROPS) return;
     const fim = bloco.drops.at(-1) ?? bloco.inicio;
     this.store.atualizarExercicio(this.indice(), e => {
-      const drop = this.store.serieNova(e.metaRepsMin, cargaDoDrop(e.series[fim].carga), 'DROP');
+      const drop = this.store.serieNova(repsDoDrop(e.series[fim].reps), cargaDoDrop(e.series[fim].carga), 'DROP');
       return { ...e, series: [...e.series.slice(0, fim + 1), drop, ...e.series.slice(fim + 1)] };
     });
   }

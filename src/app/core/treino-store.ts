@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { SessoesApi, mensagemDeErro } from './api';
 import { DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
-import { cargaDoDrop, espelharDrops, seriesFeitas, totalSeries } from './series';
+import { cargaDoDrop, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
 
 export type StatusSincronia = 'salvo' | 'salvando' | 'erro';
 
@@ -84,15 +84,17 @@ export class TreinoStore {
     return { id: novoId(), reps, carga, concluida: false, tipo };
   }
 
-  /** As séries da meta, cada uma seguida dos drops planejados, com a carga sugerida em cadeia (80% da anterior). */
+  /** As séries da meta, cada uma seguida dos drops planejados, com carga e reps sugeridas em cadeia (80% e 2 a menos que a anterior). */
   private seriesDoPlano(item: ItemPlano): SerieLocal[] {
     const series: SerieLocal[] = [];
     for (let s = 0; s < item.series; s++) {
       series.push(this.serieNova(item.repsMin, item.cargaAlvo));
       let carga = item.cargaAlvo;
+      let reps: number | null = item.repsMin;
       for (let d = 0; d < (item.drops ?? 0); d++) {
         carga = cargaDoDrop(carga);
-        series.push(this.serieNova(item.repsMin, carga, 'DROP'));
+        reps = repsDoDrop(reps);
+        series.push(this.serieNova(reps, carga, 'DROP'));
       }
     }
     return series;
