@@ -3,8 +3,10 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
+import { IntegracaoAndroid } from './core/android';
 import { AuthStore } from './core/auth';
 import { autenticacaoInterceptor } from './core/auth.interceptor';
+import { NO_APP } from './core/cofre';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,5 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([autenticacaoInterceptor])),
     // Antes da primeira rota: restaura o login pelo cookie, para o guard já saber se há sessão.
     provideAppInitializer(() => inject(AuthStore).iniciar()),
+    provideAppInitializer(() => {
+      if (NO_APP) inject(IntegracaoAndroid).iniciar();
+    }),
   ]
 };

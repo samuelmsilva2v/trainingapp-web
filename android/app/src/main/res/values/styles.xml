@@ -18,5 +18,7 @@
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <!-- Splash do sistema (Android 12+) no fundo escuro do app, sem clarão antes da primeira tela. -->
+        <item name="windowSplashScreenBackground">#121416</item>
     </style>
 </resources>

@@ -80,6 +80,10 @@ Os dois scripts (`scripts/android.mjs`) geram o front, rodam `cap sync` e `cap r
 - **`android:dev`:** usa `environment.android-dev.ts` (`http://10.0.2.2:8080/api`; no emulador, `10.0.2.2` é o `127.0.0.1` do PC) e libera HTTP sem TLS e conteúdo misto, porque a página do app é `https://localhost`. Essa liberação só existe no dev.
 - **`android`:** usa `environment.android.ts`. A API precisa aceitar a origem `https://localhost` no CORS.
 
+- **Ícone e splash:** gerados de `assets/logo.svg` (o raio do logo) com `npx @capacitor/assets generate --android --iconBackgroundColor '#121416' --iconBackgroundColorDark '#121416' --splashBackgroundColor '#121416' --splashBackgroundColorDark '#121416'`. O fundo do splash do sistema (Android 12+) é o `windowSplashScreenBackground` em `android/app/src/main/res/values/styles.xml`.
+- **Barras do sistema e áreas seguras:** o `SystemBars` do Capacitor deixa os ícones claros e injeta as variáveis `--safe-area-inset-*` (o `env()` falha em WebViews antigos); os estilos usam `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`.
+- **Voltar do sistema** (`core/android.ts`): fecha o diálogo aberto; nas abas Planos, Histórico e Perfil vai para Hoje; em Hoje e na tela de login fecha o app; nas outras telas volta uma.
+
 Enquanto o Android v1 está na branch `android-v1`, a produção ainda não tem o CORS nem o refresh no corpo. Por isso, desenvolva com `android:dev`. A web não muda: `environment.ts` continua com `/api` na mesma origem.
 
 ## CI

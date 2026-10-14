@@ -7,7 +7,7 @@
   inset: 0 0 auto 0;
   z-index: 50;
   height: 64px;
-  padding: env(safe-area-inset-top, 0) 12px 0 8px;
+  padding: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) 12px 0 8px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -207,7 +207,7 @@
   position: fixed;
   inset: auto 0 0 0;
   z-index: 40;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   background: var(--c-sup-1);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.5);
 }
@@ -234,7 +234,7 @@
   z-index: 70;
   max-width: 640px;
   margin: 0 auto;
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0));
+  padding: 16px 16px calc(16px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
   border-radius: var(--r-lg) var(--r-lg) 0 0;
   background: var(--c-sup-1);
   display: flex;
