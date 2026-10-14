@@ -92,8 +92,9 @@
   gap: 6px;
   li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-sup-3); }
   li.pulada { opacity: 0.5; }
-  li { flex-wrap: wrap; align-content: flex-start; }
-  .etapa-drop { flex-basis: 100%; text-align: right; color: var(--c-secundaria); }
+  li.com-drops { grid-column: 1 / -1; }
+  .etapas { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; column-gap: 10px; row-gap: 2px; }
+  .etapa-drop { display: inline-flex; align-items: center; gap: 2px; color: var(--c-secundaria); .icone { font-size: 16px; } }
 }
 
 .mais { width: 100%; margin-top: 16px; }

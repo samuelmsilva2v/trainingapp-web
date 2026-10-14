@@ -95,21 +95,22 @@
                         <!-- O drop-set é uma série só: os drops aparecem abaixo da série (↳ 65 kg × 8). -->
                         @for (b of blocos(e.series); track b.inicio; let k = $index) {
                           @let serie = e.series[b.inicio];
-                          <li [class.pulada]="!serie.concluida">
+                          <!-- Drop-set: a série ocupa a linha inteira e os drops seguem na mesma linha (65,0 × 6). -->
+                          <li [class.pulada]="!serie.concluida" [class.com-drops]="serie.concluida && b.drops.length > 0">
                             <span class="rotulo suave">S{{ k + 1 }}</span>
-                            <span class="num">
+                            <span class="etapas num">
                               @if (serie.concluida) {
-                                {{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}
+                                <span>{{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}</span>
+                                @for (d of b.drops; track d) {
+                                  @let drop = e.series[d];
+                                  @if (drop.concluida) {
+                                    <span class="etapa-drop" aria-label="Drop"><span class="icone" aria-hidden="true">trending_down</span>{{ drop.carga === null ? '—' : formatarCarga(drop.carga) }} × {{ drop.reps }}</span>
+                                  }
+                                }
                               } @else {
                                 não feita
                               }
                             </span>
-                            @for (d of b.drops; track d) {
-                              @let drop = e.series[d];
-                              @if (drop.concluida) {
-                                <span class="etapa-drop num" aria-label="Drop">↳ {{ drop.carga === null ? '—' : formatarCarga(drop.carga) + ' kg' }} × {{ drop.reps }}</span>
-                              }
-                            }
                           </li>
                         }
                       </ul>
