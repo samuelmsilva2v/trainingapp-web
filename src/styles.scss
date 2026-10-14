@@ -171,6 +171,8 @@ input, select { font: inherit; color: inherit; }
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+// Drop-set: o laranja de intensidade do Iron Pulse (falha, recorde, drop-set).
+.chip.drop { background: rgba(255, 107, 0, 0.15); color: #ff6b00; }
 
 // Diálogo em tela cheia (seletor de exercícios) e de confirmação
 .dialogo-cheio .mat-mdc-dialog-surface { border-radius: 0 !important; background: var(--c-fundo) !important; }

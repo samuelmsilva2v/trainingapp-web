@@ -92,6 +92,8 @@
   gap: 6px;
   li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-sup-3); }
   li.pulada { opacity: 0.5; }
+  li { flex-wrap: wrap; align-content: flex-start; }
+  .etapa-drop { flex-basis: 100%; text-align: right; color: var(--c-secundaria); }
 }
 
 .mais { width: 100%; margin-top: 16px; }

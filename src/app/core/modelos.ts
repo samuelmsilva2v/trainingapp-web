@@ -46,6 +46,8 @@ export interface ItemPlano {
   repsMax: number;
   cargaAlvo: number | null;
   descansoSegundos: number | null;
+  /** Drops (0 a 3) depois da última série; ausente vale 0. */
+  drops?: number;
 }
 
 export interface DiaPlano {
@@ -74,6 +76,7 @@ export interface PlanoRequest {
       repsMax: number;
       cargaAlvo: number | null;
       descansoSegundos: number | null;
+      drops: number;
     }[];
   }[];
 }
@@ -95,11 +98,17 @@ export interface Hoje {
   sessaoEmAndamento: SessaoLocal | null;
 }
 
+/** NORMAL abre um bloco; DROP é uma etapa do drop-set da série normal logo antes (o bloco é uma série só). */
+export type TipoSerie = 'NORMAL' | 'DROP';
+
 export interface SerieLocal {
   id: string;
   reps: number | null;
   carga: number | null;
+  /** O concluido de um drop segue o da série normal do bloco. */
   concluida: boolean;
+  /** Ausente vale NORMAL. */
+  tipo?: TipoSerie;
 }
 
 export interface ExercicioLocal {
@@ -115,6 +124,8 @@ export interface ExercicioLocal {
   metaRepsMax: number;
   metaCarga: number | null;
   metaDescansoSegundos: number | null;
+  /** Snapshot dos drops planejados na última série. */
+  metaDrops?: number;
   series: SerieLocal[];
   /** Só a API preenche: XP das séries concluídas deste exercício. */
   xp?: number;
@@ -144,7 +155,7 @@ export interface Anterior {
   exercicioId: string;
   sessaoId: string;
   iniciadaEm: string;
-  series: { ordem: number; reps: number | null; carga: number | null }[];
+  series: { ordem: number; reps: number | null; carga: number | null; tipo?: TipoSerie }[];
 }
 
 export interface SessaoResumo {

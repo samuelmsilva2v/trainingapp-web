@@ -49,7 +49,28 @@ describe('TreinoStore', () => {
 
   const marcarReps = (reps: number) => store.atualizarSerie(0, 0, s => ({ ...s, reps }));
 
-  it('várias mudanças rápidas geram um envio com o último estado', async () => {
+  it('iniciar monta os drops do plano depois da última série, com a carga em cadeia', async () => {
+    await store.iniciar('p1', 'Plano', {
+      id: 'd1', nome: 'A', ordem: 0,
+      exercicios: [{ exercicioId: 'x1', exercicioNome: 'Supino', grupoMuscular: 'PEITO', equipamento: 'BARRA',
+        series: 2, repsMin: 8, repsMax: 12, cargaAlvo: 100, descansoSegundos: 90, drops: 2 }],
+    });
+    const ex = store.sessao()!.exercicios[0];
+    expect(ex.metaDrops).toBe(2);
+    expect(ex.series.map(x => [x.tipo, x.carga, x.reps])).toEqual([
+      ['NORMAL', 100, 8], ['NORMAL', 100, 8], ['DROP', 80, 8], ['DROP', 65, 8],
+    ]);
+    expect(store.totalSeries()).toBe(2);
+  });
+
+  it('concluir a série conclui os drops dela (o drop-set é uma série só)', () => {
+    store.atualizarExercicio(0, e => ({ ...e, series: [...e.series, { id: 'r2', reps: 6, carga: 45, concluida: false, tipo: 'DROP' }] }));
+    store.atualizarSerie(0, 0, x => ({ ...x, concluida: true }));
+    expect(store.sessao()!.exercicios[0].series[1].concluida).toBe(true);
+    expect(store.seriesConcluidas()).toBe(1);
+  });
+
+    it('várias mudanças rápidas geram um envio com o último estado', async () => {
     marcarReps(9);
     marcarReps(10);
     marcarReps(11);

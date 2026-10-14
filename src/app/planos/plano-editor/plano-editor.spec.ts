@@ -24,6 +24,13 @@ describe('definirCampo', () => {
     expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999.99);
   });
 
+  it('drops na última série vão de 0 a 3', () => {
+    expect(definirCampo(item, 'drops', 2).drops).toBe(2);
+    expect(definirCampo(item, 'drops', 7).drops).toBe(3);
+    expect(definirCampo(item, 'drops', -1).drops).toBe(0);
+    expect(definirCampo(item, 'drops', null).drops).toBe(0);
+  });
+
   it('carga vazia ou zero vira sem carga alvo', () => {
     expect(definirCampo(item, 'cargaAlvo', null).cargaAlvo).toBeNull();
     expect(definirCampo(item, 'cargaAlvo', 0).cargaAlvo).toBeNull();

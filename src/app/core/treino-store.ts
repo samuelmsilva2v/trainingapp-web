@@ -1,7 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { SessoesApi, mensagemDeErro } from './api';
-import { DiaHoje, EstadoSessao, ExercicioLocal, SerieLocal, SessaoLocal } from './modelos';
+import { DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
+import { cargaDoDrop, espelharDrops, seriesFeitas, totalSeries } from './series';
 
 export type StatusSincronia = 'salvo' | 'salvando' | 'erro';
 
@@ -27,10 +28,10 @@ export class TreinoStore {
   readonly erro = signal<string | null>(null);
 
   readonly seriesConcluidas = computed(() =>
-    (this.sessao()?.exercicios ?? []).reduce((n, e) => n + e.series.filter(s => s.concluida).length, 0),
+    (this.sessao()?.exercicios ?? []).reduce((n, e) => n + seriesFeitas(e), 0),
   );
   readonly totalSeries = computed(() =>
-    (this.sessao()?.exercicios ?? []).reduce((n, e) => n + e.series.length, 0),
+    (this.sessao()?.exercicios ?? []).reduce((n, e) => n + totalSeries(e), 0),
   );
 
   private temporizador: ReturnType<typeof setTimeout> | null = null;
@@ -70,7 +71,8 @@ export class TreinoStore {
         metaRepsMax: item.repsMax,
         metaCarga: item.cargaAlvo,
         metaDescansoSegundos: item.descansoSegundos,
-        series: Array.from({ length: item.series }, () => this.serieNova(item.repsMin, item.cargaAlvo)),
+        metaDrops: item.drops ?? 0,
+        series: this.seriesDoPlano(item),
       })),
     };
     await firstValueFrom(this.api.salvar(sessao));
@@ -78,8 +80,19 @@ export class TreinoStore {
     this.status.set('salvo');
   }
 
-  serieNova(reps: number | null, carga: number | null): SerieLocal {
-    return { id: novoId(), reps, carga, concluida: false };
+  serieNova(reps: number | null, carga: number | null, tipo: TipoSerie = 'NORMAL'): SerieLocal {
+    return { id: novoId(), reps, carga, concluida: false, tipo };
+  }
+
+  /** As séries da meta e, depois da última, os drops planejados com a carga sugerida em cadeia (80% da anterior). */
+  private seriesDoPlano(item: ItemPlano): SerieLocal[] {
+    const series = Array.from({ length: item.series }, () => this.serieNova(item.repsMin, item.cargaAlvo));
+    let carga = item.cargaAlvo;
+    for (let i = 0; i < (item.drops ?? 0); i++) {
+      carga = cargaDoDrop(carga);
+      series.push(this.serieNova(item.repsMin, carga, 'DROP'));
+    }
+    return series;
   }
 
   /** Aplica a mudança localmente e agenda o envio. */
@@ -97,7 +110,11 @@ export class TreinoStore {
   atualizarExercicio(indice: number, mudanca: (e: ExercicioLocal) => ExercicioLocal): void {
     this.atualizar(s => ({
       ...s,
-      exercicios: s.exercicios.map((e, i) => (i === indice ? mudanca(e) : e)),
+      exercicios: s.exercicios.map((e, i) => {
+        if (i !== indice) return e;
+        const novo = mudanca(e);
+        return { ...novo, series: espelharDrops(novo.series) };
+      }),
     }));
   }
 

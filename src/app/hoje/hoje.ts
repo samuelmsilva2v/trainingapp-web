@@ -5,6 +5,7 @@ import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
+import { seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, formatarDataRelativa } from '../core/formatos';
 
 interface ItemCartao {
@@ -66,7 +67,7 @@ export class HojeTela implements OnInit {
       const itens = s.exercicios.map(e => ({
         id: e.id, nome: e.nome, series: e.metaSeries, repsMin: e.metaRepsMin, repsMax: e.metaRepsMax,
         carga: e.metaCarga, descanso: e.metaDescansoSegundos,
-        feitas: e.series.filter(x => x.concluida).length, total: e.series.length,
+        feitas: seriesFeitas(e), total: totalSeries(e),
       }));
       return {
         andamento: true, titulo: s.diaNome, ordem: s.diaOrdem, iniciadaEm: s.iniciadaEm, itens,

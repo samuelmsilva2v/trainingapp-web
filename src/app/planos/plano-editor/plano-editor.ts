@@ -8,6 +8,7 @@ import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
+import { MAX_DROPS } from '../../core/series';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
@@ -38,11 +39,14 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
     case 'descansoSegundos':
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
       break;
+    case 'drops':
+      novo.drops = limitar(valor ?? 0, 0, MAX_DROPS);
+      break;
   }
   return novo;
 }
 
-type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'cargaAlvo' | 'descansoSegundos';
+type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'cargaAlvo' | 'descansoSegundos' | 'drops';
 
 @Component({
   selector: 'app-plano-editor',
@@ -229,6 +233,8 @@ export class PlanoEditor implements OnInit {
           return definirCampo(item, campo, passoCarga(item.cargaAlvo, sinal));
         case 'descansoSegundos':
           return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
+        case 'drops':
+          return definirCampo(item, campo, (item.drops ?? 0) + sinal);
         default:
           return definirCampo(item, campo, item[campo] + sinal);
       }
@@ -251,7 +257,7 @@ export class PlanoEditor implements OnInit {
   }
 
   private valorAtual(indice: number, campo: CampoNumerico): string {
-    const valor = this.dia().exercicios[indice][campo];
+    const valor = this.dia().exercicios[indice][campo] ?? (campo === 'drops' ? 0 : null);
     return valor === null ? '' : this.texto(valor);
   }
 
@@ -275,6 +281,7 @@ export class PlanoEditor implements OnInit {
           repsMax: i.repsMax,
           cargaAlvo: i.cargaAlvo,
           descansoSegundos: i.descansoSegundos,
+          drops: i.drops ?? 0,
         })),
       })),
     };

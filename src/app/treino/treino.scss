@@ -264,3 +264,21 @@
   .dados { flex-shrink: 0; white-space: nowrap; }
   .trofeu { margin-left: 4px; }
 }
+
+// Drop-set: etapas recuadas dentro do bloco, sem número e sem check próprio (o check da série vale para o bloco).
+.drop-atual {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-left: 16px; padding-left: 10px;
+  border-left: 2px solid rgba(255, 107, 0, 0.35);
+  .controle { gap: 2px; button { width: 36px; height: 44px; } input { height: 44px; font-size: 20px; } }
+  .stepper { padding: 6px; }
+}
+.mais-drop { align-self: flex-start; margin-left: 16px; }
+.drop-resumo {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 8px;
+  padding-left: 40px;
+  color: var(--c-texto-2);
+  font: 700 15px/20px var(--fonte-titulo);
+}
+.linha.feita .drop-resumo { color: var(--c-texto); }

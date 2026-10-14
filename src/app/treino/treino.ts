@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,13 +12,14 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { linhasComRecorde, seriesFeitas } from '../core/series';
+import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, seriesFeitas, totalSeries } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 
 const REPS_MAX = 1000;
 
 @Component({
   selector: 'app-treino',
+  imports: [NgTemplateOutlet],
   templateUrl: './treino.html',
   styleUrl: './treino.scss',
 })
@@ -38,6 +40,8 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly formatarKg = formatarKg;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
+  protected readonly totalSeries = totalSeries;
+  protected readonly maxDrops = MAX_DROPS;
   /** Sessão como a API a vê agora, com o XP que o treino renderia se fosse concluído (exato, calculado pela API). */
   protected readonly previa = signal<SessaoLocal | null>(null);
   protected readonly linhasComRecorde = computed(() => {
@@ -51,15 +55,21 @@ export class Treino implements OnInit, OnDestroy {
 
   protected readonly carregando = signal(true);
   protected readonly indice = signal(0);
-  /** Série aberta para edição; null = a primeira ainda não feita. */
+  /** Série (bloco: a série normal e os drops dela) aberta para edição; null = a primeira ainda não feita. */
   private readonly serieAberta = signal<number | null>(null);
   private readonly anteriores = signal<ReadonlyMap<string, Anterior>>(new Map());
-  protected readonly indiceAtivo = computed(() => {
+  /** O drop-set é uma série só: a tela anda de bloco em bloco, e cada bloco tem um check (o da série normal). */
+  protected readonly blocos = computed(() => {
     const series = this.exercicio()?.series ?? [];
+    return blocos(series).map(b => ({ ...b, id: series[b.inicio].id }));
+  });
+  protected readonly blocoAtivo = computed(() => {
+    const series = this.exercicio()?.series ?? [];
+    const lista = this.blocos();
     const aberta = this.serieAberta();
-    if (aberta !== null && aberta < series.length) return aberta;
-    const pendente = series.findIndex(s => !s.concluida);
-    return pendente === -1 ? series.length - 1 : pendente;
+    if (aberta !== null && aberta < lista.length) return aberta;
+    const pendente = lista.findIndex(b => !series[b.inicio].concluida);
+    return pendente === -1 ? lista.length - 1 : pendente;
   });
   protected readonly resumoAberto = signal(false);
   protected readonly encerrando = signal(false);
@@ -122,9 +132,18 @@ export class Treino implements OnInit, OnDestroy {
     });
   }
 
-  /** reps × carga da mesma série no último treino, ou null. */
+  /**
+   * reps × carga da mesma etapa no último treino, ou null: série normal casa com a série normal na mesma posição,
+   * e drop com o drop na mesma posição dentro dela.
+   */
   protected textoAnterior(ex: ExercicioLocal, indice: number): string | null {
-    const s = this.anteriores().get(ex.exercicioId)?.series[indice];
+    const series = this.anteriores().get(ex.exercicioId)?.series ?? [];
+    const atual = blocos(ex.series);
+    const k = atual.findIndex(b => b.inicio === indice || b.drops.includes(indice));
+    const outro = blocos(series)[k];
+    if (!outro) return null;
+    const d = atual[k].drops.indexOf(indice);
+    const s = series[d === -1 ? outro.inicio : outro.drops[d]];
     if (!s || s.reps === null) return null;
     return s.carga === null ? `${s.reps}` : `${s.reps} × ${this.kg(s.carga)}`;
   }
@@ -135,11 +154,11 @@ export class Treino implements OnInit, OnDestroy {
     const comCarga = series.filter(s => s.reps !== null && s.carga !== null);
     if (comCarga.length === 0) return null;
     const melhor = comCarga.reduce((m, s) => ((s.carga ?? 0) > (m.carga ?? 0) ? s : m));
-    return `${series.length} × ${melhor.reps} @ ${this.kg(melhor.carga ?? 0)} kg`;
+    return `${blocos(series).length} × ${melhor.reps} @ ${this.kg(melhor.carga ?? 0)} kg`;
   }
 
-  protected ativarSerie(indice: number): void {
-    this.serieAberta.set(indice);
+  protected ativarSerie(bloco: number): void {
+    this.serieAberta.set(bloco);
   }
 
   ngOnDestroy(): void {
@@ -198,10 +217,11 @@ export class Treino implements OnInit, OnDestroy {
     }));
   }
 
+  /** Check do bloco (na série normal): conclui o drop-set inteiro; o store copia o check para os drops. */
   protected alternarConcluida(serie: number): void {
     const ex = this.exercicio();
     const atual = ex?.series[serie];
-    if (!ex || !atual) return;
+    if (!ex || !atual || ehDrop(atual)) return;
     if (!atual.concluida && (atual.reps ?? 0) < 1) {
       this.aviso.open('Informe pelo menos 1 repetição para concluir a série.', undefined, { duration: 3000 });
       return;
@@ -215,16 +235,32 @@ export class Treino implements OnInit, OnDestroy {
 
   protected adicionarSerie(): void {
     this.store.atualizarExercicio(this.indice(), e => {
-      const ultima: SerieLocal | undefined = e.series[e.series.length - 1];
+      const ultima: SerieLocal | undefined = e.series.filter(s => !ehDrop(s)).at(-1);
       const nova = this.store.serieNova(ultima?.reps ?? e.metaRepsMin, ultima?.carga ?? e.metaCarga);
       return { ...e, series: [...e.series, nova] };
     });
-    this.serieAberta.set((this.exercicio()?.series.length ?? 1) - 1);
+    this.serieAberta.set(this.blocos().length - 1);
   }
 
-  protected removerSerie(serie: number): void {
-    this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: e.series.filter((_, i) => i !== serie) }));
+  /** Remove a série e os drops dela. */
+  protected removerSerie(bloco: Bloco): void {
+    const fora = new Set([bloco.inicio, ...bloco.drops]);
+    this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: e.series.filter((_, i) => !fora.has(i)) }));
     this.serieAberta.set(null);
+  }
+
+  /** Drop novo no fim do bloco, com 80% da carga da última etapa (múltiplo de 5) e as reps mínimas da meta. */
+  protected adicionarDrop(bloco: Bloco): void {
+    if (bloco.drops.length >= MAX_DROPS) return;
+    const fim = bloco.drops.at(-1) ?? bloco.inicio;
+    this.store.atualizarExercicio(this.indice(), e => {
+      const drop = this.store.serieNova(e.metaRepsMin, cargaDoDrop(e.series[fim].carga), 'DROP');
+      return { ...e, series: [...e.series.slice(0, fim + 1), drop, ...e.series.slice(fim + 1)] };
+    });
+  }
+
+  protected removerDrop(serie: number): void {
+    this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: e.series.filter((_, i) => i !== serie) }));
   }
 
   // --- descanso ---

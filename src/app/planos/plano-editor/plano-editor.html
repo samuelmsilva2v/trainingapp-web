@@ -125,6 +125,15 @@
                   <button type="button" aria-label="Mais descanso" (click)="ajustar(i, 'descansoSegundos', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>
+
+              <div class="stepper drops">
+                <span class="rotulo suave">Drops na última série</span>
+                <div class="controle">
+                  <button type="button" aria-label="Menos drops" (click)="ajustar(i, 'drops', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                  <input class="valor num" inputmode="numeric" aria-label="Drops na última série" [value]="item.drops ?? 0" (change)="digitar(i, 'drops', $event)" />
+                  <button type="button" aria-label="Mais drops" (click)="ajustar(i, 'drops', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                </div>
+              </div>
             </article>
           } @empty {
             <p class="vazio suave">Nenhum exercício neste dia ainda.</p>

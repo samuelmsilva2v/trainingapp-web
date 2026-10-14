@@ -80,42 +80,25 @@
             <span role="columnheader">Feito</span>
           </div>
 
-          @for (serie of ex.series; track serie.id; let i = $index) {
-            @if (i === indiceAtivo()) {
+          @for (b of blocos(); track b.id; let k = $index) {
+            @let serie = ex.series[b.inicio];
+            @let i = b.inicio;
+            @if (k === blocoAtivo()) {
               <article class="linha-atual" [class.feita]="serie.concluida" role="row">
                 <header class="atual-topo">
-                  <span class="numero atual num">{{ i + 1 }}</span>
+                  <span class="numero atual num">{{ k + 1 }}</span>
                   <span class="atual-titulo">Série atual</span>
                   <span class="suave num atual-prev">Meta: {{ ex.metaRepsMin }}–{{ ex.metaRepsMax }} reps</span>
-                  @if (ex.series.length > 1 && !serie.concluida) {
-                    <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (i + 1)" (click)="removerSerie(i)">
+                  @if (blocos().length > 1 && !serie.concluida) {
+                    <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (k + 1)" (click)="removerSerie(b)">
                       <span class="icone" aria-hidden="true">delete</span>
                     </button>
                   }
                 </header>
                 <div class="atual-corpo">
-                  <div class="steppers">
-                    <div class="stepper">
-                      <span class="rotulo suave">Reps</span>
-                      <div class="controle">
-                        <button type="button" aria-label="Menos uma repetição" (click)="ajustarReps(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                        <input class="num" type="number" inputmode="numeric" min="0" aria-label="Repetições"
-                               [value]="serie.reps ?? ''" (change)="digitarReps(i, $event)" />
-                        <button type="button" aria-label="Mais uma repetição" (click)="ajustarReps(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
-                      </div>
-                    </div>
-                    <div class="stepper">
-                      <span class="rotulo suave">Carga (kg)</span>
-                      <div class="controle">
-                        <button type="button" aria-label="Menos 2,5 kg" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                        <input class="num" type="number" inputmode="decimal" min="0" step="0.01" aria-label="Carga em quilos"
-                               [value]="serie.carga ?? ''" (change)="digitarCarga(i, $event)" />
-                        <button type="button" aria-label="Mais 2,5 kg" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
-                      </div>
-                    </div>
-                  </div>
+                  <ng-container *ngTemplateOutlet="steppers; context: { $implicit: serie, i: i }" />
                   <button type="button" class="check" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
-                          [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (i + 1)"
+                          [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (k + 1)"
                           (click)="alternarConcluida(i)">
                     <span class="icone" aria-hidden="true">{{ serie.concluida ? 'check' : 'radio_button_unchecked' }}</span>
                   </button>
@@ -123,18 +106,47 @@
                 @if (textoAnterior(ex, i); as prev) {
                   <p class="suave num atual-anterior">Anterior: {{ prev }} kg</p>
                 }
+                @for (d of b.drops; track d) {
+                  @let drop = ex.series[d];
+                  <div class="drop-atual">
+                    <header class="atual-topo">
+                      <span class="chip drop">Drop-set</span>
+                      @if (textoAnterior(ex, d); as prev) {
+                        <span class="suave num atual-prev">Anterior: {{ prev }} kg</span>
+                      } @else {
+                        <span class="atual-prev"></span>
+                      }
+                      <button type="button" class="btn-icone pequeno" aria-label="Remover drop" (click)="removerDrop(d)">
+                        <span class="icone" aria-hidden="true">close</span>
+                      </button>
+                    </header>
+                    <ng-container *ngTemplateOutlet="steppers; context: { $implicit: drop, i: d }" />
+                  </div>
+                }
+                @if (b.drops.length < maxDrops) {
+                  <button type="button" class="btn btn-secundario mais-drop" (click)="adicionarDrop(b)">
+                    <span class="icone" aria-hidden="true">add</span> Drop
+                  </button>
+                }
               </article>
             } @else {
               <div class="linha" [class.feita]="serie.concluida" role="row" tabindex="0"
-                   (click)="ativarSerie(i)" (keydown.enter)="ativarSerie(i)">
-                <span class="numero num" role="cell">{{ i + 1 }}</span>
+                   (click)="ativarSerie(k)" (keydown.enter)="ativarSerie(k)">
+                <span class="numero num" role="cell">{{ k + 1 }}</span>
                 <span class="valor num" role="cell">{{ serie.reps ?? '—' }}</span>
                 <span class="valor num" role="cell">{{ serie.carga === null ? '—' : kg(serie.carga) }}</span>
                 <button type="button" class="check mini" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
-                        [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (i + 1)"
+                        [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (k + 1)"
                         (click)="alternarConcluida(i); $event.stopPropagation()">
                   <span class="icone" aria-hidden="true">{{ serie.concluida ? 'check' : 'radio_button_unchecked' }}</span>
                 </button>
+                @for (d of b.drops; track d) {
+                  @let drop = ex.series[d];
+                  <span class="drop-resumo" role="cell">
+                    <span class="chip drop">Drop-set</span>
+                    <span class="num">{{ drop.reps ?? '—' }} × {{ drop.carga === null ? '—' : kg(drop.carga) + ' kg' }}</span>
+                  </span>
+                }
               </div>
             }
           }
@@ -149,7 +161,7 @@
         <button type="button" class="proximo" (click)="irPara(1)">
           <span class="icone" aria-hidden="true">playlist_play</span>
           <span class="texto"><span class="rotulo suave">A seguir</span><span class="nome">{{ prox.nome }}</span></span>
-          <span class="suave num">{{ prox.series.length }} séries</span>
+          <span class="suave num">{{ totalSeries(prox) }} séries</span>
         </button>
       }
     } @else {
@@ -193,7 +205,7 @@
           <li>
             <span class="nome">{{ e.nome }}</span>
             <span class="num suave dados">
-              {{ seriesFeitas(e) }}/{{ e.series.length }} · {{ xpDoExercicio(e) ?? '—' }} XP
+              {{ seriesFeitas(e) }}/{{ totalSeries(e) }} · {{ xpDoExercicio(e) ?? '—' }} XP
               @if (linhasComRecorde().has(e.id)) { <span class="trofeu" role="img" aria-label="Recorde">🏆</span> }
             </span>
           </li>
@@ -212,3 +224,27 @@
 } @else if (carregando()) {
   <p class="carregando suave" role="status">Carregando treino…</p>
 }
+
+<!-- Steppers de reps e carga de uma etapa (série normal ou drop). -->
+<ng-template #steppers let-serie let-i="i">
+  <div class="steppers">
+    <div class="stepper">
+      <span class="rotulo suave">Reps</span>
+      <div class="controle">
+        <button type="button" aria-label="Menos uma repetição" (click)="ajustarReps(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
+        <input class="num" type="number" inputmode="numeric" min="0" aria-label="Repetições"
+               [value]="serie.reps ?? ''" (change)="digitarReps(i, $event)" />
+        <button type="button" aria-label="Mais uma repetição" (click)="ajustarReps(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
+      </div>
+    </div>
+    <div class="stepper">
+      <span class="rotulo suave">Carga (kg)</span>
+      <div class="controle">
+        <button type="button" aria-label="Menos 2,5 kg" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
+        <input class="num" type="number" inputmode="decimal" min="0" step="0.01" aria-label="Carga em quilos"
+               [value]="serie.carga ?? ''" (change)="digitarCarga(i, $event)" />
+        <button type="button" aria-label="Mais 2,5 kg" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
+      </div>
+    </div>
+  </div>
+</ng-template>
