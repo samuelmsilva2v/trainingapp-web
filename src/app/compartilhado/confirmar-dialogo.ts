@@ -5,6 +5,10 @@ export interface ConfirmarDados {
   titulo: string;
   mensagem: string;
   confirmar: string;
+  /** Texto do botão que fecha sem confirmar (padrão "Cancelar"). */
+  cancelar?: string;
+  /** Confirmar sem ser uma ação destrutiva: botão na cor primária, não no vermelho de perigo. */
+  primario?: boolean;
 }
 
 @Component({
@@ -14,8 +18,9 @@ export interface ConfirmarDados {
       <h2 class="titulo-sm">{{ dados.titulo }}</h2>
       <p class="suave">{{ dados.mensagem }}</p>
       <div class="acoes">
-        <button type="button" class="btn btn-secundario" (click)="ref.close(false)">Cancelar</button>
-        <button type="button" class="btn btn-perigo" (click)="ref.close(true)">{{ dados.confirmar }}</button>
+        <button type="button" class="btn btn-secundario" (click)="ref.close(false)">{{ dados.cancelar ?? 'Cancelar' }}</button>
+        <button type="button" class="btn" [class.btn-perigo]="!dados.primario" [class.btn-primario]="dados.primario"
+                (click)="ref.close(true)">{{ dados.confirmar }}</button>
       </div>
     </div>
   `,

@@ -5,6 +5,7 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 import { App } from '@capacitor/app';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { alarmeExato, conferirAlarmeExato } from './alarme-exato';
 import { NO_APP } from './cofre';
 import { CANAL_LEMBRETE, reagendarLembretes } from './lembrete';
 
@@ -26,8 +27,15 @@ export class IntegracaoAndroid {
       .catch(() => undefined);
     void LocalNotifications.createChannel({ id: CANAL_LEMBRETE, name: 'Lembrete de treino', importance: 4, visibility: 1 })
       .catch(() => undefined);
-    // Os avisos são de 14 dias: abrir o app renova a janela.
-    void reagendarLembretes();
+    // Os avisos são de 14 dias: abrir o app renova a janela. Antes, confere se o alarme exato está permitido.
+    void conferirAlarmeExato().then(() => reagendarLembretes());
+    // A pessoa pode ter mudado "Alarmes e lembretes" nas configurações enquanto o app estava em segundo plano.
+    void App.addListener('resume', () => {
+      const antes = alarmeExato();
+      void conferirAlarmeExato().then(agora => {
+        if (agora !== antes) void reagendarLembretes();
+      });
+    });
   }
 
   /** Fecha o diálogo aberto; senão volta uma tela; só nas telas iniciais fecha o app. */
@@ -71,7 +79,7 @@ const CANAL_DESCANSO = 'descanso';
 
 /**
  * Avisa o fim do descanso por notificação local (só no app), para tocar com a tela bloqueada ou o app em segundo plano.
- * Sem alarme exato: o Android pode atrasar alguns segundos (a Play Store restringe a permissão de alarme exato).
+ * Exato quando "Alarmes e lembretes" está permitido (ver alarme-exato.ts); senão inexato, e o Android pode atrasar.
  * A permissão de notificação é pedida no primeiro agendamento; recusada, o cronômetro na tela segue valendo.
  */
 export async function agendarFimDoDescanso(fim: number, texto: string): Promise<void> {
@@ -85,8 +93,8 @@ export async function agendarFimDoDescanso(fim: number, texto: string): Promise<
           channelId: CANAL_DESCANSO,
           title: 'Descanso acabou',
           body: texto,
-          // Inexato de propósito: o padrão do plugin (exato) abre a tela de "Alarmes e lembretes" a cada descanso.
-          isExactNotification: false,
+          // Só exato com a permissão: sem ela, o plugin abriria a tela de "Alarmes e lembretes" a cada descanso.
+          isExactNotification: alarmeExato(),
           schedule: { at: new Date(fim), allowWhileIdle: true },
         },
       ],

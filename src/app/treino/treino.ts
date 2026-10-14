@@ -5,7 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { agendarFimDoDescanso, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
-import { atualizarContextoDoLembrete } from '../core/lembrete';
+import { alarmeExato, devePedirAlarmeExato, pedirAlarmeExato } from '../core/alarme-exato';
+import { atualizarContextoDoLembrete, reagendarLembretes } from '../core/lembrete';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
@@ -348,8 +349,38 @@ export class Treino implements OnInit, OnDestroy {
   private iniciarDescanso(segundos: number, texto: string): void {
     this.textoDescanso = texto;
     this.totalDescanso.set(segundos);
-    this.definirFimDescanso(Date.now() + segundos * 1000);
     this.agora.set(Date.now());
+    const fim = Date.now() + segundos * 1000;
+    if (devePedirAlarmeExato()) {
+      // Primeiro descanso no app: explica e pede o alarme exato antes de agendar (e antes do pedido de notificação do sistema).
+      this.fimDescanso.set(fim);
+      void this.explicarAlarmeExato();
+    } else {
+      this.definirFimDescanso(fim);
+    }
+  }
+
+  /** Uma vez só: sem "Alarmes e lembretes", o Android atrasa o aviso em até 75% do descanso. */
+  private async explicarAlarmeExato(): Promise<void> {
+    const permitir = await firstValueFrom(
+      this.dialogo
+        .open(ConfirmarDialogo, {
+          panelClass: 'dialogo-confirmar',
+          data: {
+            titulo: 'Aviso do descanso na hora certa',
+            mensagem:
+              'Para o aviso do fim do descanso chegar na hora, mesmo com a tela bloqueada, permita "Alarmes e lembretes" para o TrainingApp na próxima tela.',
+            confirmar: 'Permitir',
+            cancelar: 'Agora não',
+            primario: true,
+          },
+        })
+        .afterClosed(),
+      { defaultValue: false },
+    );
+    await pedirAlarmeExato(!!permitir);
+    this.definirFimDescanso(this.fimDescanso()); // agenda o descanso em curso (exato, se permitiu)
+    if (alarmeExato()) void reagendarLembretes();
   }
 
   /** Muda o fim do descanso na tela e na notificação do app (null encerra os dois). */

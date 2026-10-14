@@ -1,4 +1,5 @@
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { alarmeExato } from './alarme-exato';
 import { NO_APP } from './cofre';
 
 /** Lembrete de dia de treino, guardado só no aparelho (é uma notificação local dele). */
@@ -84,8 +85,8 @@ export async function reagendarLembretes(): Promise<void> {
         channelId: CANAL_LEMBRETE,
         title: 'Dia de treino',
         body: contexto.proximoDia ? `Hoje é dia de ${contexto.proximoDia}.` : 'Hora de treinar.',
-        // Inexato como o do descanso (ver web#35): o Android pode atrasar o aviso.
-        isExactNotification: false,
+        // Exato com "Alarmes e lembretes" permitido; senão o Android pode atrasar o aviso (ver alarme-exato.ts).
+        isExactNotification: alarmeExato(),
         schedule: { at: quando, allowWhileIdle: true },
       })),
     });
