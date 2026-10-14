@@ -128,7 +128,7 @@
 }
 .atual-topo { display: flex; align-items: center; gap: 8px; }
 .atual-titulo { font: 700 13px/16px 'Inter', sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
-.atual-prev { flex: 1; text-align: right; font-size: 12px; white-space: nowrap; }
+.atual-prev { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: right; font-size: 12px; white-space: nowrap; }
 .atual-corpo { display: flex; align-items: stretch; gap: 8px; .steppers { flex: 1; min-width: 0; } .check { align-self: center; } }
 .atual-anterior { margin: 0; font-size: 12px; }
 // Na linha atual os controles são mais estreitos para caber os dois steppers e o check na largura do celular.

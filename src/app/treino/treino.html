@@ -88,6 +88,9 @@
                 <header class="atual-topo">
                   <span class="numero atual num">{{ k + 1 }}</span>
                   <span class="atual-titulo">Série atual</span>
+                  @if (b.drops.length > 0) {
+                    <span class="chip drop">Drop-set</span>
+                  }
                   <span class="suave num atual-prev">Meta: {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }} reps</span>
                   @if (blocos().length > 1 && !serie.concluida) {
                     <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (k + 1)" (click)="removerSerie(b)">
@@ -106,11 +109,11 @@
                 @if (textoAnterior(ex, i); as prev) {
                   <p class="suave num atual-anterior">Anterior: {{ prev }} kg</p>
                 }
-                @for (d of b.drops; track d) {
+                @for (d of b.drops; track d; let n = $index) {
                   @let drop = ex.series[d];
                   <div class="drop-atual">
                     <header class="atual-topo">
-                      <span class="chip drop">Drop-set</span>
+                      <span class="rotulo suave">Drop {{ n + 1 }}</span>
                       @if (textoAnterior(ex, d); as prev) {
                         <span class="suave num atual-prev">Anterior: {{ prev }} kg</span>
                       } @else {
