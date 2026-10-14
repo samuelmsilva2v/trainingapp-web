@@ -40,7 +40,8 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
       break;
     case 'drops':
-      novo.drops = limitar(valor ?? 0, 0, MAX_DROPS);
+      // Com o drop-set ligado vai de 1 a 3; só o interruptor volta a 0 (série normal).
+      novo.drops = limitar(valor ?? 1, 1, MAX_DROPS);
       break;
   }
   return novo;
@@ -224,6 +225,11 @@ export class PlanoEditor implements OnInit {
   }
 
   /** Incrementa/decrementa um campo (botões + e −). */
+  /** Interruptor "Drop-set": ligar começa com 1 drop em cada série; desligar volta às séries normais. */
+  protected alternarDropSet(indice: number): void {
+    this.atualizarItem(indice, item => ({ ...item, drops: (item.drops ?? 0) > 0 ? 0 : 1 }));
+  }
+
   protected ajustar(indice: number, campo: CampoNumerico, sinal: 1 | -1): void {
     this.atualizarItem(indice, item => {
       switch (campo) {

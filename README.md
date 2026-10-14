@@ -35,7 +35,7 @@ Rotas em `src/app/app.routes.ts`, todas carregadas sob demanda. As quatro primei
 | `/historico` | `historico` | Treinos concluídos e abandonados, por período, com volume e recordes |
 | `/perfil` | `perfil` | Nome, nível, XP e conquistas; trocar senha, excluir conta e sair |
 | `/planos/novo`, `/planos/:id` | `planos/plano-editor` | Editor do plano (dias, exercícios, séries, reps e carga), com o seletor de exercícios do catálogo e o cadastro de exercício próprio |
-| `/treino` | `treino` | Execução da sessão: registra as cargas e reps reais (passo de 2,5 kg), com drop-set (até 3 drops por série, sugeridos com 80% da carga anterior em múltiplo de 5; o bloco tem um check só e conta como uma série) e, ao concluir, mostra o XP ganho e os recordes |
+| `/treino` | `treino` | Execução da sessão: registra as cargas e reps reais (passo de 2,5 kg), com drop-set (ligado no plano, até 3 drops em cada série, sugeridos com 80% da carga anterior em múltiplo de 5; o bloco tem um check só e conta como uma série) e, ao concluir, mostra o XP ganho e os recordes |
 
 Estado e acesso à API ficam em `src/app/core` (stores com signals, interceptor de autenticação, modelos). Os modelos são escritos à mão em `core/modelos.ts`; ainda não há cliente gerado do OpenAPI.
 

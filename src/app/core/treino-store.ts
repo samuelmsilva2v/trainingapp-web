@@ -84,13 +84,16 @@ export class TreinoStore {
     return { id: novoId(), reps, carga, concluida: false, tipo };
   }
 
-  /** As séries da meta e, depois da última, os drops planejados com a carga sugerida em cadeia (80% da anterior). */
+  /** As séries da meta, cada uma seguida dos drops planejados, com a carga sugerida em cadeia (80% da anterior). */
   private seriesDoPlano(item: ItemPlano): SerieLocal[] {
-    const series = Array.from({ length: item.series }, () => this.serieNova(item.repsMin, item.cargaAlvo));
-    let carga = item.cargaAlvo;
-    for (let i = 0; i < (item.drops ?? 0); i++) {
-      carga = cargaDoDrop(carga);
-      series.push(this.serieNova(item.repsMin, carga, 'DROP'));
+    const series: SerieLocal[] = [];
+    for (let s = 0; s < item.series; s++) {
+      series.push(this.serieNova(item.repsMin, item.cargaAlvo));
+      let carga = item.cargaAlvo;
+      for (let d = 0; d < (item.drops ?? 0); d++) {
+        carga = cargaDoDrop(carga);
+        series.push(this.serieNova(item.repsMin, carga, 'DROP'));
+      }
     }
     return series;
   }

@@ -46,7 +46,7 @@ export interface ItemPlano {
   repsMax: number;
   cargaAlvo: number | null;
   descansoSegundos: number | null;
-  /** Drops (0 a 3) depois da última série; ausente vale 0. */
+  /** Drops (0 a 3) depois de cada série (0 = séries normais); ausente vale 0. */
   drops?: number;
 }
 
@@ -124,7 +124,7 @@ export interface ExercicioLocal {
   metaRepsMax: number;
   metaCarga: number | null;
   metaDescansoSegundos: number | null;
-  /** Snapshot dos drops planejados na última série. */
+  /** Snapshot dos drops planejados em cada série. */
   metaDrops?: number;
   series: SerieLocal[];
   /** Só a API preenche: XP das séries concluídas deste exercício. */

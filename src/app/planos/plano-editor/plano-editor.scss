@@ -171,8 +171,8 @@ input.valor {
 @container (min-width: 520px) {
   .exercicio { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stepper.largo { order: 1; }
-  .stepper.descanso, .stepper.drops { grid-column: auto; flex-direction: column; align-items: stretch; }
-  .stepper.descanso .controle button, .stepper.drops .controle button { width: 48px; height: 48px; }
+  .stepper.descanso { grid-column: auto; flex-direction: column; align-items: stretch; }
+  .stepper.descanso .controle button { width: 48px; height: 48px; }
 }
 
 .vazio { padding: 24px 8px; text-align: center; }
@@ -188,3 +188,7 @@ input.valor {
   background: linear-gradient(to top, var(--c-fundo) 70%, transparent);
   .btn { display: flex; width: 100%; max-width: 640px; margin: 0 auto; }
 }
+
+/* Drop-set: interruptor à esquerda e, ligado, o número de drops à direita (linha inteira em qualquer largura). */
+.drops { min-height: 56px; .faixa { flex: 0 0 56px; } }
+.drops .alternar input:not(:checked) + .trilho { background: var(--c-sup-4); }

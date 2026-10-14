@@ -24,11 +24,11 @@ describe('definirCampo', () => {
     expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999.99);
   });
 
-  it('drops na última série vão de 0 a 3', () => {
+  it('com o drop-set ligado, os drops vão de 1 a 3 (só o interruptor volta a 0)', () => {
     expect(definirCampo(item, 'drops', 2).drops).toBe(2);
     expect(definirCampo(item, 'drops', 7).drops).toBe(3);
-    expect(definirCampo(item, 'drops', -1).drops).toBe(0);
-    expect(definirCampo(item, 'drops', null).drops).toBe(0);
+    expect(definirCampo(item, 'drops', 0).drops).toBe(1);
+    expect(definirCampo(item, 'drops', null).drops).toBe(1);
   });
 
   it('carga vazia ou zero vira sem carga alvo', () => {

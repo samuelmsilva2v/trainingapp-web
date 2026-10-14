@@ -49,7 +49,7 @@ describe('TreinoStore', () => {
 
   const marcarReps = (reps: number) => store.atualizarSerie(0, 0, s => ({ ...s, reps }));
 
-  it('iniciar monta os drops do plano depois da última série, com a carga em cadeia', async () => {
+  it('iniciar monta os drops do plano depois de cada série, com a carga em cadeia', async () => {
     await store.iniciar('p1', 'Plano', {
       id: 'd1', nome: 'A', ordem: 0,
       exercicios: [{ exercicioId: 'x1', exercicioNome: 'Supino', grupoMuscular: 'PEITO', equipamento: 'BARRA',
@@ -58,7 +58,8 @@ describe('TreinoStore', () => {
     const ex = store.sessao()!.exercicios[0];
     expect(ex.metaDrops).toBe(2);
     expect(ex.series.map(x => [x.tipo, x.carga, x.reps])).toEqual([
-      ['NORMAL', 100, 8], ['NORMAL', 100, 8], ['DROP', 80, 8], ['DROP', 65, 8],
+      ['NORMAL', 100, 8], ['DROP', 80, 8], ['DROP', 65, 8],
+      ['NORMAL', 100, 8], ['DROP', 80, 8], ['DROP', 65, 8],
     ]);
     expect(store.totalSeries()).toBe(2);
   });

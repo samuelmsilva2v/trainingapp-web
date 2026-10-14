@@ -126,13 +126,20 @@
                 </div>
               </div>
 
+              <!-- Normal por padrão; ligado, cada série vira drop-set com 1 a 3 drops. -->
               <div class="stepper drops">
-                <span class="rotulo suave">Drops na última série</span>
-                <div class="controle">
-                  <button type="button" aria-label="Menos drops" (click)="ajustar(i, 'drops', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                  <input class="valor num" inputmode="numeric" aria-label="Drops na última série" [value]="item.drops ?? 0" (change)="digitar(i, 'drops', $event)" />
-                  <button type="button" aria-label="Mais drops" (click)="ajustar(i, 'drops', 1)"><span class="icone" aria-hidden="true">add</span></button>
-                </div>
+                <label class="alternar">
+                  <input type="checkbox" role="switch" [checked]="(item.drops ?? 0) > 0" (change)="alternarDropSet(i)" />
+                  <span class="trilho" aria-hidden="true"></span>
+                  <span class="legenda">DROP-SET</span>
+                </label>
+                @if ((item.drops ?? 0) > 0) {
+                  <div class="controle">
+                    <button type="button" aria-label="Menos drops" (click)="ajustar(i, 'drops', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                    <span class="faixa"><small>drops</small><input class="valor num" inputmode="numeric" aria-label="Drops em cada série" [value]="item.drops" (change)="digitar(i, 'drops', $event)" /></span>
+                    <button type="button" aria-label="Mais drops" (click)="ajustar(i, 'drops', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                  </div>
+                }
               </div>
             </article>
           } @empty {
