@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
-import { manterTelaLigada, vibrar } from '../core/android';
+import { agendarFimDoDescanso, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
@@ -169,6 +169,7 @@ export class Treino implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     manterTelaLigada(false);
+    cancelarFimDoDescanso(); // o descanso é desta tela: saindo dela, ele acaba
     if (this.intervalo) clearInterval(this.intervalo);
   }
 
@@ -288,7 +289,8 @@ export class Treino implements OnInit, OnDestroy {
     if (!atual.concluida) vibrar('leve');
     this.serieAberta.set(null); // a próxima série pendente passa a ser a atual
     if (!atual.concluida && ex.metaDescansoSegundos) {
-      this.iniciarDescanso(ex.metaDescansoSegundos);
+      const numero = this.blocos().findIndex(b => b.inicio === serie) + 1;
+      this.iniciarDescanso(ex.metaDescansoSegundos, `${ex.nome}, série ${numero}`);
     }
   }
 
@@ -324,16 +326,27 @@ export class Treino implements OnInit, OnDestroy {
 
   // --- descanso ---
 
-  private iniciarDescanso(segundos: number): void {
+  /** Texto da notificação do descanso em curso (exercício e série), para reagendar ao somar ou tirar tempo. */
+  private textoDescanso = '';
+
+  private iniciarDescanso(segundos: number, texto: string): void {
+    this.textoDescanso = texto;
     this.totalDescanso.set(segundos);
-    this.fimDescanso.set(Date.now() + segundos * 1000);
+    this.definirFimDescanso(Date.now() + segundos * 1000);
     this.agora.set(Date.now());
+  }
+
+  /** Muda o fim do descanso na tela e na notificação do app (null encerra os dois). */
+  private definirFimDescanso(fim: number | null): void {
+    this.fimDescanso.set(fim);
+    if (fim === null) cancelarFimDoDescanso();
+    else void agendarFimDoDescanso(fim, this.textoDescanso);
   }
 
   protected maisDescanso(): void {
     const fim = this.fimDescanso();
     if (fim === null) return;
-    this.fimDescanso.set(fim + 15_000);
+    this.definirFimDescanso(fim + 15_000);
     this.totalDescanso.update(t => t + 15);
   }
 
@@ -342,15 +355,15 @@ export class Treino implements OnInit, OnDestroy {
     if (fim === null) return;
     // Tirar 15 s de um descanso que tem menos que isso a correr encerra o descanso.
     if (fim - Date.now() <= 15_000) {
-      this.fimDescanso.set(null);
+      this.definirFimDescanso(null);
       return;
     }
-    this.fimDescanso.set(fim - 15_000);
+    this.definirFimDescanso(fim - 15_000);
     this.totalDescanso.update(t => Math.max(1, t - 15));
   }
 
   protected pularDescanso(): void {
-    this.fimDescanso.set(null);
+    this.definirFimDescanso(null);
   }
 
   // --- encerrar ---
