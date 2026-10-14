@@ -84,6 +84,36 @@
       </button>
     </form>
 
+    @if (noApp) {
+      <section class="card" aria-label="Lembrete de treino">
+        <header class="card-topo">
+          <h2 class="titulo"><span class="icone" aria-hidden="true">calendar_view_week</span> Lembrete de treino</h2>
+        </header>
+        <label class="alternar">
+          <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
+          <span class="trilho" aria-hidden="true"></span>
+          <span class="legenda">Avisar nos dias de treino</span>
+        </label>
+        @if (lembrete().ligado) {
+          <label class="campo">
+            <span class="legenda">Horário</span>
+            <span class="entrada">
+              <!-- Sem ícone próprio: o seletor de horário do Android já desenha o dele. -->
+              <input type="time" required [value]="lembrete().hora" (change)="mudarHora($any($event.target).value)" />
+            </span>
+          </label>
+          <div class="tema dias" role="group" aria-label="Dias da semana">
+            @for (dia of diasDaSemana; track dia.valor) {
+              <button type="button" class="opcao" [class.sel]="lembrete().dias.includes(dia.valor)"
+                      [attr.aria-pressed]="lembrete().dias.includes(dia.valor)" [attr.aria-label]="dia.nome"
+                      (click)="alternarDia(dia.valor)">{{ dia.letra }}</button>
+            }
+          </div>
+          <p class="suave dica">Não avisa no dia em que você já treinou. Os avisos valem por 14 dias e se renovam quando você abre o app.</p>
+        }
+      </section>
+    }
+
     <section class="card" aria-label="Dados do treino">
       <header class="card-topo">
         <h2 class="titulo"><span class="icone" aria-hidden="true">database</span> Dados do treino</h2>

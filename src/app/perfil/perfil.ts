@@ -5,6 +5,7 @@ import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
 import { NO_APP } from '../core/cofre';
+import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -49,6 +50,17 @@ export class PerfilTela implements OnInit {
   /** Só no app: o client id web que o Credential Manager usa. */
   private webClientId: string | null = null;
   protected readonly conquistasAbertas = signal(false);
+  protected readonly noApp = NO_APP;
+  protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
+  protected readonly diasDaSemana = [
+    { valor: 0, letra: 'D', nome: 'Domingo' },
+    { valor: 1, letra: 'S', nome: 'Segunda' },
+    { valor: 2, letra: 'T', nome: 'Terça' },
+    { valor: 3, letra: 'Q', nome: 'Quarta' },
+    { valor: 4, letra: 'Q', nome: 'Quinta' },
+    { valor: 5, letra: 'S', nome: 'Sexta' },
+    { valor: 6, letra: 'S', nome: 'Sábado' },
+  ];
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
@@ -185,6 +197,21 @@ export class PerfilTela implements OnInit {
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
       },
     });
+  }
+
+  /** Lembrete de treino: guardado no aparelho e reagendado a cada mudança. */
+  protected alterarLembrete(mudanca: Partial<ConfigLembrete>): void {
+    this.lembrete.update(atual => ({ ...atual, ...mudanca }));
+    void salvarLembrete(this.lembrete());
+  }
+
+  protected mudarHora(hora: string): void {
+    if (/^d{2}:d{2}$/.test(hora)) this.alterarLembrete({ hora });
+  }
+
+  protected alternarDia(dia: number): void {
+    const dias = this.lembrete().dias;
+    this.alterarLembrete({ dias: dias.includes(dia) ? dias.filter(d => d !== dia) : [...dias, dia].sort() });
   }
 
   protected sair(): void {

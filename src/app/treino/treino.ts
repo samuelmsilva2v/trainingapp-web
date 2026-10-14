@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { agendarFimDoDescanso, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
+import { atualizarContextoDoLembrete } from '../core/lembrete';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
@@ -425,6 +426,8 @@ export class Treino implements OnInit, OnDestroy {
     try {
       const antes = this.gamificacao.dados();
       const resposta = await this.store.encerrar(estado);
+      // Treinou hoje: o lembrete de hoje sai (o texto do próximo dia volta quando a tela Hoje falar com a API).
+      if (estado === 'CONCLUIDA') atualizarContextoDoLembrete(null, true);
       if (resposta === 'offline') {
         this.aviso.open('Sem conexão: o treino ficou salvo no aparelho e vai para a nuvem quando a rede voltar.', 'OK', {
           duration: 6000,

@@ -6,6 +6,7 @@ import { App } from '@capacitor/app';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { NO_APP } from './cofre';
+import { CANAL_LEMBRETE, reagendarLembretes } from './lembrete';
 
 /** Onde o voltar do sistema fecha o app: a tela inicial de quem está logado e a de quem não está. */
 const SAIDAS = ['/hoje', '/entrar'];
@@ -23,6 +24,10 @@ export class IntegracaoAndroid {
     // Canal com prioridade alta: som, vibração e o aviso aparece por cima de outro app.
     void LocalNotifications.createChannel({ id: CANAL_DESCANSO, name: 'Fim do descanso', importance: 5, vibration: true, visibility: 1 })
       .catch(() => undefined);
+    void LocalNotifications.createChannel({ id: CANAL_LEMBRETE, name: 'Lembrete de treino', importance: 4, visibility: 1 })
+      .catch(() => undefined);
+    // Os avisos são de 14 dias: abrir o app renova a janela.
+    void reagendarLembretes();
   }
 
   /** Fecha o diálogo aberto; senão volta uma tela; só nas telas iniciais fecha o app. */

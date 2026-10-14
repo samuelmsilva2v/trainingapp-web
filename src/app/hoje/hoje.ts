@@ -1,9 +1,10 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { Hoje, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
+import { atualizarContextoDoLembrete } from '../core/lembrete';
 import { TreinoStore } from '../core/treino-store';
 import { seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa } from '../core/formatos';
@@ -43,6 +44,15 @@ export class HojeTela implements OnInit {
   private readonly perfilApi = inject(PerfilApi);
   private readonly store = inject(TreinoStore);
   protected readonly gamificacao = inject(GamificacaoStore);
+
+  constructor() {
+    // O lembrete de treino (só no app) usa o próximo dia da rotação no texto e não avisa se hoje já houve treino.
+    effect(() => {
+      const hoje = this.hoje();
+      const dados = this.gamificacao.dados();
+      if (hoje && dados) atualizarContextoDoLembrete(hoje.proximoDia?.nome ?? null, dados.treinouHoje);
+    });
+  }
   private readonly roteador = inject(Router);
   private readonly aviso = inject(MatSnackBar);
 
