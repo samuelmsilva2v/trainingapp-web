@@ -89,9 +89,12 @@
                   <span class="numero atual num">{{ k + 1 }}</span>
                   <span class="atual-titulo">Série atual</span>
                   @if (b.drops.length > 0) {
+                    <!-- Drop-set: a badge ocupa o lugar da meta (as reps de cada etapa já vêm sugeridas). -->
                     <span class="chip drop">Drop-set</span>
+                    <span class="atual-prev"></span>
+                  } @else {
+                    <span class="suave num atual-prev">Meta: {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }} reps</span>
                   }
-                  <span class="suave num atual-prev">Meta: {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }} reps</span>
                   @if (blocos().length > 1 && !serie.concluida) {
                     <button type="button" class="btn-icone pequeno" [attr.aria-label]="'Remover série ' + (k + 1)" (click)="removerSerie(b)">
                       <span class="icone" aria-hidden="true">delete</span>
