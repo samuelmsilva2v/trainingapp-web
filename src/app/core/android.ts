@@ -1,7 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { KeepAwake } from '@capacitor-community/keep-awake';
 import { App } from '@capacitor/app';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { NO_APP } from './cofre';
 
 /** Onde o voltar do sistema fecha o app: a tela inicial de quem está logado e a de quem não está. */
 const SAIDAS = ['/hoje', '/entrar'];
@@ -34,4 +37,21 @@ export class IntegracaoAndroid {
       history.back();
     }
   }
+}
+
+/**
+ * Vibração: leve nos controles do treino (steppers, série feita), forte no fim do descanso. No navegador só o fim do
+ * descanso vibra (navigator.vibrate, onde existe), como antes do app.
+ */
+export function vibrar(tipo: 'leve' | 'forte'): void {
+  if (!NO_APP) {
+    if (tipo === 'forte') navigator.vibrate?.(200);
+    return;
+  }
+  void (tipo === 'leve' ? Haptics.impact({ style: ImpactStyle.Light }) : Haptics.vibrate({ duration: 400 }));
+}
+
+/** Tela ligada durante o treino (só no app): ninguém quer desbloquear o celular entre uma série e outra. */
+export function manterTelaLigada(ligada: boolean): void {
+  if (NO_APP) void (ligada ? KeepAwake.keepAwake() : KeepAwake.allowSleep());
 }

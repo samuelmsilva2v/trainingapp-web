@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
+import { manterTelaLigada, vibrar } from '../core/android';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
@@ -102,6 +103,7 @@ export class Treino implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    manterTelaLigada(true);
     this.intervalo = setInterval(() => this.tique(), 1000);
     if (this.store.sessao()) {
       this.carregando.set(false);
@@ -166,6 +168,7 @@ export class Treino implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    manterTelaLigada(false);
     if (this.intervalo) clearInterval(this.intervalo);
   }
 
@@ -175,7 +178,7 @@ export class Treino implements OnInit, OnDestroy {
     const fim = this.fimDescanso();
     if (fim !== null && agora >= fim) {
       this.fimDescanso.set(null);
-      navigator.vibrate?.(200);
+      vibrar('forte');
     }
   }
 
@@ -239,6 +242,7 @@ export class Treino implements OnInit, OnDestroy {
   // --- séries ---
 
   protected ajustarReps(serie: number, delta: 1 | -1): void {
+    vibrar('leve');
     this.store.atualizarSerie(this.indice(), serie, s => {
       const reps = Math.min(REPS_MAX, Math.max(0, (s.reps ?? 0) + delta));
       return { ...s, reps, concluida: s.concluida && reps >= 1 };
@@ -246,6 +250,7 @@ export class Treino implements OnInit, OnDestroy {
   }
 
   protected ajustarCarga(serie: number, delta: 1 | -1): void {
+    vibrar('leve');
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
       carga: passoCarga(s.carga ?? 0, delta),
@@ -280,6 +285,7 @@ export class Treino implements OnInit, OnDestroy {
       return;
     }
     this.store.atualizarSerie(this.indice(), serie, s => ({ ...s, concluida: !s.concluida }));
+    if (!atual.concluida) vibrar('leve');
     this.serieAberta.set(null); // a próxima série pendente passa a ser a atual
     if (!atual.concluida && ex.metaDescansoSegundos) {
       this.iniciarDescanso(ex.metaDescansoSegundos);
