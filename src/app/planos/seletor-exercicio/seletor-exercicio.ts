@@ -1,12 +1,17 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { ExerciciosApi, mensagemDeErro } from '../../core/api';
 import { Equipamento, Exercicio, GrupoMuscular } from '../../core/modelos';
 import { EQUIPAMENTOS, GRUPOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 
 const LIMITE_EXIBIDO = 100;
+
+/** Filtro inicial opcional (ex.: trocar exercício no treino abre no grupo muscular do original). */
+export interface DadosSeletor {
+  grupo?: GrupoMuscular;
+}
 
 @Component({
   selector: 'app-seletor-exercicio',
@@ -16,6 +21,7 @@ const LIMITE_EXIBIDO = 100;
 export class SeletorExercicio {
   private readonly api = inject(ExerciciosApi);
   private readonly ref = inject(MatDialogRef<SeletorExercicio, Exercicio>);
+  private readonly dados = inject<DadosSeletor | null>(MAT_DIALOG_DATA, { optional: true });
 
   protected readonly grupos = GRUPOS;
   protected readonly equipamentos = EQUIPAMENTOS;
@@ -23,7 +29,7 @@ export class SeletorExercicio {
   protected readonly rotuloEquipamento = rotuloEquipamento;
 
   protected readonly busca = signal('');
-  protected readonly grupo = signal<GrupoMuscular | null>(null);
+  protected readonly grupo = signal<GrupoMuscular | null>(this.dados?.grupo ?? null);
   protected readonly equipamento = signal<Equipamento | null>(null);
   protected readonly apenasMeus = signal(false);
   protected readonly erro = signal<string | null>(null);

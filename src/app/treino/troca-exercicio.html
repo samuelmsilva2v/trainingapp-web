@@ -1,0 +1,46 @@
+<section class="folha" role="dialog" aria-label="Trocar exercício">
+  <header class="cabecalho">
+    <div>
+      <p class="rotulo suave">Trocar por</p>
+      <h2 class="titulo-sm">{{ dados.exercicio.nome }}</h2>
+      <p class="suave nota">Só neste treino: o plano não muda.</p>
+    </div>
+    <button type="button" class="btn-icone" aria-label="Fechar" (click)="fechar()">
+      <span class="icone" aria-hidden="true">close</span>
+    </button>
+  </header>
+
+  <div class="opcao">
+    <label class="alternar">
+      <input type="checkbox" role="switch" [checked]="dropSet()" (change)="dropSet.set(!dropSet())" />
+      <span class="trilho" aria-hidden="true"></span>
+      <span class="legenda">DROP-SET</span>
+    </label>
+    @if (dropSet()) {
+      <div class="controle">
+        <button type="button" aria-label="Menos etapas" (click)="ajustarEtapas(-1)"><span class="icone" aria-hidden="true">remove</span></button>
+        <span class="faixa"><small>etapas</small><span class="valor num">{{ etapas() }}</span></span>
+        <button type="button" aria-label="Mais etapas" (click)="ajustarEtapas(1)"><span class="icone" aria-hidden="true">add</span></button>
+      </div>
+    }
+  </div>
+
+  @if (dropSet()) {
+    <div class="opcao coluna">
+      <span class="rotulo suave">Repetições</span>
+      <div class="controle largo">
+        <button type="button" aria-label="Menos repetições" (click)="ajustarReps(-1)"><span class="icone" aria-hidden="true">remove</span></button>
+        <span class="faixa"><small>1ª etapa</small><span class="valor num">{{ reps() }}</span></span>
+        <button type="button" aria-label="Mais repetições" (click)="ajustarReps(1)"><span class="icone" aria-hidden="true">add</span></button>
+      </div>
+      <small class="suave">Etapas: {{ sequencia() }} reps</small>
+    </div>
+  }
+
+  <div class="acoes">
+    <button type="button" class="btn btn-secundario" (click)="fechar()">Cancelar</button>
+    <button type="button" class="btn btn-primario" (click)="confirmar()">
+      <span class="icone" aria-hidden="true">swap_horiz</span> Confirmar troca
+    </button>
+  </div>
+</section>

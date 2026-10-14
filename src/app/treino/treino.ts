@@ -3,17 +3,20 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, formatarKg } from '../core/formatos';
-import { Anterior, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
+import { Anterior, Exercicio, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
+import { DadosTroca, TrocaExercicio } from './troca-exercicio';
+import { DadosSeletor, SeletorExercicio } from '../planos/seletor-exercicio/seletor-exercicio';
+import { ConfigTroca, trocarExercicio } from '../core/troca';
 
 const REPS_MAX = 1000;
 
@@ -182,6 +185,55 @@ export class Treino implements OnInit, OnDestroy {
     const total = this.sessao()?.exercicios.length ?? 0;
     this.indice.update(i => Math.min(total - 1, Math.max(0, i + delta)));
     this.serieAberta.set(null);
+  }
+
+  // --- trocar exercício (só nesta sessão) ---
+
+  /** Só antes da primeira série concluída: série feita num exercício não passa para outro (recorde e XP errados). */
+  protected readonly podeTrocar = computed(() => {
+    const ex = this.exercicio();
+    return !!ex && seriesFeitas(ex) === 0;
+  });
+
+  /** Seletor no grupo do original, folha "Trocar por" (normal ou drop-set) e "Anterior" do exercício novo. */
+  protected trocarExercicio(): void {
+    const ex = this.exercicio();
+    if (!ex || !this.podeTrocar()) return;
+    const indice = this.indice();
+    this.dialogo
+      .open<SeletorExercicio, DadosSeletor, Exercicio>(SeletorExercicio, {
+        panelClass: 'dialogo-cheio',
+        maxWidth: '100vw',
+        width: '100vw',
+        height: '100dvh',
+        data: { grupo: ex.grupoMuscular },
+      })
+      .afterClosed()
+      .subscribe(novo => {
+        if (!novo) return;
+        this.dialogo
+          .open<TrocaExercicio, DadosTroca, ConfigTroca>(TrocaExercicio, {
+            panelClass: 'dialogo-folha',
+            position: { bottom: '0' },
+            width: '512px',
+            maxWidth: '100vw',
+            data: { exercicio: novo, reps: ex.metaRepsMin },
+          })
+          .afterClosed()
+          .subscribe(config => config && this.aplicarTroca(indice, novo, config));
+      });
+  }
+
+  private aplicarTroca(indice: number, novo: Exercicio, config: ConfigTroca): void {
+    // Sem histórico (ou se a busca falhar) as cargas começam vazias.
+    this.api.anteriores([novo.id]).pipe(catchError(() => of([]))).subscribe(lista => {
+      const anterior = lista[0];
+      if (anterior) this.anteriores.update(m => new Map(m).set(novo.id, anterior));
+      this.store.atualizarExercicio(indice, e =>
+        trocarExercicio(e, novo, config, anterior, (reps, carga, tipo) => this.store.serieNova(reps, carga, tipo)),
+      );
+      this.serieAberta.set(null);
+    });
   }
 
   // --- séries ---
