@@ -1,0 +1,55 @@
+name: Release Android
+
+# Uma tag v* gera o APK assinado e o anexa a um GitHub Release: git tag v0.1.0 && git push --tags
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx ng test --watch=false
+      # Front apontando para a API de produção (environment.android.ts), sem as liberações de HTTP do dev.
+      - run: npx ng build --configuration production,android
+      - run: npx cap sync android
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - name: Versão a partir da tag
+        id: versao
+        run: |
+          nome="${GITHUB_REF_NAME#v}"
+          IFS=. read -r maior menor correcao <<< "${nome%%-*}"
+          echo "nome=$nome" >> "$GITHUB_OUTPUT"
+          echo "codigo=$(( ${maior:-0} * 10000 + ${menor:-0} * 100 + ${correcao:-0} ))" >> "$GITHUB_OUTPUT"
+      - name: APK assinado
+        working-directory: android
+        env:
+          TRAININGAPP_KEYSTORE_BASE64: ${{ secrets.TRAININGAPP_KEYSTORE_BASE64 }}
+          TRAININGAPP_KEYSTORE_SENHA: ${{ secrets.TRAININGAPP_KEYSTORE_SENHA }}
+          TRAININGAPP_KEY_ALIAS: ${{ secrets.TRAININGAPP_KEY_ALIAS }}
+          TRAININGAPP_KEY_SENHA: ${{ secrets.TRAININGAPP_KEY_SENHA }}
+        run: |
+          echo "$TRAININGAPP_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export TRAININGAPP_KEYSTORE="$RUNNER_TEMP/release.jks"
+          chmod +x gradlew
+          ./gradlew assembleRelease -PversionName=${{ steps.versao.outputs.nome }} -PversionCode=${{ steps.versao.outputs.codigo }}
+          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/trainingapp-${{ steps.versao.outputs.nome }}.apk"
+          rm "$RUNNER_TEMP/release.jks"
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/trainingapp-${{ steps.versao.outputs.nome }}.apk" --title "$GITHUB_REF_NAME" --generate-notes

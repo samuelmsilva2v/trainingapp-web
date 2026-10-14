@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+// Versão vinda da tag na esteira de release (v1.2.3 -> versionName 1.2.3, versionCode 10203); local fica a de dev.
+def versaoNome = project.findProperty('versionName') ?: '0.0.0-dev'
+def versaoCodigo = (project.findProperty('versionCode') ?: '1').toInteger()
+// Chave de assinatura do release só pelo ambiente (secrets da esteira); sem ela, o release sai sem assinatura.
+def chave = System.getenv('TRAININGAPP_KEYSTORE')
+
 android {
     namespace = "io.github.samuelmsilva2v.trainingapp"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +13,8 @@ android {
         applicationId "io.github.samuelmsilva2v.trainingapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode versaoCodigo
+        versionName versaoNome
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +22,19 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (chave) {
+            release {
+                storeFile file(chave)
+                storePassword System.getenv('TRAININGAPP_KEYSTORE_SENHA')
+                keyAlias System.getenv('TRAININGAPP_KEY_ALIAS')
+                keyPassword System.getenv('TRAININGAPP_KEY_SENHA')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (chave) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -87,6 +87,20 @@ Os dois scripts (`scripts/android.mjs`) geram o front, rodam `cap sync` e `cap r
 
 Enquanto o Android v1 está na branch `android-v1`, a produção ainda não tem o CORS nem o refresh no corpo. Por isso, desenvolva com `android:dev`. A web não muda: `environment.ts` continua com `/api` na mesma origem.
 
+### Versão do app (APK)
+
+Uma tag `v*` dispara `.github/workflows/release.yml`: testes, front de produção (`production,android`), `cap sync`, APK assinado e um GitHub Release com o arquivo. A versão sai da tag (`v1.2.3` vira `versionName` 1.2.3 e `versionCode` 10203).
+
+```bash
+git tag v0.1.0 && git push --tags
+```
+
+No celular, baixe o `.apk` do Release e instale (permita "instalar apps desconhecidos" para o navegador). Uma versão nova instala por cima e mantém o login.
+
+- **Chave de assinatura:** `%USERPROFILE%.trainingapp-release	rainingapp-release.jks` (senha e alias no `LEIA-ME.txt` ao lado), também nos secrets `TRAININGAPP_KEYSTORE_BASE64`, `TRAININGAPP_KEYSTORE_SENHA`, `TRAININGAPP_KEY_ALIAS` e `TRAININGAPP_KEY_SENHA`. **Guarde uma cópia fora do PC:** sem ela, uma atualização exige desinstalar o app (e perde os dados locais).
+- **Login com Google no APK de release:** cada chave que assina o APK precisa de um client OAuth Android no Google Cloud (mesmo projeto e pacote). SHA-1 da chave de release: `E0:CC:14:60:F4:5E:15:C5:20:BF:2C:4A:EB:1C:89:AB:1C:FE:15:6F`.
+- **Build local de release:** `npx ng build --configuration production,android && npx cap sync android` e `./gradlew assembleRelease` em `android/` com as variáveis `TRAININGAPP_KEYSTORE` (caminho do `.jks`), `TRAININGAPP_KEYSTORE_SENHA`, `TRAININGAPP_KEY_ALIAS` e `TRAININGAPP_KEY_SENHA`. Sem elas, o release sai sem assinatura.
+
 ## CI
 
 `.github/workflows/ci.yml` roda os testes e o build a cada push na `master`. Um push aqui **não** implanta: o deploy é da esteira do `trainingapp-api` (`gh workflow run deploy.yml -R samuelmsilva2v/trainingapp-api`).
