@@ -96,7 +96,7 @@
                 <span class="rotulo suave">Carga alvo (kg)</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos carga" (click)="ajustar(i, 'cargaAlvo', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                  <input class="valor num" inputmode="decimal" placeholder="—" aria-label="Carga alvo em quilos" [value]="texto(item.cargaAlvo)" (change)="digitar(i, 'cargaAlvo', $event)" />
+                  <input class="valor num" inputmode="numeric" placeholder="—" aria-label="Carga alvo em quilos" [value]="texto(item.cargaAlvo)" (change)="digitar(i, 'cargaAlvo', $event)" />
                   <button type="button" aria-label="Mais carga" (click)="ajustar(i, 'cargaAlvo', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>

@@ -17,15 +17,17 @@ const item = {
 } as ItemPlano;
 
 describe('definirCampo', () => {
-  it('guarda a carga digitada com até 2 casas e limita a 9999,99', () => {
-    expect(definirCampo(item, 'cargaAlvo', 47.5).cargaAlvo).toBe(47.5);
-    expect(definirCampo(item, 'cargaAlvo', 11.256).cargaAlvo).toBe(11.26);
-    expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999.99);
+  it('guarda a carga digitada em kg inteiros, como no treino, e limita a 9999', () => {
+    expect(definirCampo(item, 'cargaAlvo', 47).cargaAlvo).toBe(47);
+    expect(definirCampo(item, 'cargaAlvo', 22.5).cargaAlvo).toBe(23);
+    expect(definirCampo(item, 'cargaAlvo', 11.256).cargaAlvo).toBe(11);
+    expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999);
   });
 
   it('carga vazia ou zero vira sem carga alvo', () => {
     expect(definirCampo(item, 'cargaAlvo', null).cargaAlvo).toBeNull();
     expect(definirCampo(item, 'cargaAlvo', 0).cargaAlvo).toBeNull();
+    expect(definirCampo(item, 'cargaAlvo', 0.4).cargaAlvo).toBeNull();
   });
 
   it('limita séries, reps e descanso aos valores da API', () => {

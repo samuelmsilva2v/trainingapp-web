@@ -13,7 +13,8 @@ import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
 
 const SERIES = { min: 1, max: 20 };
 const REPS = { min: 1, max: 100 };
-const CARGA = { passo: 2.5, max: 9999.99 };
+// Kg inteiros, igual à execução do treino (passo de 1 em 1), para plano e treino não discordarem da carga.
+const CARGA = { passo: 1, max: 9999 };
 const DESCANSO = { passo: 15, max: 1800 };
 
 /** Aplica um valor a um campo respeitando os limites da API; reps mín nunca passa da máx. */
@@ -33,7 +34,7 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
       break;
     case 'cargaAlvo':
-      novo.cargaAlvo = valor === null || valor <= 0 ? null : Math.min(Math.round(valor * 100) / 100, CARGA.max);
+      novo.cargaAlvo = valor === null || Math.round(valor) <= 0 ? null : limitar(valor, 1, CARGA.max);
       break;
     case 'descansoSegundos':
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
