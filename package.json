@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "android": "node scripts/android.mjs",
+    "android:dev": "node scripts/android.mjs dev"
   },
   "private": true,
   "packageManager": "npm@10.8.2",
@@ -18,6 +20,8 @@
     "@angular/material": "^21.2.14",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -25,6 +29,7 @@
     "@angular/build": "^21.2.6",
     "@angular/cli": "^21.2.6",
     "@angular/compiler-cli": "^21.2.0",
+    "@capacitor/cli": "^8.5.3",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",

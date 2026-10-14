@@ -63,6 +63,25 @@ Os artefatos de build vão para `dist/trainingapp-web/browser`. O build de produ
 
 A API serve esse diretório no perfil `online` e na imagem de produção, por isso o front e a API ficam na mesma origem.
 
+## Android (Capacitor)
+
+O app Android é este mesmo front empacotado no APK pelo Capacitor 8 (pasta `android/`, `capacitor.config.ts`). Precisa de:
+
+- **Node 22+** (o Capacitor 8 não roda no 20). Com o nvm-windows: `nvm use 22.23.3`.
+- **Android Studio 2025.2.1+** com o Android SDK e um emulador (AVD) criado no Device Manager.
+
+```bash
+npm run android:dev   # emulador, contra a API local (perfil dev rodando no PC)
+npm run android       # API de produção (https://apptraining.duckdns.org/api)
+```
+
+Os dois scripts (`scripts/android.mjs`) geram o front, rodam `cap sync` e `cap run android`, que pergunta em qual aparelho ou emulador instalar.
+
+- **`android:dev`:** usa `environment.android-dev.ts` (`http://10.0.2.2:8080/api`; no emulador, `10.0.2.2` é o `127.0.0.1` do PC) e libera HTTP sem TLS e conteúdo misto, porque a página do app é `https://localhost`. Essa liberação só existe no dev.
+- **`android`:** usa `environment.android.ts`. A API precisa aceitar a origem `https://localhost` no CORS.
+
+Enquanto o Android v1 está na branch `android-v1`, a produção ainda não tem o CORS nem o refresh no corpo. Por isso, desenvolva com `android:dev`. A web não muda: `environment.ts` continua com `/api` na mesma origem.
+
 ## CI
 
 `.github/workflows/ci.yml` roda os testes e o build a cada push na `master`. Um push aqui **não** implanta: o deploy é da esteira do `trainingapp-api` (`gh workflow run deploy.yml -R samuelmsilva2v/trainingapp-api`).
