@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
+import { limparCarga, passoCarga } from '../core/carga';
 import { cronometro, formatarCarga, formatarKg } from '../core/formatos';
 import { Anterior, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
@@ -13,8 +14,6 @@ import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { linhasComRecorde, seriesFeitas } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 
-const PASSO_CARGA = 1;
-const CARGA_MAX = 9999;
 const REPS_MAX = 1000;
 
 @Component({
@@ -177,7 +176,7 @@ export class Treino implements OnInit, OnDestroy {
   protected ajustarCarga(serie: number, delta: 1 | -1): void {
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
-      carga: this.limparCarga((s.carga ?? 0) + delta * PASSO_CARGA),
+      carga: passoCarga(s.carga ?? 0, delta),
     }));
   }
 
@@ -195,12 +194,8 @@ export class Treino implements OnInit, OnDestroy {
     const valor = parseFloat((evento.target as HTMLInputElement).value.replace(',', '.'));
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
-      carga: Number.isNaN(valor) ? null : this.limparCarga(valor),
+      carga: Number.isNaN(valor) ? null : limparCarga(valor),
     }));
-  }
-
-  private limparCarga(valor: number): number {
-    return Math.round(Math.min(CARGA_MAX, Math.max(0, valor))); // carga em kg inteiros
   }
 
   protected alternarConcluida(serie: number): void {

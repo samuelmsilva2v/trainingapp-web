@@ -107,10 +107,10 @@
                     <div class="stepper">
                       <span class="rotulo suave">Carga (kg)</span>
                       <div class="controle">
-                        <button type="button" aria-label="Menos 1 kg" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                        <input class="num" type="number" inputmode="numeric" min="0" step="1" aria-label="Carga em quilos"
+                        <button type="button" aria-label="Menos 2,5 kg" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                        <input class="num" type="number" inputmode="decimal" min="0" step="0.01" aria-label="Carga em quilos"
                                [value]="serie.carga ?? ''" (change)="digitarCarga(i, $event)" />
-                        <button type="button" aria-label="Mais 1 kg" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
+                        <button type="button" aria-label="Mais 2,5 kg" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
                       </div>
                     </div>
                   </div>

@@ -7,14 +7,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
+import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
 
 const SERIES = { min: 1, max: 20 };
 const REPS = { min: 1, max: 100 };
-// Kg inteiros, igual à execução do treino (passo de 1 em 1), para plano e treino não discordarem da carga.
-const CARGA = { passo: 1, max: 9999 };
 const DESCANSO = { passo: 15, max: 1800 };
 
 /** Aplica um valor a um campo respeitando os limites da API; reps mín nunca passa da máx. */
@@ -34,7 +33,7 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
       break;
     case 'cargaAlvo':
-      novo.cargaAlvo = valor === null || Math.round(valor) <= 0 ? null : limitar(valor, 1, CARGA.max);
+      novo.cargaAlvo = valor === null || limparCarga(valor) <= 0 ? null : limparCarga(valor);
       break;
     case 'descansoSegundos':
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
@@ -225,7 +224,9 @@ export class PlanoEditor implements OnInit {
     this.atualizarItem(indice, item => {
       switch (campo) {
         case 'cargaAlvo':
-          return definirCampo(item, campo, this.passo(item.cargaAlvo, sinal, CARGA.passo, CARGA.max));
+          // Mesma grade de 2,5 kg do treino; de vazio, "+" começa em 2,5 e "−" até zero volta a vazio.
+          if (item.cargaAlvo === null) return definirCampo(item, campo, sinal > 0 ? PASSO_CARGA : null);
+          return definirCampo(item, campo, passoCarga(item.cargaAlvo, sinal));
         case 'descansoSegundos':
           return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
         default:
