@@ -5,8 +5,9 @@ import { AuthApi, mensagemDeErro } from '../core/api';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { NO_APP } from '../core/cofre';
-import { GoogleCodigo, criarClienteGoogle } from '../core/google';
+import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { senhaForte } from '../core/senha';
+import { Observable } from 'rxjs';
 
 /** A rota define o modo (`data.modo`); as cinco telas compartilham o cartão, os campos e o tratamento de erro. */
 type Modo = 'entrar' | 'cadastrar' | 'esqueci' | 'redefinir' | 'confirmar';
@@ -41,6 +42,8 @@ export class AuthTela implements OnInit {
   protected readonly googleAtivo = signal(false);
   protected readonly entrandoComGoogle = signal(false);
   private clienteGoogle: GoogleCodigo | null = null;
+  /** Só no app: o client id web que o Credential Manager usa. */
+  private webClientId: string | null = null;
 
   protected readonly conferem = computed(() => this.senha() === this.confirmacao());
 
@@ -127,15 +130,36 @@ export class AuthTela implements OnInit {
   /** Abre o popup do Google. O cliente já foi criado ao carregar a tela: o navegador só deixa abrir popup direto do clique. */
   protected entrarComGoogle(): void {
     this.erro.set(null);
+    if (this.webClientId) {
+      void this.entrarComGoogleNoApp(this.webClientId);
+      return;
+    }
     this.clienteGoogle?.requestCode();
+  }
+
+  private async entrarComGoogleNoApp(webClientId: string): Promise<void> {
+    const idToken = await idTokenDoGoogle(webClientId).catch((e: unknown) => {
+      console.warn('Login com Google no app falhou', e); // desistir também cai aqui
+      return null;
+    });
+    if (!idToken) {
+      this.erro.set('O Google não autorizou o login. Tente de novo.');
+      return;
+    }
+    this.entrarPeloGoogle(this.auth.entrarComGoogleIdToken(idToken));
   }
 
   /** O botão do Google só aparece se a API tiver client id e segredo configurados e o script do Google carregar. */
   private iniciarGoogle(): void {
-    if (NO_APP) return; // o Google bloqueia o popup dentro do app (WebView); o login nativo vem na web#34
     this.api.config().subscribe({
       next: ({ googleClientId }) => {
         if (!googleClientId) return;
+        if (NO_APP) {
+          // O popup do Google não abre em WebView: no app o login é pelo Credential Manager.
+          this.webClientId = googleClientId;
+          this.googleAtivo.set(true);
+          return;
+        }
         criarClienteGoogle(
           googleClientId,
           codigo => this.codigoDoGoogle(codigo),
@@ -161,8 +185,12 @@ export class AuthTela implements OnInit {
       this.erro.set('O Google não autorizou o login. Tente de novo.');
       return;
     }
+    this.entrarPeloGoogle(this.auth.entrarComGoogle(codigo));
+  }
+
+  private entrarPeloGoogle(login: Observable<void>): void {
     this.entrandoComGoogle.set(true);
-    this.auth.entrarComGoogle(codigo).subscribe({
+    login.subscribe({
       next: () => this.entrou(),
       error: e => {
         this.entrandoComGoogle.set(false);

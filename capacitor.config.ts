@@ -10,6 +10,10 @@ const config: CapacitorConfig = {
   // Só no dev: a página é https://localhost e a API local é http://10.0.2.2, bloqueada por padrão. Nunca no release.
   server: dev ? { cleartext: true } : undefined,
   android: dev ? { allowMixedContent: true } : undefined,
+  plugins: {
+    // Só o Google: os outros provedores ficariam embutidos no APK (o SDK do Facebook, por exemplo) sem uso.
+    SocialLogin: { providers: { google: true, facebook: false, apple: false, twitter: false } },
+  },
 };
 
 export default config;

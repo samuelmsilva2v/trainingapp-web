@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Observable, catchError, finalize, firstValueFrom, map, of, share, tap, throwError } from 'rxjs';
-import { AuthApi } from './api';
+import { AuthApi, ProvaDeIdentidade } from './api';
 import { CofreRefresh } from './cofre';
 import { Acesso } from './modelos';
 
@@ -60,12 +60,16 @@ export class AuthStore {
     return this.api.entrarComGoogle(codigo).pipe(map(a => void this.definir(a)));
   }
 
+  entrarComGoogleIdToken(idToken: string): Observable<void> {
+    return this.api.entrarComGoogleIdToken(idToken).pipe(map(a => void this.definir(a)));
+  }
+
   sair(): Observable<void> {
     return this.api.sair().pipe(catchError(() => of(undefined)), tap(() => this.irParaEntrar()));
   }
 
   /** Depois de apagada, a conta não existe mais: volta ao login com tudo limpo. */
-  excluirConta(prova: { senha?: string; codigo?: string }): Observable<void> {
+  excluirConta(prova: ProvaDeIdentidade): Observable<void> {
     return this.api.excluirConta(prova).pipe(tap(() => this.irParaEntrar()));
   }
 

@@ -10,6 +10,9 @@ import {
 
 export const API_URL = environment.apiUrl;
 
+/** Como quem pede a exclusão da conta prova que é o dono: um dos três. */
+export type ProvaDeIdentidade = { senha?: string; codigo?: string; idToken?: string };
+
 /** Extrai a mensagem do ProblemDetail da API (campo `detail`) ou devolve um texto padrão. */
 export function mensagemDeErro(erro: unknown): string {
   if (erro instanceof HttpErrorResponse) {
@@ -154,6 +157,11 @@ export class AuthApi {
     return this.http.post<Acesso>(`${API_URL}/auth/login`, { email, senha }, this.opcoesDoLogin);
   }
 
+  /** App Android: o ID token que o Credential Manager entregou (o popup do Google não abre em WebView). */
+  entrarComGoogleIdToken(idToken: string): Observable<Acesso> {
+    return this.http.post<Acesso>(`${API_URL}/auth/google/token`, { idToken }, this.opcoesDoLogin);
+  }
+
   /** O código de uso único que o popup do Google entregou; a API o troca por tokens. */
   entrarComGoogle(codigo: string): Observable<Acesso> {
     return this.http.post<Acesso>(`${API_URL}/auth/google`, { codigo }, this.opcoesDoLogin);
@@ -175,8 +183,8 @@ export class AuthApi {
     return this.http.post<void>(`${API_URL}/auth/redefinir-senha`, { token, senha });
   }
 
-  /** Apaga a conta e tudo que é dela. A prova de identidade é a senha ou, em conta só do Google, o código do popup. */
-  excluirConta(prova: { senha?: string; codigo?: string }): Observable<void> {
+  /** Apaga a conta e tudo que é dela. A prova é a senha ou, em conta só do Google, o código do popup (web) ou o ID token (app). */
+  excluirConta(prova: ProvaDeIdentidade): Observable<void> {
     return this.http.post<void>(`${API_URL}/auth/excluir-conta`, prova);
   }
 

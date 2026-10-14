@@ -60,3 +60,21 @@ export async function criarClienteGoogle(
     error_callback: ({ type }) => aoFalhar(type),
   });
 }
+
+let nativoIniciadoCom: string | null = null;
+
+/**
+ * App Android: o Google bloqueia o popup em WebView, então o login passa pelo Credential Manager do aparelho
+ * (plugin @capgo/capacitor-social-login). Devolve o ID token, cujo destinatário é o client id **web**; a API o valida.
+ * Exige um client OAuth Android no mesmo projeto do Google Cloud, com o pacote e o SHA-1 da chave que assina o APK.
+ */
+export async function idTokenDoGoogle(webClientId: string): Promise<string | null> {
+  const { SocialLogin } = await import('@capgo/capacitor-social-login');
+  if (nativoIniciadoCom !== webClientId) {
+    await SocialLogin.initialize({ google: { webClientId, mode: 'online' } });
+    nativoIniciadoCom = webClientId;
+  }
+  // Sem 'scopes': o ID token já traz e-mail e nome, e escopos extras exigiriam mudar a MainActivity.
+  const resposta = await SocialLogin.login({ provider: 'google', options: {} });
+  return 'idToken' in resposta.result ? resposta.result.idToken : null;
+}

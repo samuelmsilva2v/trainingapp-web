@@ -1,11 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthApi, PerfilApi, mensagemDeErro } from '../core/api';
+import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
 import { NO_APP } from '../core/cofre';
-import { GoogleCodigo, criarClienteGoogle } from '../core/google';
+import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
 import { senhaForte } from '../core/senha';
@@ -46,6 +46,8 @@ export class PerfilTela implements OnInit {
   /** Conta só do Google: o botão de confirmar só habilita quando o popup do Google está pronto para abrir. */
   protected readonly googlePronto = signal(false);
   private clienteGoogle: GoogleCodigo | null = null;
+  /** Só no app: o client id web que o Credential Manager usa. */
+  private webClientId: string | null = null;
   protected readonly conquistasAbertas = signal(false);
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
@@ -114,11 +116,16 @@ export class PerfilTela implements OnInit {
   /** Abre a confirmação. Na conta só do Google já prepara o popup, que o navegador só deixa abrir direto de um clique. */
   protected abrirExclusao(): void {
     this.excluindo.set(true);
-    // No app o popup do Google não abre (web#34): conta só do Google ainda não consegue confirmar a exclusão por lá.
-    if (this.temSenha() || this.clienteGoogle || NO_APP) return;
+    if (this.temSenha() || this.clienteGoogle || this.webClientId) return;
     this.authApi.config().subscribe({
       next: ({ googleClientId }) => {
         if (!googleClientId) return;
+        if (NO_APP) {
+          // No app o popup do Google não abre: a prova é o ID token do Credential Manager.
+          this.webClientId = googleClientId;
+          this.googlePronto.set(true);
+          return;
+        }
         criarClienteGoogle(googleClientId, codigo => this.excluirComCodigo(codigo), tipo => {
           if (tipo === 'popup_failed_to_open') {
             this.aviso.open('Não foi possível abrir a janela do Google. Libere os pop-ups e tente de novo.', 'OK', { duration: 6000 });
@@ -145,7 +152,20 @@ export class PerfilTela implements OnInit {
   }
 
   protected confirmarComGoogle(): void {
+    if (this.webClientId) {
+      void this.confirmarComGoogleNoApp(this.webClientId);
+      return;
+    }
     this.clienteGoogle?.requestCode();
+  }
+
+  private async confirmarComGoogleNoApp(webClientId: string): Promise<void> {
+    const idToken = await idTokenDoGoogle(webClientId).catch(() => null);
+    if (!idToken) {
+      this.aviso.open('O Google não autorizou a confirmação. Tente de novo.', 'OK', { duration: 6000 });
+      return;
+    }
+    this.excluir({ idToken });
   }
 
   private excluirComCodigo(codigo?: string): void {
@@ -156,7 +176,7 @@ export class PerfilTela implements OnInit {
     this.excluir({ codigo });
   }
 
-  private excluir(prova: { senha?: string; codigo?: string }): void {
+  private excluir(prova: ProvaDeIdentidade): void {
     this.salvando.set(true);
     // Deu certo: o app recarrega na tela de login e nada da conta fica na memória.
     this.auth.excluirConta(prova).subscribe({
