@@ -271,7 +271,23 @@
   .controle { gap: 2px; button { width: 36px; height: 44px; } input { height: 44px; font-size: 20px; } }
   .stepper { padding: 6px; }
 }
-.mais-drop { align-self: flex-start; }
+// Faixa tracejada na largura do bloco, no laranja do drop-set (não compete com o check nem com "Adicionar série").
+.mais-drop {
+  width: 100%;
+  min-height: 44px;
+  border: 1.5px dashed rgba(255, 107, 0, 0.45);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: #ff6b00;
+  font: 700 13px/16px 'Inter', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer;
+  .icone { font-size: 20px; }
+  &:active { background: rgba(255, 107, 0, 0.12); }
+  &:focus-visible { outline: 2px solid var(--c-primaria); outline-offset: 2px; }
+}
 .drop-resumo {
   grid-column: 1 / -1;
   display: flex; align-items: center; gap: 8px;

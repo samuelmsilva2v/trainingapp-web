@@ -250,9 +250,9 @@ export class Treino implements OnInit, OnDestroy {
     this.serieAberta.set(null);
   }
 
-  /** Drop novo no fim do bloco, com 80% da carga da última etapa (múltiplo de 5) e 2 reps a menos que ela. */
+  /** Drop novo no fim do bloco (só em exercício planejado como drop-set), com 80% da carga da última etapa (múltiplo de 5) e 2 reps a menos. */
   protected adicionarDrop(bloco: Bloco): void {
-    if (bloco.drops.length >= MAX_DROPS) return;
+    if (!this.exercicio()?.metaDrops || bloco.drops.length >= MAX_DROPS) return;
     const fim = bloco.drops.at(-1) ?? bloco.inicio;
     this.store.atualizarExercicio(this.indice(), e => {
       const drop = this.store.serieNova(repsDoDrop(e.series[fim].reps), cargaDoDrop(e.series[fim].carga), 'DROP');

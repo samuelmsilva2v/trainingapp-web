@@ -129,9 +129,10 @@
                     <ng-container *ngTemplateOutlet="steppers; context: { $implicit: drop, i: d }" />
                   </div>
                 }
-                @if (b.drops.length < maxDrops) {
-                  <button type="button" class="btn btn-secundario mais-drop" (click)="adicionarDrop(b)">
-                    <span class="icone" aria-hidden="true">add</span> Drop
+                <!-- Só em exercício planejado como drop-set; mudar o tipo do exercício fica para a edição do exercício. -->
+                @if ((ex.metaDrops ?? 0) > 0 && b.drops.length < maxDrops) {
+                  <button type="button" class="mais-drop" (click)="adicionarDrop(b)">
+                    <span class="icone" aria-hidden="true">add</span> Adicionar drop
                   </button>
                 }
               </article>
