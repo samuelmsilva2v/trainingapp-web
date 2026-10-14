@@ -39,6 +39,7 @@ describe('TreinoStore', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    localStorage.clear();
     salvar = vi.fn((s: SessaoLocal) => of(s));
     TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar } }] });
     store = TestBed.inject(TreinoStore);
@@ -133,8 +134,8 @@ describe('TreinoStore', () => {
     expect(store.status()).toBe('salvo');
   });
 
-  it('não insiste além de uma nova tentativa automática', async () => {
-    salvar.mockImplementation(() => throwError(() => new HttpErrorResponse({ status: 0 })));
+  it('não insiste além de uma nova tentativa automática quando a API falha', async () => {
+    salvar.mockImplementation(() => throwError(() => new HttpErrorResponse({ status: 500 })));
     marcarReps(9);
     await vi.advanceTimersByTimeAsync(500);
     await vi.advanceTimersByTimeAsync(5000);
@@ -142,6 +143,92 @@ describe('TreinoStore', () => {
 
     expect(salvar).toHaveBeenCalledTimes(2);
     expect(store.status()).toBe('erro');
-    expect(store.erro()).toBe('Não foi possível conectar à API.');
+  });
+
+  const semRede = () => throwError(() => new HttpErrorResponse({ status: 0 }));
+  const guardado = () => JSON.parse(localStorage.getItem('trainingapp.treino')!) as { sessao: SessaoLocal; enviado: boolean };
+
+  it('sem rede fica offline com a mudança no aparelho e a envia quando a rede volta', async () => {
+    salvar.mockImplementationOnce(semRede);
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(store.status()).toBe('offline');
+    expect(guardado().enviado).toBe(false);
+    expect(guardado().sessao.exercicios[0].series[0].reps).toBe(9);
+
+    dispatchEvent(new Event('online'));
+    await vi.advanceTimersByTimeAsync(10);
+
+    expect(salvar).toHaveBeenCalledTimes(2);
+    expect(store.status()).toBe('salvo');
+    expect(guardado().enviado).toBe(true);
+  });
+
+  it('só marca "salvo" se o que foi enviado ainda é o estado atual', async () => {
+    const resposta = new Subject<SessaoLocal>();
+    salvar.mockReturnValueOnce(resposta);
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500); // envio em curso
+    marcarReps(10); // mudança durante o envio, antes do agrupamento disparar
+
+    resposta.next(sessao);
+    resposta.complete();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(store.status()).toBe('salvando');
+
+    await store.sincronizar(); // a prévia de XP não pode pular a mudança pendente
+    expect(salvar.mock.calls.at(-1)![0].exercicios[0].series[0].reps).toBe(10);
+    expect(store.status()).toBe('salvo');
+  });
+
+  it('409: fica a versão da API e avisa', async () => {
+    const doServidor = { ...sessao, atualizadoEm: '2026-01-01T11:00:00Z' };
+    salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 409, error: doServidor })));
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(store.sessao()).toEqual(doServidor);
+    expect(store.status()).toBe('salvo');
+    expect(store.avisoConflito()).toContain('outro aparelho');
+  });
+
+  it('encerrar sem rede guarda o treino no aparelho e o envia quando a rede volta', async () => {
+    salvar.mockImplementationOnce(semRede);
+    expect(await store.encerrar('CONCLUIDA')).toBe('offline');
+    expect(store.sessao()).toBeNull();
+    expect(guardado().sessao.estado).toBe('CONCLUIDA');
+
+    dispatchEvent(new Event('online'));
+    await vi.advanceTimersByTimeAsync(10);
+
+    expect(salvar.mock.calls.at(-1)![0].estado).toBe('CONCLUIDA');
+    expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+  });
+
+  it('ao reabrir o app, retoma do aparelho as mudanças que não chegaram à API e as envia', async () => {
+    salvar.mockImplementationOnce(semRede);
+    marcarReps(11);
+    await vi.advanceTimersByTimeAsync(500);
+
+    // App reaberto: um store novo lê o aparelho.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar } }] });
+    const reaberto = TestBed.inject(TreinoStore);
+    await vi.advanceTimersByTimeAsync(10);
+
+    expect(reaberto.sessao()!.exercicios[0].series[0].reps).toBe(11);
+    expect(salvar.mock.calls.at(-1)![0].exercicios[0].series[0].reps).toBe(11);
+    expect(reaberto.status()).toBe('salvo');
+  });
+
+  it('a versão mais antiga da API não desfaz mudanças do aparelho que ainda não chegaram a ela', async () => {
+    salvar.mockImplementation(semRede);
+    marcarReps(11);
+    await vi.advanceTimersByTimeAsync(500);
+
+    store.retomar(sessao); // a API ainda tem a versão de antes
+    expect(store.sessao()!.exercicios[0].series[0].reps).toBe(11);
+    expect(guardado().enviado).toBe(false);
   });
 });

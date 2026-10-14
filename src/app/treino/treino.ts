@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -35,6 +35,16 @@ export class Treino implements OnInit, OnDestroy {
   private readonly roteador = inject(Router);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
+
+  constructor() {
+    // 409: outro aparelho escreveu depois e o store ficou com a versão da API.
+    effect(() => {
+      const mensagem = this.store.avisoConflito();
+      if (!mensagem) return;
+      this.aviso.open(mensagem, 'OK', { duration: 6000 });
+      this.store.avisoConflito.set(null);
+    });
+  }
 
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
@@ -122,6 +132,11 @@ export class Treino implements OnInit, OnDestroy {
         }
       },
       error: e => {
+        // Sem rede: segue com o treino guardado no aparelho, se houver.
+        if (this.store.abrirDoAparelho()) {
+          this.carregando.set(false);
+          return;
+        }
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 5000 });
         this.roteador.navigate(['/hoje']);
       },
@@ -410,6 +425,13 @@ export class Treino implements OnInit, OnDestroy {
     try {
       const antes = this.gamificacao.dados();
       const resposta = await this.store.encerrar(estado);
+      if (resposta === 'offline') {
+        this.aviso.open('Sem conexão: o treino ficou salvo no aparelho e vai para a nuvem quando a rede voltar.', 'OK', {
+          duration: 6000,
+        });
+        await this.roteador.navigate(['/hoje']);
+        return;
+      }
       if (estado === 'CONCLUIDA' && resposta && (await this.mostrarResultado(resposta, antes))) {
         await this.roteador.navigate([destino]);
         return;

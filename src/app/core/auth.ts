@@ -4,6 +4,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { Observable, catchError, finalize, firstValueFrom, map, of, share, tap, throwError } from 'rxjs';
 import { AuthApi, ProvaDeIdentidade } from './api';
 import { CofreRefresh } from './cofre';
+import { apagarTreinoLocal } from './treino-store';
 import { Acesso } from './modelos';
 
 /**
@@ -31,7 +32,16 @@ export class AuthStore {
       await this.cofre.carregar();
       if (!this.cofre.valor) return; // nunca entrou neste aparelho, ou saiu
     }
-    await firstValueFrom(this.renovar().pipe(catchError(() => of(null))));
+    await firstValueFrom(
+      this.renovar().pipe(
+        catchError(() => {
+          // Sem rede no app: o refresh guardado vale até a API dizer o contrário (o 401 da primeira chamada com rede
+          // renova o token). Assim o treino guardado no aparelho abre mesmo sem sinal.
+          if (this.cofre.noApp && this.cofre.valor) this.logado.set(true);
+          return of(null);
+        }),
+      ),
+    );
   }
 
   /** Pede um access token novo. Chamadas simultâneas (vários 401 juntos) dividem uma única requisição. */
@@ -65,12 +75,23 @@ export class AuthStore {
   }
 
   sair(): Observable<void> {
-    return this.api.sair().pipe(catchError(() => of(undefined)), tap(() => this.irParaEntrar()));
+    return this.api.sair().pipe(
+      catchError(() => of(undefined)),
+      tap(() => {
+        apagarTreinoLocal();
+        this.irParaEntrar();
+      }),
+    );
   }
 
   /** Depois de apagada, a conta não existe mais: volta ao login com tudo limpo. */
   excluirConta(prova: ProvaDeIdentidade): Observable<void> {
-    return this.api.excluirConta(prova).pipe(tap(() => this.irParaEntrar()));
+    return this.api.excluirConta(prova).pipe(
+      tap(() => {
+        apagarTreinoLocal();
+        this.irParaEntrar();
+      }),
+    );
   }
 
   /** Recarrega o app na tela de login: nada da conta anterior (planos, treino em andamento) fica na memória. */

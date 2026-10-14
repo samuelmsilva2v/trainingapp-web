@@ -8,6 +8,7 @@
       @switch (store.status()) {
         @case ('salvo') { <span class="icone" aria-hidden="true">cloud_done</span> Salvo }
         @case ('salvando') { <span class="icone" aria-hidden="true">sync</span> Salvando… }
+        @case ('offline') { <span class="icone" aria-hidden="true">cloud_off</span> Offline: salvo no aparelho }
         @case ('erro') {
           <button type="button" class="tentar" (click)="store.reenviar()">
             <span class="icone" aria-hidden="true">cloud_off</span> {{ store.erro() }} · tentar de novo

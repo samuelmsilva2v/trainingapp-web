@@ -19,6 +19,9 @@
 } @else if (erro()) {
   <div class="estado">
     <p class="erro">{{ erro() }}</p>
+    @if (treinoNoAparelho()) {
+      <button type="button" class="btn btn-primario" routerLink="/treino">Continuar o treino salvo no aparelho</button>
+    }
     <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
   </div>
 } @else if (hoje(); as h) {

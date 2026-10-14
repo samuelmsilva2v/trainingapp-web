@@ -52,6 +52,8 @@ export class HojeTela implements OnInit {
   protected readonly carregando = signal(true);
   protected readonly ocupado = signal(false);
   protected readonly erro = signal<string | null>(null);
+  /** Sem rede, mas com um treino em andamento guardado no aparelho. */
+  protected readonly treinoNoAparelho = signal(false);
 
   protected readonly duracaoMinutos = duracaoMinutos;
   protected readonly resumoAberto = signal(false);
@@ -106,6 +108,8 @@ export class HojeTela implements OnInit {
       },
       error: e => {
         this.erro.set(mensagemDeErro(e));
+        // Sem rede: o treino em andamento guardado no aparelho ainda pode continuar.
+        this.treinoNoAparelho.set(this.store.abrirDoAparelho());
         this.carregando.set(false);
       },
     });

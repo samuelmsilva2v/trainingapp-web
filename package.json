@@ -26,6 +26,7 @@
     "@capacitor/core": "^8.5.3",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/network": "^8.0.1",
     "@capgo/capacitor-social-login": "^8.5.17",
     "capacitor-secure-storage-plugin": "^0.13.0",
     "rxjs": "~7.8.0",
