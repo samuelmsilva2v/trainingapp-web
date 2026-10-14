@@ -149,10 +149,11 @@
                 </button>
                 @for (d of b.drops; track d) {
                   @let drop = ex.series[d];
-                  <span class="drop-resumo" role="cell">
-                    <span class="chip drop">Drop-set</span>
-                    <span class="num">{{ drop.reps ?? '—' }} × {{ drop.carga === null ? '—' : kg(drop.carga) + ' kg' }}</span>
-                  </span>
+                  <!-- Drop nas mesmas colunas da série: ícone de carga caindo no lugar do número, sem check próprio. -->
+                  <span class="etapa-seta" role="cell" aria-label="Drop"><span class="icone" aria-hidden="true">trending_down</span></span>
+                  <span class="valor num etapa" role="cell">{{ drop.reps ?? '—' }}</span>
+                  <span class="valor num etapa" role="cell">{{ drop.carga === null ? '—' : kg(drop.carga) }}</span>
+                  <span role="cell"></span>
                 }
               </div>
             }

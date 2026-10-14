@@ -288,11 +288,7 @@
   &:active { background: rgba(255, 107, 0, 0.12); }
   &:focus-visible { outline: 2px solid var(--c-primaria); outline-offset: 2px; }
 }
-.drop-resumo {
-  grid-column: 1 / -1;
-  display: flex; align-items: center; gap: 8px;
-  padding-left: 40px;
-  color: var(--c-texto-2);
-  font: 700 15px/20px var(--fonte-titulo);
-}
-.linha.feita .drop-resumo { color: var(--c-texto); }
+// Drops de uma série fechada: linhas nas mesmas colunas (Reps e Carga), com os números do mesmo tamanho, em laranja.
+.linha { row-gap: 4px; }
+.etapa-seta { width: 28px; display: flex; justify-content: center; color: #ff6b00; .icone { font-size: 20px; } }
+.linha .valor.etapa, .linha.feita .valor.etapa { color: #ff6b00; }
