@@ -112,7 +112,7 @@
                       <button type="button" aria-label="Mais repetições" (click)="ajustar(i, 'reps', 1)"><span class="icone" aria-hidden="true">add</span></button>
                     </div>
                   </div>
-                  <small class="suave dica-drops">Drops: {{ repsDosDrops(item) }} reps</small>
+                  <small class="suave dica-drops">Etapas: {{ repsDasEtapas(item) }} reps</small>
                 } @else {
                 <span class="rotulo suave">Repetições</span>
                 <div class="reps">
@@ -139,7 +139,7 @@
                 </div>
               </div>
 
-              <!-- Normal por padrão; ligado, cada série vira drop-set com 1 a 3 drops. -->
+              <!-- Normal por padrão; ligado, cada série vira drop-set com 2 a 4 etapas (a primeira e 1 a 3 drops). -->
               <div class="stepper drops">
                 <label class="alternar">
                   <input type="checkbox" role="switch" [checked]="(item.drops ?? 0) > 0" (change)="alternarDropSet(i)" />
@@ -148,9 +148,9 @@
                 </label>
                 @if ((item.drops ?? 0) > 0) {
                   <div class="controle">
-                    <button type="button" aria-label="Menos drops" (click)="ajustar(i, 'drops', -1)"><span class="icone" aria-hidden="true">remove</span></button>
-                    <span class="faixa"><small>drops</small><input class="valor num" inputmode="numeric" aria-label="Drops em cada série" [value]="item.drops" (change)="digitar(i, 'drops', $event)" /></span>
-                    <button type="button" aria-label="Mais drops" (click)="ajustar(i, 'drops', 1)"><span class="icone" aria-hidden="true">add</span></button>
+                    <button type="button" aria-label="Menos etapas" (click)="ajustar(i, 'etapas', -1)"><span class="icone" aria-hidden="true">remove</span></button>
+                    <span class="faixa"><small>etapas</small><input class="valor num" inputmode="numeric" aria-label="Etapas do drop-set, contando a primeira" [value]="(item.drops ?? 0) + 1" (change)="digitar(i, 'etapas', $event)" /></span>
+                    <button type="button" aria-label="Mais etapas" (click)="ajustar(i, 'etapas', 1)"><span class="icone" aria-hidden="true">add</span></button>
                   </div>
                 }
               </div>

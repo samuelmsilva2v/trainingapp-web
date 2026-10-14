@@ -24,11 +24,11 @@ describe('definirCampo', () => {
     expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999.99);
   });
 
-  it('com o drop-set ligado, os drops vão de 1 a 3 (só o interruptor volta a 0)', () => {
-    expect(definirCampo(item, 'drops', 2).drops).toBe(2);
-    expect(definirCampo(item, 'drops', 7).drops).toBe(3);
-    expect(definirCampo(item, 'drops', 0).drops).toBe(1);
-    expect(definirCampo(item, 'drops', null).drops).toBe(1);
+  it('etapas do drop-set contam a primeira: 2 a 4, gravadas como drops (só o interruptor volta a 0)', () => {
+    expect(definirCampo(item, 'etapas', 3).drops).toBe(2); // 8-6-4
+    expect(definirCampo(item, 'etapas', 7).drops).toBe(3);
+    expect(definirCampo(item, 'etapas', 1).drops).toBe(1);
+    expect(definirCampo(item, 'etapas', null).drops).toBe(1);
   });
 
   it('no drop-set as reps são um número só (as da primeira etapa)', () => {

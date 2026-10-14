@@ -43,15 +43,16 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
     case 'descansoSegundos':
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
       break;
-    case 'drops':
-      // Com o drop-set ligado vai de 1 a 3; só o interruptor volta a 0 (série normal).
-      novo.drops = limitar(valor ?? 1, 1, MAX_DROPS);
+    case 'etapas':
+      // Etapas do drop-set contando a primeira (8 com 3 etapas = 8-6-4): 2 a 4, gravadas como drops = etapas - 1.
+      // Só o interruptor volta a 0 drops (série normal).
+      novo.drops = limitar((valor ?? 2) - 1, 1, MAX_DROPS);
       break;
   }
   return novo;
 }
 
-type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'reps' | 'cargaAlvo' | 'descansoSegundos' | 'drops';
+type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'reps' | 'cargaAlvo' | 'descansoSegundos' | 'etapas';
 
 @Component({
   selector: 'app-plano-editor',
@@ -228,10 +229,9 @@ export class PlanoEditor implements OnInit {
     });
   }
 
-  /** Incrementa/decrementa um campo (botões + e −). */
   /**
-   * Interruptor "Drop-set": ligar começa com 1 drop em cada série e troca a faixa de reps por um número só (o mínimo
-   * da faixa vira as reps da primeira etapa); desligar volta às séries normais.
+   * Interruptor "Drop-set": ligar começa com 2 etapas (1 drop) em cada série e troca a faixa de reps por um número só
+   * (o mínimo da faixa vira as reps da primeira etapa); desligar volta às séries normais.
    */
   protected alternarDropSet(indice: number): void {
     this.atualizarItem(indice, item =>
@@ -239,17 +239,18 @@ export class PlanoEditor implements OnInit {
     );
   }
 
-  /** Reps sugeridas de cada drop, para mostrar no card: 10 reps com 2 drops dá "8 e 6". */
-  protected repsDosDrops(item: ItemPlano): string {
-    const reps: number[] = [];
+  /** Reps de cada etapa, para mostrar no card: 10 reps com 3 etapas dá "10, 8 e 6". */
+  protected repsDasEtapas(item: ItemPlano): string {
+    const reps: number[] = [item.repsMin];
     let atual: number | null = item.repsMin;
     for (let d = 0; d < (item.drops ?? 0); d++) {
       atual = repsDoDrop(atual);
       if (atual !== null) reps.push(atual);
     }
-    return reps.length > 1 ? reps.slice(0, -1).join(', ') + ' e ' + reps.at(-1) : String(reps[0] ?? '');
+    return reps.slice(0, -1).join(', ') + ' e ' + reps.at(-1);
   }
 
+  /** Incrementa/decrementa um campo (botões + e −). */
   protected ajustar(indice: number, campo: CampoNumerico, sinal: 1 | -1): void {
     this.atualizarItem(indice, item => {
       switch (campo) {
@@ -259,8 +260,8 @@ export class PlanoEditor implements OnInit {
           return definirCampo(item, campo, passoCarga(item.cargaAlvo, sinal));
         case 'descansoSegundos':
           return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
-        case 'drops':
-          return definirCampo(item, campo, (item.drops ?? 0) + sinal);
+        case 'etapas':
+          return definirCampo(item, campo, (item.drops ?? 0) + 1 + sinal);
         case 'reps':
           return definirCampo(item, campo, item.repsMin + sinal);
         default:
@@ -286,7 +287,7 @@ export class PlanoEditor implements OnInit {
 
   private valorAtual(indice: number, campo: CampoNumerico): string {
     const item = this.dia().exercicios[indice];
-    const valor = (campo === 'reps' ? item.repsMin : item[campo]) ?? (campo === 'drops' ? 0 : null);
+    const valor = campo === 'reps' ? item.repsMin : campo === 'etapas' ? (item.drops ?? 0) + 1 : item[campo];
     return valor === null ? '' : this.texto(valor);
   }
 
