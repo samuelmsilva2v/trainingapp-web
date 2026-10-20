@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
-import { agendarFimDoDescanso, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
+import { agendarFimDoDescanso, avisoDescansoLigado, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
 import { alarmeExato, devePedirAlarmeExato, pedirAlarmeExato } from '../core/alarme-exato';
 import { atualizarContextoDoLembrete, reagendarLembretes } from '../core/lembrete';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
@@ -351,7 +351,7 @@ export class Treino implements OnInit, OnDestroy {
     this.totalDescanso.set(segundos);
     this.agora.set(Date.now());
     const fim = Date.now() + segundos * 1000;
-    if (devePedirAlarmeExato()) {
+    if (devePedirAlarmeExato() && avisoDescansoLigado()) {
       // Primeiro descanso no app: explica e pede o alarme exato antes de agendar (e antes do pedido de notificação do sistema).
       this.fimDescanso.set(fim);
       void this.explicarAlarmeExato();

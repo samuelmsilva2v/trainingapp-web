@@ -6,6 +6,7 @@ import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
 import { NO_APP } from '../core/cofre';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
+import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -53,6 +54,7 @@ export class PerfilTela implements OnInit {
   protected readonly conquistasAbertas = signal(false);
   protected readonly noApp = NO_APP;
   protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
+  protected readonly avisoDescanso = signal(avisoDescansoLigado());
   protected readonly diasDaSemana = [
     { valor: 0, letra: 'D', nome: 'Domingo' },
     { valor: 1, letra: 'S', nome: 'Segunda' },
@@ -65,6 +67,7 @@ export class PerfilTela implements OnInit {
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
+  protected readonly frequenciasPeso = [7, 15, 30];
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
@@ -214,6 +217,12 @@ export class PerfilTela implements OnInit {
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
       },
     });
+  }
+
+  /** Aviso de fim do descanso: guardado no aparelho; desligar cancela o aviso já agendado. */
+  protected alternarAvisoDescanso(): void {
+    this.avisoDescanso.update(ligado => !ligado);
+    salvarAvisoDescanso(this.avisoDescanso());
   }
 
   /** Lembrete de treino: guardado no aparelho e reagendado a cada mudança. */

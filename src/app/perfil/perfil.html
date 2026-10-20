@@ -43,21 +43,32 @@
       }
     </section>
 
-    <form class="card" (submit)="$event.preventDefault(); salvar()">
+    <section class="card" aria-label="Dados pessoais">
+      <header class="card-topo">
+        <h2 class="titulo"><span class="icone" aria-hidden="true">person</span> Dados pessoais</h2>
+      </header>
+
+      <form class="campos" (submit)="$event.preventDefault(); salvar()">
+        <label class="campo">
+          <span class="legenda">Nome de exibição</span>
+          <span class="entrada">
+            <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
+            <span class="icone" aria-hidden="true">edit</span>
+          </span>
+        </label>
+        <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
+          <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar nome' }}
+        </button>
+      </form>
+
+      <app-peso-secao />
+    </section>
+
+    <section class="card" aria-label="Preferências">
       <header class="card-topo">
         <h2 class="titulo"><span class="icone" aria-hidden="true">tune</span> Preferências</h2>
         <span class="rotulo suave">Ajustes</span>
       </header>
-
-      <label class="campo">
-        <span class="legenda">Nome de exibição</span>
-        <span class="entrada">
-          <input type="text" maxlength="100" autocomplete="name" [value]="nome()" (input)="nome.set($any($event.target).value)" />
-          <span class="icone" aria-hidden="true">edit</span>
-        </span>
-      </label>
-
-      <app-peso-secao [lembreteDias]="lembretePeso()" (lembreteMudou)="mudarLembretePeso($event)" />
 
       <div class="campo">
         <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
@@ -72,40 +83,63 @@
         <p class="suave dica">O tema claro chega em breve.</p>
       </div>
 
-      <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
-        <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar alterações' }}
-      </button>
-    </form>
+      <div class="campos" role="group" aria-labelledby="rotulo-notificacoes">
+        <span class="legenda" id="rotulo-notificacoes">Notificações</span>
 
-    @if (noApp) {
-      <section class="card" aria-label="Lembrete de treino">
-        <header class="card-topo">
-          <h2 class="titulo"><span class="icone" aria-hidden="true">calendar_view_week</span> Lembrete de treino</h2>
-        </header>
-        <label class="alternar">
-          <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
-          <span class="trilho" aria-hidden="true"></span>
-          <span class="legenda">Avisar nos dias de treino</span>
-        </label>
-        @if (lembrete().ligado) {
-          <label class="campo">
-            <span class="legenda">Horário</span>
-            <span class="entrada">
-              <!-- Sem ícone próprio: o seletor de horário do Android já desenha o dele. -->
-              <input type="time" required [value]="lembrete().hora" (change)="mudarHora($any($event.target).value)" />
-            </span>
+        <div class="notificacao">
+          <label class="alternar">
+            <input type="checkbox" role="switch" [checked]="lembretePeso() !== null"
+                   (change)="mudarLembretePeso(lembretePeso() === null ? 7 : null)" />
+            <span class="trilho" aria-hidden="true"></span>
+            <span class="legenda">Lembrete de pesagem</span>
           </label>
-          <div class="tema dias" role="group" aria-label="Dias da semana">
-            @for (dia of diasDaSemana; track dia.valor) {
-              <button type="button" class="opcao" [class.sel]="lembrete().dias.includes(dia.valor)"
-                      [attr.aria-pressed]="lembrete().dias.includes(dia.valor)" [attr.aria-label]="dia.nome"
-                      (click)="alternarDia(dia.valor)">{{ dia.letra }}</button>
+          @if (lembretePeso() !== null) {
+            <div class="tema frequencias" role="group" aria-label="Frequência do lembrete de pesagem">
+              @for (dias of frequenciasPeso; track dias) {
+                <button type="button" class="opcao" [class.sel]="lembretePeso() === dias" [attr.aria-pressed]="lembretePeso() === dias"
+                        (click)="mudarLembretePeso(dias)">{{ dias }} dias</button>
+              }
+            </div>
+          }
+        </div>
+
+        @if (noApp) {
+          <div class="notificacao">
+            <label class="alternar">
+              <input type="checkbox" role="switch" [checked]="avisoDescanso()" (change)="alternarAvisoDescanso()" />
+              <span class="trilho" aria-hidden="true"></span>
+              <span class="legenda">Aviso de fim do descanso</span>
+            </label>
+            <p class="suave dica">Notificação quando o descanso entre séries acaba, mesmo com a tela bloqueada. Desligado, o fim do descanso fica só no cronômetro do treino.</p>
+          </div>
+
+          <div class="notificacao">
+            <label class="alternar">
+              <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
+              <span class="trilho" aria-hidden="true"></span>
+              <span class="legenda">Lembrete de treino</span>
+            </label>
+            @if (lembrete().ligado) {
+              <label class="campo">
+                <span class="legenda">Horário</span>
+                <span class="entrada">
+                  <!-- Sem ícone próprio: o seletor de horário do Android já desenha o dele. -->
+                  <input type="time" required [value]="lembrete().hora" (change)="mudarHora($any($event.target).value)" />
+                </span>
+              </label>
+              <div class="tema dias" role="group" aria-label="Dias da semana">
+                @for (dia of diasDaSemana; track dia.valor) {
+                  <button type="button" class="opcao" [class.sel]="lembrete().dias.includes(dia.valor)"
+                          [attr.aria-pressed]="lembrete().dias.includes(dia.valor)" [attr.aria-label]="dia.nome"
+                          (click)="alternarDia(dia.valor)">{{ dia.letra }}</button>
+                }
+              </div>
+              <p class="suave dica">Não avisa no dia em que você já treinou. Os avisos valem por 14 dias e se renovam quando você abre o app.</p>
             }
           </div>
-          <p class="suave dica">Não avisa no dia em que você já treinou. Os avisos valem por 14 dias e se renovam quando você abre o app.</p>
         }
-      </section>
-    }
+      </div>
+    </section>
 
     <section class="card" aria-label="Dados do treino">
       <header class="card-topo">

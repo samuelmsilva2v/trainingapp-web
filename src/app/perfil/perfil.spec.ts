@@ -168,20 +168,47 @@ describe('PerfilTela: peso', () => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
-  it('sem pesagens mostra o convite e o lembrete desligado', () => {
-    const { tela } = abrir({}, []);
-    const secao = tela.querySelector('[aria-labelledby="titulo-peso"]')!;
+  const preferencias = (tela: HTMLElement) => tela.querySelector('[aria-label="Preferências"]')!;
+  const interruptorPeso = (tela: HTMLElement) =>
+    [...preferencias(tela).querySelectorAll<HTMLLabelElement>('.alternar')].find(l => l.textContent!.includes('Lembrete de pesagem'))!
+      .querySelector<HTMLInputElement>('input')!;
 
-    expect(secao.textContent).toContain('Nenhuma pesagem ainda');
-    expect(secao.querySelector('[aria-pressed="true"]')!.textContent!.trim()).toBe('Desligado');
+  it('Dados pessoais tem o nome e o peso; Preferências tem o tema e as notificações', () => {
+    const { tela } = abrir({}, []);
+    const dados = tela.querySelector('[aria-label="Dados pessoais"]')!;
+
+    expect(dados.querySelector('input[autocomplete="name"]')).not.toBeNull();
+    expect(dados.querySelector('[aria-labelledby="titulo-peso"]')!.textContent).toContain('Nenhuma pesagem ainda');
+    expect(dados.textContent).not.toContain('Lembrete');
+    expect(preferencias(tela).textContent).toContain('Tema do aplicativo');
+    expect(preferencias(tela).textContent).toContain('Notificações');
+    expect(preferencias(tela).querySelector('input[autocomplete="name"]')).toBeNull();
   });
 
-  it('fica dentro de Preferências, no lugar da unidade de peso, e mostra o último peso, a variação e o gráfico', () => {
+  it('lembrete de pesagem desligado não mostra a frequência; ligar salva com 7 dias', () => {
+    const { fixture, tela } = abrir({}, []);
+    expect(interruptorPeso(tela).checked).toBe(false);
+    expect(preferencias(tela).querySelector('.frequencias')).toBeNull();
+
+    interruptorPeso(tela).click();
+    fixture.detectChanges();
+
+    expect(atualizar).toHaveBeenCalledWith({ nome: 'Samuel', lembretePesoDias: 7 });
+    expect(preferencias(tela).querySelector('.frequencias [aria-pressed="true"]')!.textContent!.trim()).toBe('7 dias');
+  });
+
+  it('desligar o lembrete de pesagem salva null', () => {
+    const { tela } = abrir({ lembretePesoDias: 15 }, []);
+    interruptorPeso(tela).click();
+
+    expect(atualizar).toHaveBeenCalledWith({ nome: 'Samuel', lembretePesoDias: null });
+  });
+
+  it('mostra o último peso, a variação e o gráfico', () => {
     const { tela } = abrir({}, [{ data: dia(3), kg: 81 }, { data: dia(0), kg: 80 }]);
-    const secao = tela.querySelector('form.card [aria-labelledby="titulo-peso"]')!;
+    const secao = tela.querySelector('[aria-labelledby="titulo-peso"]')!;
     const texto = secao.textContent!;
 
-    expect(tela.textContent).not.toContain('Unidade de peso');
     expect(texto).toContain('80 kg');
     expect(texto).toContain('−1,0 kg');
     expect(texto).not.toContain('IMC');
@@ -228,7 +255,7 @@ describe('PerfilTela: peso', () => {
     expect(secao.textContent).toContain('Tendência');
   });
 
-  it('salvar Preferências manda o nome com o lembrete atual', () => {
+  it('salvar o nome manda junto o lembrete atual', () => {
     const { fixture, tela } = abrir({ lembretePesoDias: 15 }, []);
     const campo = tela.querySelector<HTMLInputElement>('input[autocomplete="name"]')!;
     campo.value = 'Sam';
@@ -240,8 +267,8 @@ describe('PerfilTela: peso', () => {
   });
 
   it('escolher a frequência do lembrete salva na hora', () => {
-    const { fixture, tela } = abrir({}, []);
-    const opcoes = [...tela.querySelectorAll<HTMLButtonElement>('[aria-labelledby="rotulo-lembrete-peso"] button')];
+    const { fixture, tela } = abrir({ lembretePesoDias: 7 }, []);
+    const opcoes = [...preferencias(tela).querySelectorAll<HTMLButtonElement>('.frequencias button')];
     opcoes.find(b => b.textContent!.trim() === '15 dias')!.click();
     fixture.detectChanges();
 

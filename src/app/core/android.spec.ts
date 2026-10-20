@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router, provideRouter } from '@angular/router';
 import { App } from '@capacitor/app';
 import { vi } from 'vitest';
-import { IntegracaoAndroid } from './android';
+import { IntegracaoAndroid, avisoDescansoLigado, salvarAvisoDescanso } from './android';
 
 vi.mock('@capacitor/app', () => ({ App: { addListener: vi.fn(), exitApp: vi.fn() } }));
 
@@ -58,5 +58,17 @@ describe('voltar do Android', () => {
     integracao.voltar(false);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/hoje');
     expect(App.exitApp).not.toHaveBeenCalled();
+  });
+});
+
+describe('aviso de fim do descanso', () => {
+  afterEach(() => localStorage.removeItem('trainingapp.avisoDescanso'));
+
+  it('vem ligado e a escolha fica guardada no aparelho', () => {
+    expect(avisoDescansoLigado()).toBe(true);
+    salvarAvisoDescanso(false);
+    expect(avisoDescansoLigado()).toBe(false);
+    salvarAvisoDescanso(true);
+    expect(avisoDescansoLigado()).toBe(true);
   });
 });

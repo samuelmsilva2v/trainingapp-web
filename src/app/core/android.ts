@@ -76,6 +76,26 @@ export function manterTelaLigada(ligada: boolean): void {
 /** Uma notificação de descanso por vez: agendar outra substitui a anterior. */
 const DESCANSO = 1;
 const CANAL_DESCANSO = 'descanso';
+const CHAVE_AVISO_DESCANSO = 'trainingapp.avisoDescanso';
+
+/** Preferência do aparelho (Perfil > Notificações): desligada, o fim do descanso fica só no cronômetro e na vibração da tela. */
+export function avisoDescansoLigado(): boolean {
+  try {
+    return localStorage.getItem(CHAVE_AVISO_DESCANSO) !== 'desligado';
+  } catch {
+    return true;
+  }
+}
+
+export function salvarAvisoDescanso(ligado: boolean): void {
+  try {
+    if (ligado) localStorage.removeItem(CHAVE_AVISO_DESCANSO);
+    else localStorage.setItem(CHAVE_AVISO_DESCANSO, 'desligado');
+  } catch {
+    // sem armazenamento: vale o padrão (ligado)
+  }
+  if (!ligado) cancelarFimDoDescanso();
+}
 
 /**
  * Avisa o fim do descanso por notificação local (só no app), para tocar com a tela bloqueada ou o app em segundo plano.
@@ -83,7 +103,7 @@ const CANAL_DESCANSO = 'descanso';
  * A permissão de notificação é pedida no primeiro agendamento; recusada, o cronômetro na tela segue valendo.
  */
 export async function agendarFimDoDescanso(fim: number, texto: string): Promise<void> {
-  if (!NO_APP) return;
+  if (!NO_APP || !avisoDescansoLigado()) return;
   try {
     await LocalNotifications.cancel({ notifications: [{ id: DESCANSO }] });
     await LocalNotifications.schedule({

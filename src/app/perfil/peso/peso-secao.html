@@ -95,14 +95,4 @@
   } @else {
     <p class="suave vazio">Nenhuma pesagem ainda. Registre a primeira para acompanhar a evolução.</p>
   }
-
-  <div class="campo">
-    <span class="legenda" id="rotulo-lembrete-peso">Lembrete de pesagem</span>
-    <div class="tema lembretes" role="group" aria-labelledby="rotulo-lembrete-peso">
-      @for (l of lembretes; track l.valor) {
-        <button type="button" class="opcao" [class.sel]="lembreteDias() === l.valor" [attr.aria-pressed]="lembreteDias() === l.valor"
-                (click)="lembreteMudou.emit(l.valor)">{{ l.rotulo }}</button>
-      }
-    </div>
-  </div>
 </div>

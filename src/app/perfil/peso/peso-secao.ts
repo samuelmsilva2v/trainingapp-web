@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PesoApi, mensagemDeErro } from '../../core/api';
@@ -33,7 +33,7 @@ function formatarDia(data: string): string {
   return dia.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', ...ano }).replaceAll('.', '');
 }
 
-/** Bloco de peso das Preferências do Perfil (sempre em kg): último peso, variação, gráfico com tendência, lista e frequência do lembrete. */
+/** Bloco de peso dos Dados pessoais do Perfil (sempre em kg): último peso, variação, gráfico com tendência e lista. */
 @Component({
   selector: 'app-peso-secao',
   templateUrl: './peso-secao.html',
@@ -44,15 +44,6 @@ export class PesoSecao implements OnInit {
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
 
-  readonly lembreteDias = input<number | null>(null);
-  readonly lembreteMudou = output<number | null>();
-
-  protected readonly lembretes = [
-    { valor: null, rotulo: 'Desligado' },
-    { valor: 7, rotulo: '7 dias' },
-    { valor: 15, rotulo: '15 dias' },
-    { valor: 30, rotulo: '30 dias' },
-  ];
   protected readonly periodos: { valor: Periodo; rotulo: string }[] = [
     { valor: 30, rotulo: '30 dias' },
     { valor: 90, rotulo: '90 dias' },

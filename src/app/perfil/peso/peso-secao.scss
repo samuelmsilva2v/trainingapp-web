@@ -1,7 +1,7 @@
 // Mesmos cards, títulos, seletores e listas do Perfil.
 @use '../perfil';
 
-// Bloco dentro do card de Preferências, no lugar da antiga linha "Unidade de peso".
+// Bloco dentro do card de Dados pessoais.
 .bloco { display: flex; flex-direction: column; gap: 16px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
 .topo-peso { display: flex; align-items: center; gap: 10px; > .icone { color: var(--c-texto-2); font-size: 20px; } }
 
@@ -20,7 +20,6 @@
 }
 
 .periodos { grid-template-columns: repeat(3, 1fr); }
-.lembretes { grid-template-columns: repeat(4, 1fr); .opcao { font-size: 12px; gap: 0; } }
 
 .grafico { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 svg { display: block; width: 100%; height: auto; overflow: visible; }
