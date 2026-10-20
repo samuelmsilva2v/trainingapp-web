@@ -177,10 +177,13 @@ export interface Perfil {
   email: string;
   /** Falso em conta criada só pelo Google: não há senha para trocar. */
   temSenha: boolean;
+  /** A cada quantos dias lembrar de se pesar (7, 15 ou 30); null = desligado. */
+  lembretePesoDias: number | null;
 }
 
 export interface PerfilRequest {
   nome: string;
+  lembretePesoDias: number | null;
 }
 
 /** Token de acesso (Bearer) e quantos segundos ele ainda vale. O refresh fica num cookie HttpOnly. */
@@ -209,4 +212,10 @@ export interface Gamificacao {
   recordes: number;
   treinouHoje: boolean;
   conquistas: Conquista[];
+}
+
+/** Uma pesagem por dia; `data` é o dia (AAAA-MM-DD). */
+export interface Peso {
+  data: string;
+  kg: number;
 }

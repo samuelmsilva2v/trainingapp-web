@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CofreRefresh } from './cofre';
 import {
-  Acesso, Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Plano, PlanoRequest, PlanoResumo,
+  Acesso, Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Peso, Plano, PlanoRequest, PlanoResumo,
   SessaoLocal, SessaoResumo,
 } from './modelos';
 
@@ -121,6 +121,24 @@ export class PerfilApi {
 
   atualizar(perfil: PerfilRequest): Observable<Perfil> {
     return this.http.put<Perfil>(`${API_URL}/perfil`, perfil);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class PesoApi {
+  private readonly http = inject(HttpClient);
+
+  listar(): Observable<Peso[]> {
+    return this.http.get<Peso[]>(`${API_URL}/peso`);
+  }
+
+  /** Grava ou substitui a pesagem do dia. */
+  registrar(data: string, kg: number): Observable<Peso> {
+    return this.http.put<Peso>(`${API_URL}/peso/${data}`, { kg });
+  }
+
+  excluir(data: string): Observable<void> {
+    return this.http.delete<void>(`${API_URL}/peso/${data}`);
   }
 }
 

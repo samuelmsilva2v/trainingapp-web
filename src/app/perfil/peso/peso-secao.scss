@@ -1,0 +1,53 @@
+// Mesmos cards, títulos, seletores e listas do Perfil.
+@use '../perfil';
+
+// Bloco dentro do card de Preferências, no lugar da antiga linha "Unidade de peso".
+.bloco { display: flex; flex-direction: column; gap: 16px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
+.topo-peso { display: flex; align-items: center; gap: 10px; > .icone { color: var(--c-texto-2); font-size: 20px; } }
+
+.registrar { height: 36px; padding: 0 14px; font-size: 13px; .icone { font-size: 18px; } }
+
+.resumo { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.atual { display: flex; flex-direction: column; gap: 2px; }
+.valor-grande { font: 700 32px/36px var(--fonte-titulo); small { font-size: 16px; font-weight: 600; color: var(--c-texto-2); } }
+.numeros {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  div { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  dt { font-size: 11px; line-height: 14px; }
+  dd { margin: 0; font: 700 14px/20px 'Inter', sans-serif; }
+}
+
+.periodos { grid-template-columns: repeat(3, 1fr); }
+.lembretes { grid-template-columns: repeat(4, 1fr); .opcao { font-size: 12px; gap: 0; } }
+
+.grafico { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grade { stroke: var(--c-sup-4); stroke-width: 1; }
+.rotulo-eixo { fill: var(--c-texto-2); font: 400 10px 'Inter', sans-serif; }
+.ponto { fill: var(--c-secundaria); stroke: var(--c-sup-1); stroke-width: 1.5; }
+.linha-pesos { fill: none; stroke: var(--c-primaria); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.tendencia { fill: none; stroke: var(--c-texto-2); stroke-width: 1.5; stroke-dasharray: 4 4; stroke-linecap: round; }
+.legenda-grafico { display: flex; gap: 16px; font-size: 11px; line-height: 14px; > span { display: inline-flex; align-items: center; gap: 6px; } }
+.marca-pesagem { position: relative; width: 16px; height: 2px; background: var(--c-primaria); &::after { content: ''; position: absolute; left: 4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--c-secundaria); } }
+.marca-tendencia { width: 16px; border-top: 2px dashed var(--c-texto-2); }
+
+.vazio { padding: 8px 0; }
+
+.pesos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  li { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 4px 0 14px; border-radius: var(--r-sm); background: var(--c-sup-3); }
+  li .suave { flex: 1; }
+  .btn-icone .icone { font-size: 20px; color: var(--c-texto-2); }
+}
+
+// Classes próprias (não as do Perfil): as conquistas são procuradas por elas.
+.lista-topo { @extend .conquistas-topo; }
+.qtd { @extend .contagem; }
+.mais { width: 100%; }

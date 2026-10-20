@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
-import { AuthApi, GamificacaoApi, PerfilApi } from '../core/api';
+import { AuthApi, GamificacaoApi, PerfilApi, PesoApi } from '../core/api';
 import { AuthStore } from '../core/auth';
-import { Gamificacao, Perfil } from '../core/modelos';
+import { Gamificacao, Perfil, Peso } from '../core/modelos';
 import { PerfilTela } from './perfil';
 
 const gamificacao: Gamificacao = {
@@ -17,11 +17,14 @@ const gamificacao: Gamificacao = {
 
 describe('PerfilTela', () => {
   const excluirConta = vi.fn(() => of(undefined));
+  const atualizar = vi.fn((p: Partial<Perfil>) => of({ nome: 'Samuel', email: 'samuel@teste.com', temSenha: false, lembretePesoDias: null, ...p }));
 
-  function abrir(perfil: Partial<Perfil> = {}, config = { googleClientId: '' }) {
+  function abrir(perfil: Partial<Perfil> = {}, config = { googleClientId: '' }, pesos: Peso[] = []) {
+    atualizar.mockClear();
     TestBed.configureTestingModule({
       providers: [
-        { provide: PerfilApi, useValue: { obter: () => of({ nome: 'Samuel', email: 'samuel@teste.com', temSenha: false, ...perfil }), atualizar: () => of({ nome: 'Samuel' }) } },
+        { provide: PerfilApi, useValue: { obter: () => of({ nome: 'Samuel', email: 'samuel@teste.com', temSenha: false, ...perfil }), atualizar } },
+        { provide: PesoApi, useValue: { listar: () => of(pesos) } },
         { provide: GamificacaoApi, useValue: { resumo: () => of(gamificacao) } },
         { provide: AuthApi, useValue: { config: () => of(config) } },
         { provide: AuthStore, useValue: { excluirConta, sair: () => of(undefined) } },
@@ -137,5 +140,112 @@ describe('PerfilTela', () => {
 
     configuracao.callback({ code: 'codigo-do-popup' });
     expect(excluirConta).toHaveBeenCalledWith({ codigo: 'codigo-do-popup' });
+  });
+});
+
+describe('PerfilTela: peso', () => {
+  const atualizar = vi.fn((p: Partial<Perfil>) => of({ nome: 'Samuel', email: 's@t.com', temSenha: true, lembretePesoDias: null, ...p }));
+
+  function abrir(perfil: Partial<Perfil>, pesos: Peso[]) {
+    atualizar.mockClear();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: PerfilApi, useValue: { obter: () => of({ nome: 'Samuel', email: 's@t.com', temSenha: true, lembretePesoDias: null, ...perfil }), atualizar } },
+        { provide: PesoApi, useValue: { listar: () => of(pesos) } },
+        { provide: GamificacaoApi, useValue: { resumo: () => of(gamificacao) } },
+        { provide: AuthApi, useValue: { config: () => of({ googleClientId: '' }) } },
+        { provide: AuthStore, useValue: { excluirConta: () => of(undefined), sair: () => of(undefined) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(PerfilTela);
+    fixture.detectChanges();
+    return { fixture, tela: fixture.nativeElement as HTMLElement };
+  }
+
+  const hoje = new Date();
+  const dia = (atras: number) => {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - atras);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  it('sem pesagens mostra o convite e o lembrete desligado', () => {
+    const { tela } = abrir({}, []);
+    const secao = tela.querySelector('[aria-labelledby="titulo-peso"]')!;
+
+    expect(secao.textContent).toContain('Nenhuma pesagem ainda');
+    expect(secao.querySelector('[aria-pressed="true"]')!.textContent!.trim()).toBe('Desligado');
+  });
+
+  it('fica dentro de Preferências, no lugar da unidade de peso, e mostra o último peso, a variação e o gráfico', () => {
+    const { tela } = abrir({}, [{ data: dia(3), kg: 81 }, { data: dia(0), kg: 80 }]);
+    const secao = tela.querySelector('form.card [aria-labelledby="titulo-peso"]')!;
+    const texto = secao.textContent!;
+
+    expect(tela.textContent).not.toContain('Unidade de peso');
+    expect(texto).toContain('80 kg');
+    expect(texto).toContain('−1,0 kg');
+    expect(texto).not.toContain('IMC');
+    expect(secao.querySelectorAll('svg circle').length).toBe(2);
+    expect(secao.querySelector('svg polyline')).not.toBeNull();
+  });
+
+  it('a linha principal passa pelos pontos; com menos de 5 pesagens não há tendência', () => {
+    const { tela } = abrir({}, [{ data: dia(9), kg: 77.4 }, { data: dia(5), kg: 78.4 }, { data: dia(0), kg: 80.2 }]);
+    const secao = tela.querySelector('[aria-labelledby="titulo-peso"]')!;
+    const pontos = [...secao.querySelectorAll('svg circle')].map(c => `${Number(c.getAttribute('cx')).toFixed(1)},${Number(c.getAttribute('cy')).toFixed(1)}`);
+
+    expect(secao.querySelector('.linha-pesos')!.getAttribute('points')).toBe(pontos.join(' '));
+    expect(secao.querySelector('.tendencia')).toBeNull();
+    expect(secao.textContent).not.toContain('Tendência');
+    // Eixo em kg inteiros, de 77 a 81.
+    expect([...secao.querySelectorAll('svg .rotulo-eixo.num')].map(t => t.textContent)).toEqual(['81', '79', '77']);
+  });
+
+  it('a lista mostra as 5 mais recentes e o "Mostrar mais" abre mais 5', () => {
+    const pesos = Array.from({ length: 12 }, (_, i) => ({ data: dia(11 - i), kg: 80 }));
+    const { fixture, tela } = abrir({}, pesos);
+    tela.querySelector<HTMLButtonElement>('.lista-topo')!.click();
+    fixture.detectChanges();
+    const mais = () => tela.querySelector<HTMLButtonElement>('.mais');
+
+    expect(tela.querySelectorAll('.pesos li').length).toBe(5);
+    expect(mais()!.textContent).toContain('7 restantes');
+    mais()!.click();
+    fixture.detectChanges();
+    expect(tela.querySelectorAll('.pesos li').length).toBe(10);
+    mais()!.click();
+    fixture.detectChanges();
+    expect(tela.querySelectorAll('.pesos li').length).toBe(12);
+    expect(mais()).toBeNull();
+  });
+
+  it('com 5 pesagens ou mais, a tendência aparece tracejada e no resumo', () => {
+    const pesos = [9, 7, 5, 3, 0].map((atras, i) => ({ data: dia(atras), kg: 80 + i * 0.3 }));
+    const { tela } = abrir({}, pesos);
+    const secao = tela.querySelector('[aria-labelledby="titulo-peso"]')!;
+
+    expect(secao.querySelector('.tendencia')).not.toBeNull();
+    expect(secao.textContent).toContain('Tendência');
+  });
+
+  it('salvar Preferências manda o nome com o lembrete atual', () => {
+    const { fixture, tela } = abrir({ lembretePesoDias: 15 }, []);
+    const campo = tela.querySelector<HTMLInputElement>('input[autocomplete="name"]')!;
+    campo.value = 'Sam';
+    campo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    tela.querySelector('form')!.dispatchEvent(new Event('submit'));
+
+    expect(atualizar).toHaveBeenCalledWith({ nome: 'Sam', lembretePesoDias: 15 });
+  });
+
+  it('escolher a frequência do lembrete salva na hora', () => {
+    const { fixture, tela } = abrir({}, []);
+    const opcoes = [...tela.querySelectorAll<HTMLButtonElement>('[aria-labelledby="rotulo-lembrete-peso"] button')];
+    opcoes.find(b => b.textContent!.trim() === '15 dias')!.click();
+    fixture.detectChanges();
+
+    expect(atualizar).toHaveBeenCalledWith({ nome: 'Samuel', lembretePesoDias: 15 });
+    expect(opcoes.find(b => b.getAttribute('aria-pressed') === 'true')!.textContent!.trim()).toBe('15 dias');
   });
 });

@@ -53,8 +53,6 @@ input {
   font: 400 16px/24px 'Inter', sans-serif;
   &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
 }
-.peso { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-3); > .icone { color: var(--c-texto-2); font-size: 20px; } .texto { flex: 1; } .suave { font-size: 11px; line-height: 14px; } }
-.selo { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 4px; background: var(--c-sup-2); color: var(--c-primaria); font: 700 12px/16px 'Inter', sans-serif; .icone { font-size: 14px; } }
 
 .tema { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--r-sm); background: var(--c-sup-3); }
 .opcao {

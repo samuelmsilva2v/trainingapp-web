@@ -1,0 +1,108 @@
+<div class="bloco" role="group" aria-labelledby="titulo-peso">
+  <header class="card-topo">
+    <span class="topo-peso"><span class="icone" aria-hidden="true">scale</span> <span class="legenda-forte" id="titulo-peso">Peso corporal (kg)</span></span>
+    <button type="button" class="btn btn-primario registrar" [disabled]="carregando() || erro()" (click)="registrar()">
+      <span class="icone" aria-hidden="true">add</span> Registrar
+    </button>
+  </header>
+
+  @if (carregando()) {
+    <p class="suave" role="status">Carregando…</p>
+  } @else if (erro()) {
+    <p class="erro">{{ erro() }}</p>
+    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
+  } @else if (ultimo(); as u) {
+    <div class="resumo">
+      <div class="atual">
+        <span class="valor-grande num">{{ kg(u.kg) }} <small>kg</small></span>
+        <span class="suave">{{ dia(u.data) }}</span>
+      </div>
+      <dl class="numeros">
+        @if (variacao(); as v) {
+          <div>
+            <dt class="suave">Desde {{ dia(v.desde) }}</dt>
+            <dd class="num">{{ v.kg > 0 ? '+' : v.kg < 0 ? '−' : '' }}{{ kg1(v.kg < 0 ? -v.kg : v.kg) }} kg</dd>
+          </div>
+        }
+        @if (tendenciaAtual(); as t) {
+          <div>
+            <dt class="suave">Tendência</dt>
+            <dd class="num destaque">{{ kg1(t) }} kg</dd>
+          </div>
+        }
+      </dl>
+    </div>
+    <div class="tema periodos" role="group" aria-label="Período do gráfico">
+      @for (p of periodos; track p.valor) {
+        <button type="button" class="opcao" [class.sel]="periodo() === p.valor" [attr.aria-pressed]="periodo() === p.valor"
+                (click)="periodo.set(p.valor)">{{ p.rotulo }}</button>
+      }
+    </div>
+
+    @if (grafico(); as g) {
+      <figure class="grafico">
+        <svg [attr.viewBox]="'0 0 ' + largura + ' ' + altura" role="img" [attr.aria-label]="descricaoGrafico()">
+          @for (linha of g.grade; track $index) {
+            <line class="grade" x1="36" [attr.x2]="g.direita" [attr.y1]="linha.y" [attr.y2]="linha.y" />
+            <text class="rotulo-eixo num" x="30" [attr.y]="linha.y + 3" text-anchor="end">{{ linha.rotulo }}</text>
+          }
+          @for (d of g.datas; track $index) {
+            <text class="rotulo-eixo" [attr.x]="d.x" [attr.y]="g.baseDatas" [attr.text-anchor]="d.ancora">{{ d.rotulo }}</text>
+          }
+          @if (g.linhaTendencia) {
+            <polyline class="tendencia" [attr.points]="g.linhaTendencia" />
+          }
+          <polyline class="linha-pesos" [attr.points]="g.linhaPesos" />
+          @for (p of g.pontos; track $index) {
+            <circle class="ponto" [attr.cx]="p.x" [attr.cy]="p.y" r="3.5"><title>{{ p.titulo }}</title></circle>
+          }
+        </svg>
+        <figcaption class="legenda-grafico suave">
+          <span><span class="marca-pesagem" aria-hidden="true"></span> Pesagens</span>
+          @if (g.linhaTendencia) {
+            <span><span class="marca-tendencia" aria-hidden="true"></span> Tendência (média)</span>
+          }
+        </figcaption>
+      </figure>
+    } @else {
+      <p class="suave vazio">Nenhuma pesagem nesse período.</p>
+    }
+
+    <button type="button" class="lista-topo" [attr.aria-expanded]="listaAberta()" aria-controls="lista-pesos"
+            (click)="listaAberta.set(!listaAberta())">
+      <span class="legenda-forte">Pesagens</span>
+      <span class="qtd num">{{ lista().length }}</span>
+      <span class="icone" aria-hidden="true">{{ listaAberta() ? 'expand_less' : 'expand_more' }}</span>
+    </button>
+    @if (listaAberta()) {
+      <ul class="pesos" id="lista-pesos">
+        @for (p of listaVisivel(); track p.data) {
+          <li>
+            <span class="suave">{{ dia(p.data) }}</span>
+            <span class="num">{{ kg(p.kg) }} kg</span>
+            <button type="button" class="btn-icone" [attr.aria-label]="'Excluir pesagem de ' + dia(p.data)" (click)="excluir(p)">
+              <span class="icone" aria-hidden="true">delete</span>
+            </button>
+          </li>
+        }
+      </ul>
+      @if (listaVisivel().length < lista().length) {
+        <button type="button" class="btn btn-secundario mais" (click)="mostrarMais()">
+          Mostrar mais ({{ lista().length - listaVisivel().length }} restantes)
+        </button>
+      }
+    }
+  } @else {
+    <p class="suave vazio">Nenhuma pesagem ainda. Registre a primeira para acompanhar a evolução.</p>
+  }
+
+  <div class="campo">
+    <span class="legenda" id="rotulo-lembrete-peso">Lembrete de pesagem</span>
+    <div class="tema lembretes" role="group" aria-labelledby="rotulo-lembrete-peso">
+      @for (l of lembretes; track l.valor) {
+        <button type="button" class="opcao" [class.sel]="lembreteDias() === l.valor" [attr.aria-pressed]="lembreteDias() === l.valor"
+                (click)="lembreteMudou.emit(l.valor)">{{ l.rotulo }}</button>
+      }
+    </div>
+  </div>
+</div>

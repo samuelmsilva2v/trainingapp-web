@@ -10,13 +10,14 @@ import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/googl
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
 import { senhaForte } from '../core/senha';
+import { PesoSecao } from './peso/peso-secao';
 
 /** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
 const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha],
+  imports: [ForcaSenha, PesoSecao],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -63,6 +64,8 @@ export class PerfilTela implements OnInit {
   ];
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
+  protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
+
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
 
@@ -94,7 +97,7 @@ export class PerfilTela implements OnInit {
   protected salvar(): void {
     if (!this.valido() || this.salvando()) return;
     this.salvando.set(true);
-    this.api.atualizar({ nome: this.nome().trim() }).subscribe({
+    this.api.atualizar({ nome: this.nome().trim(), lembretePesoDias: this.lembretePeso() }).subscribe({
       next: perfil => {
         this.aplicar(perfil);
         this.salvando.set(false);
@@ -102,6 +105,20 @@ export class PerfilTela implements OnInit {
       },
       error: e => {
         this.salvando.set(false);
+        this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
+      },
+    });
+  }
+
+  /** Salva na hora, com o nome já salvo: o que está sendo digitado no campo de nome continua lá. */
+  protected mudarLembretePeso(dias: number | null): void {
+    const salvo = this.salvo();
+    if (!salvo || salvo.lembretePesoDias === dias) return;
+    this.salvo.set({ ...salvo, lembretePesoDias: dias });
+    this.api.atualizar({ nome: salvo.nome, lembretePesoDias: dias }).subscribe({
+      next: perfil => this.salvo.set(perfil),
+      error: e => {
+        this.salvo.set(salvo);
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
       },
     });

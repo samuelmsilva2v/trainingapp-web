@@ -57,14 +57,7 @@
         </span>
       </label>
 
-      <div class="peso">
-        <span class="icone" aria-hidden="true">scale</span>
-        <span class="texto">
-          <span class="legenda-forte">Unidade de peso</span>
-          <span class="suave">Padrão biométrico métrico</span>
-        </span>
-        <span class="selo"><span class="icone" aria-hidden="true">lock</span> Kg</span>
-      </div>
+      <app-peso-secao [lembreteDias]="lembretePeso()" (lembreteMudou)="mudarLembretePeso($event)" />
 
       <div class="campo">
         <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
