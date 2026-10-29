@@ -206,6 +206,31 @@ describe('TreinoStore', () => {
     expect(localStorage.getItem('trainingapp.treino')).toBeNull();
   });
 
+  it('treino encerrado sem rede não se perde se a API estiver fora do ar quando a rede volta', async () => {
+    salvar.mockImplementationOnce(semRede);
+    await store.encerrar('CONCLUIDA');
+
+    salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 502 })));
+    dispatchEvent(new Event('online'));
+    await vi.advanceTimersByTimeAsync(10);
+    expect(guardado().sessao.estado).toBe('CONCLUIDA'); // continua no aparelho
+
+    dispatchEvent(new Event('online'));
+    await vi.advanceTimersByTimeAsync(10);
+    expect(salvar.mock.calls.at(-1)![0].estado).toBe('CONCLUIDA');
+    expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+  });
+
+  it('treino encerrado sem rede e recusado pela API (422) sai do aparelho', async () => {
+    salvar.mockImplementationOnce(semRede);
+    await store.encerrar('CONCLUIDA');
+
+    salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 422 })));
+    dispatchEvent(new Event('online'));
+    await vi.advanceTimersByTimeAsync(10);
+    expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+  });
+
   it('ao reabrir o app, retoma do aparelho as mudanças que não chegaram à API e as envia', async () => {
     salvar.mockImplementationOnce(semRede);
     marcarReps(11);

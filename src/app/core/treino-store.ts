@@ -50,6 +50,7 @@ export function apagarTreinoLocal(): void {
 
 const semRede = (erro: unknown) => erro instanceof HttpErrorResponse && erro.status === 0;
 const conflito = (erro: unknown): erro is HttpErrorResponse => erro instanceof HttpErrorResponse && erro.status === 409;
+const recusado = (erro: unknown) => erro instanceof HttpErrorResponse && (erro.status === 409 || erro.status === 422);
 
 /**
  * Mantém a sessão em andamento no cliente e a reenvia inteira para a API a cada mudança (PUT idempotente com ids
@@ -280,8 +281,9 @@ export class TreinoStore {
     try {
       await firstValueFrom(this.api.salvar(encerrado));
     } catch (erro) {
-      if (semRede(erro)) return; // tenta de novo quando a rede voltar
-      // A API recusou (outro aparelho mexeu depois, regra violada): reenviar não vai mudar isso.
+      // Só a recusa da API (outro aparelho mexeu depois, regra violada) descarta; sem rede ou API fora do ar (502 num
+      // deploy), o treino fica no aparelho e vai na próxima vez que a rede voltar ou o app abrir.
+      if (!recusado(erro)) return;
       console.warn('Treino encerrado sem rede foi recusado pela API', erro);
     }
     this.encerradoPendente = null;
