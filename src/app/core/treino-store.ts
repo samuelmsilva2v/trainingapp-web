@@ -107,7 +107,8 @@ export class TreinoStore {
    */
   retomar(sessao: SessaoLocal): void {
     const local = lerLocal();
-    if (local && !local.enviado && local.sessao.id === sessao.id && local.sessao.atualizadoEm > sessao.atualizadoEm) {
+    // Como data, não como texto: a API devolve "…:00Z" quando os milissegundos são zero e o aparelho grava "…:00.500Z".
+    if (local && !local.enviado && local.sessao.id === sessao.id && Date.parse(local.sessao.atualizadoEm) > Date.parse(sessao.atualizadoEm)) {
       this.sessao.set(local.sessao);
       this.status.set('salvando');
       void this.enviar();

@@ -256,4 +256,13 @@ describe('TreinoStore', () => {
     expect(store.sessao()!.exercicios[0].series[0].reps).toBe(11);
     expect(guardado().enviado).toBe(false);
   });
+
+  it('compara atualizadoEm como data: "…:00Z" da API é mais antigo que "…:00.500Z" do aparelho', () => {
+    const local = { ...sessao, atualizadoEm: '2026-01-01T12:00:00.500Z', exercicios: [{ ...sessao.exercicios[0], metaSeries: 9 }] };
+    localStorage.setItem('trainingapp.treino', JSON.stringify({ sessao: local, enviado: false }));
+
+    store.retomar({ ...sessao, atualizadoEm: '2026-01-01T12:00:00Z' });
+
+    expect(store.sessao()!.exercicios[0].metaSeries).toBe(9); // ficou a do aparelho, meio segundo mais nova
+  });
 });
