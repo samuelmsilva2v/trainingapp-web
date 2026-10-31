@@ -33,3 +33,18 @@ export function tendencia(pesos: readonly Peso[]): number[] {
   return resultado;
 }
 
+
+/**
+ * Se a tela Hoje deve lembrar de se pesar: lembrete ligado e nenhuma pesagem, ou a última com `lembreteDias` dias ou
+ * mais. "Agora não" (`adiadoEm`, a data em que foi tocado) esconde o lembrete até o dia seguinte. Pesagens em ordem de data.
+ */
+export function pesagemPendente(
+  pesos: readonly Peso[],
+  lembreteDias: number | null,
+  hoje: string,
+  adiadoEm: string | null,
+): boolean {
+  if (!lembreteDias || adiadoEm === hoje) return false;
+  const ultima = pesos.at(-1);
+  return !ultima || diasEntre(ultima.data, hoje) >= lembreteDias;
+}

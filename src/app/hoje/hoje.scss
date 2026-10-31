@@ -101,3 +101,12 @@
   dd { margin: 2px 0 0; font: 700 20px/28px var(--fonte-titulo); }
   dt { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.05em; }
 }
+
+// Lembrete de pesagem (fim da página).
+.pesagem { display: flex; flex-direction: column; gap: 8px; p { margin: 0; } }
+.pesagem-titulo {
+  display: flex; align-items: center; gap: 8px; margin: 0;
+  font: 600 16px/24px 'Inter', sans-serif;
+  .icone { font-size: 20px; color: var(--c-primaria); }
+}
+.pesagem-acoes { display: flex; gap: 8px; margin-top: 4px; .btn { flex: 1; } }

@@ -142,4 +142,16 @@
       </dl>
     </section>
   }
+
+  <!-- No fim da página: chega depois das outras respostas e não pode empurrar o cartão do treino. -->
+  @if (lembrarPesagem()) {
+    <section class="cartao pesagem" aria-label="Lembrete de pesagem">
+      <h2 class="pesagem-titulo"><span class="icone" aria-hidden="true">monitor_weight</span> Hora de se pesar</h2>
+      <p class="suave">{{ textoPesagem() }}</p>
+      <div class="pesagem-acoes">
+        <button type="button" class="btn btn-secundario" (click)="adiarPesagem()">Agora não</button>
+        <button type="button" class="btn btn-primario" (click)="registrarPeso()">Registrar</button>
+      </div>
+    </section>
+  }
 }

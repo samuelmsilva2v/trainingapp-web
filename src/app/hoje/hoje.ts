@@ -1,13 +1,27 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
-import { PerfilApi, SessoesApi, mensagemDeErro } from '../core/api';
-import { Hoje, SessaoResumo } from '../core/modelos';
+import { PerfilApi, PesoApi, SessoesApi, mensagemDeErro } from '../core/api';
+import { Hoje, Peso, SessaoResumo } from '../core/modelos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { atualizarContextoDoLembrete } from '../core/lembrete';
+import { diasEntre, hojeIso, pesagemPendente } from '../core/peso';
 import { TreinoStore } from '../core/treino-store';
 import { seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
+import { RegistrarPeso, RegistrarPesoDados } from '../compartilhado/registrar-peso';
+
+/** Data (AAAA-MM-DD) em que o lembrete de pesagem foi adiado com "Agora não": conveniência deste aparelho. */
+const CHAVE_PESAGEM_ADIADA = 'trainingapp.pesagem.adiadaEm';
+
+function lerAdiamento(): string | null {
+  try {
+    return localStorage.getItem(CHAVE_PESAGEM_ADIADA);
+  } catch {
+    return null;
+  }
+}
 
 interface ItemCartao {
   id: string | undefined;
@@ -42,6 +56,8 @@ interface CartaoTreino {
 export class HojeTela implements OnInit {
   private readonly api = inject(SessoesApi);
   private readonly perfilApi = inject(PerfilApi);
+  private readonly pesoApi = inject(PesoApi);
+  private readonly dialogo = inject(MatDialog);
   private readonly store = inject(TreinoStore);
   protected readonly gamificacao = inject(GamificacaoStore);
 
@@ -99,12 +115,60 @@ export class HojeTela implements OnInit {
   protected readonly formatarDataRelativa = formatarDataRelativa;
   protected readonly faixaReps = faixaReps;
 
+  // Lembrete de pesagem: as pesagens só são buscadas com o lembrete ligado no perfil.
+  private readonly pesos = signal<Peso[] | null>(null);
+  private readonly lembretePesoDias = signal<number | null>(null);
+  private readonly pesagemAdiadaEm = signal(lerAdiamento());
+  protected readonly lembrarPesagem = computed(() => {
+    const pesos = this.pesos();
+    return pesos !== null && pesagemPendente(pesos, this.lembretePesoDias(), hojeIso(), this.pesagemAdiadaEm());
+  });
+  protected readonly textoPesagem = computed(() => {
+    const ultima = this.pesos()?.at(-1);
+    return ultima
+      ? `Sua última pesagem foi há ${diasEntre(ultima.data, hojeIso())} dias.`
+      : 'Registre seu peso para acompanhar a evolução.';
+  });
+
   ngOnInit(): void {
     this.perfilApi.obter().subscribe({
-      next: perfil => this.nome.set(perfil.nome.trim().split(/\s+/)[0] || null),
+      next: perfil => {
+        this.nome.set(perfil.nome.trim().split(/\s+/)[0] || null);
+        this.lembretePesoDias.set(perfil.lembretePesoDias);
+        if (perfil.lembretePesoDias) this.pesoApi.listar().subscribe({ next: pesos => this.pesos.set(pesos), error: () => {} });
+      },
       error: () => this.nome.set(null),
     });
     this.carregar();
+  }
+
+  /** O mesmo diálogo do Perfil; registrado o peso de hoje, o lembrete some. */
+  protected registrarPeso(): void {
+    this.dialogo
+      .open<RegistrarPeso, RegistrarPesoDados, Peso>(RegistrarPeso, {
+        panelClass: 'dialogo-folha',
+        position: { bottom: '0' },
+        width: '512px',
+        maxWidth: '100vw',
+        data: { pesos: this.pesos() ?? [] },
+      })
+      .afterClosed()
+      .subscribe(peso => {
+        if (!peso) return;
+        this.pesos.update(lista => [...(lista ?? []).filter(p => p.data !== peso.data), peso].sort((a, b) => a.data.localeCompare(b.data)));
+        this.aviso.open('Peso registrado.', undefined, { duration: 3000 });
+      });
+  }
+
+  /** "Agora não": esconde o lembrete até amanhã, neste aparelho. */
+  protected adiarPesagem(): void {
+    const hoje = hojeIso();
+    try {
+      localStorage.setItem(CHAVE_PESAGEM_ADIADA, hoje);
+    } catch {
+      // sem armazenamento: o lembrete fica escondido só até recarregar
+    }
+    this.pesagemAdiadaEm.set(hoje);
   }
 
   protected carregar(): void {

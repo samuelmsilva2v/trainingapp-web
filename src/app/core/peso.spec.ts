@@ -1,4 +1,4 @@
-import { diasEntre, hojeIso, tendencia } from './peso';
+import { diasEntre, hojeIso, pesagemPendente, tendencia } from './peso';
 
 describe('peso', () => {
   it('tendência de série vazia é vazia e a de um ponto é o próprio peso', () => {
@@ -32,5 +32,28 @@ describe('peso', () => {
 
   it('hoje no formato da API', () => {
     expect(hojeIso(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+  });
+});
+
+describe('pesagemPendente', () => {
+  const pesagem = (data: string) => ({ data, kg: 80 });
+
+  it('lembrete desligado nunca lembra', () => {
+    expect(pesagemPendente([], null, '2026-10-31', null)).toBe(false);
+  });
+
+  it('sem nenhuma pesagem, lembra', () => {
+    expect(pesagemPendente([], 7, '2026-10-31', null)).toBe(true);
+  });
+
+  it('lembra a partir de N dias desde a última pesagem', () => {
+    const pesos = [pesagem('2026-10-01'), pesagem('2026-10-24')];
+    expect(pesagemPendente(pesos, 7, '2026-10-30', null)).toBe(false); // 6 dias
+    expect(pesagemPendente(pesos, 7, '2026-10-31', null)).toBe(true); // 7 dias
+  });
+
+  it('"agora não" esconde só no dia em que foi tocado', () => {
+    expect(pesagemPendente([], 7, '2026-10-31', '2026-10-31')).toBe(false);
+    expect(pesagemPendente([], 7, '2026-11-01', '2026-10-31')).toBe(true);
   });
 });
