@@ -13,6 +13,11 @@ export function formatarCarga(valor: number | null): string {
   return valor === null ? '—' : valor.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
 }
 
+/** Kg sem casas decimais quando a carga é inteira (30), com vírgula só se vier quebrada (32,5). */
+export function kg(valor: number): string {
+  return Number.isInteger(valor) ? String(valor) : formatarCarga(valor);
+}
+
 /** Minutos inteiros entre dois instantes ISO; sem fim, até agora. */
 export function duracaoMinutos(inicio: string, fim: string | null): number {
   const ms = (fim ? new Date(fim).getTime() : Date.now()) - new Date(inicio).getTime();

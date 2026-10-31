@@ -7,7 +7,7 @@ import { GamificacaoStore } from '../core/gamificacao-store';
 import { atualizarContextoDoLembrete } from '../core/lembrete';
 import { TreinoStore } from '../core/treino-store';
 import { seriesFeitas, totalSeries } from '../core/series';
-import { duracaoMinutos, faixaReps, formatarDataRelativa } from '../core/formatos';
+import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
 
 interface ItemCartao {
   id: string | undefined;
@@ -67,8 +67,7 @@ export class HojeTela implements OnInit {
 
   protected readonly duracaoMinutos = duracaoMinutos;
   protected readonly resumoAberto = signal(false);
-  /** Kg inteiros sem casas decimais; só mostra vírgula se a carga vier quebrada. */
-  protected readonly kg = (v: number): string => (Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR'));
+  protected readonly kg = kg;
 
   /** O treino mostrado no cartão: o em andamento ou o próximo da rotação, no mesmo formato. */
   protected readonly cartao = computed<CartaoTreino | null>(() => {
