@@ -41,7 +41,10 @@ function abrir(dados: ResultadoDados): HTMLElement {
 describe('ResultadoTreino', () => {
   it('mostra o XP com o detalhe, o nível novo, o recorde e a conquista nova', () => {
     const el = abrir({
-      sessao: comXpPorExercicio(sessao({ xpGanho: 90, xpSeries: 65, xpRecordes: 25, recordes: ['x1'] }), 65),
+      sessao: comXpPorExercicio(sessao({
+        xpGanho: 115, xpSeries: 65, xpRecordes: 25, xpConquistas: 25, recordes: ['x1'],
+        conquistas: [{ codigo: 'PRIMEIRO_RECORDE', nome: 'Primeiro recorde', xp: 25 }],
+      }), 65),
       antes: gamificacao({ xpTotal: 250, nivel: 1 }),
       depois: gamificacao({
         xpTotal: 340, nivel: 2, xpInicioDoNivel: 283, xpProximoNivel: 520,
@@ -53,7 +56,8 @@ describe('ResultadoTreino', () => {
     });
     const texto = el.textContent ?? '';
 
-    expect(texto).toContain('+90 XP');
+    expect(el.querySelector('.grande')?.textContent).toContain('+90 XP'); // 115 − 25 das conquistas
+    expect(texto).toContain('+25 conquistas');
     expect(texto).toContain('+65');
     expect(texto).toContain('+25');
     expect(texto).toContain('Subiu para o nível 2!');
@@ -86,6 +90,30 @@ describe('ResultadoTreino', () => {
     expect(texto).toContain('Total');
     expect(texto).toContain('+51');
     expect(el.querySelector('.metricas dd')?.textContent).toBe('36');
+  });
+
+  it('lista as conquistas que a API creditou, com o XP de cada uma, e a linha de conquistas no detalhe', () => {
+    const el = abrir({
+      sessao: comXpPorExercicio(sessao({
+        xpGanho: 100, xpSeries: 0, xpConquistas: 100, recordes: [],
+        conquistas: [
+          { codigo: 'PRIMEIRO_TREINO', nome: 'Primeiro treino', xp: 25 },
+          { codigo: 'TREINOS_10', nome: 'Constância', xp: 50 },
+          { codigo: 'STREAK_7', nome: 'Uma semana de fogo', xp: 25 },
+        ],
+      }), 0),
+      antes: null, // sem o "antes" a lista ainda aparece: ela vem da API
+      depois: gamificacao({}),
+    });
+    const texto = el.textContent ?? '';
+    expect(texto).toContain('Novas conquistas');
+    expect(texto).toContain('Constância');
+    expect(texto).toContain('+50 XP');
+    expect(texto).toContain('Uma semana de fogo');
+    expect(texto).toContain('Conquistas');
+    expect(texto).toContain('+100');
+    expect(texto).toContain('Total');
+    expect(el.querySelector('.grande')).toBeNull(); // sem XP de treino: nada de "+0 XP"
   });
 
   it('avisa o título novo quando o treino muda a faixa de nível, e só nesse caso', () => {

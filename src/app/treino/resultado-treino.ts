@@ -52,9 +52,9 @@ export class ResultadoTreino implements OnInit {
     .map(id => this.sessao.exercicios.find(e => e.exercicioId === id)?.nome)
     .filter((nome): nome is string => !!nome);
 
-  protected readonly conquistasNovas = (this.dados.depois?.conquistas ?? []).filter(
-    c => c.conquistada && !this.dados.antes?.conquistas.some(a => a.codigo === c.codigo && a.conquistada),
-  );
+  /** Conquistas creditadas neste treino, como a API as gravou (inclui as que já valiam antes, no 1º treino depois do deploy). */
+  protected readonly conquistasNovas = this.sessao.conquistas ?? [];
+  protected readonly xpConquistas = this.sessao.xpConquistas ?? 0;
 
   /** Por que o treino não rendeu XP. */
   protected readonly motivoSemXp =

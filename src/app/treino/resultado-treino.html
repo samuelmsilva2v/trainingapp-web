@@ -6,15 +6,28 @@
 
   @if (xp > 0) {
     <section class="xp" aria-label="XP ganho">
-      <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpTreino }} XP</p>
+      <!-- Só conquistas (ex.: 2º treino do dia que credita conquistas antigas): o motivo no lugar de "+0 XP". -->
+      @if (xpTreino > 0) {
+        <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpTreino }} XP</p>
+      } @else {
+        <p class="sem-xp suave">{{ motivoSemXp }}</p>
+      }
       @if (bonus) {
         <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ bonus }} bônus</p>
+      }
+      @if (xpConquistas) {
+        <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ xpConquistas }} conquistas</p>
       }
       <ul class="detalhe num">
         @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
         @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
         @if (bonus) {
           <li class="xp-bonus"><span>Sequência ({{ diasSequencia }} {{ diasSequencia === 1 ? 'dia' : 'dias' }})</span><span>+{{ bonus }}</span></li>
+        }
+        @if (xpConquistas) {
+          <li class="xp-bonus"><span>Conquistas</span><span>+{{ xpConquistas }}</span></li>
+        }
+        @if (bonus || xpConquistas) {
           <li class="total"><span>Total</span><span>+{{ xp }}</span></li>
         }
       </ul>
@@ -55,10 +68,10 @@
 
   @if (conquistasNovas.length > 0) {
     <section aria-label="Conquistas">
-      <h3 class="rotulo suave">Nova conquista</h3>
+      <h3 class="rotulo suave">{{ conquistasNovas.length === 1 ? 'Nova conquista' : 'Novas conquistas' }}</h3>
       <ul class="lista">
         @for (c of conquistasNovas; track c.codigo) {
-          <li><span class="icone cheio" aria-hidden="true">emoji_events</span> {{ c.nome }}</li>
+          <li><span class="icone cheio" aria-hidden="true">emoji_events</span> {{ c.nome }} <span class="xp-bonus num">+{{ c.xp }} XP</span></li>
         }
       </ul>
     </section>

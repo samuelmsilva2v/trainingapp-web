@@ -149,6 +149,9 @@ export interface SessaoLocal {
   xpRecordes?: number;
   /** Bônus da sequência de dias de treino (já somado em xpGanho). */
   xpStreak?: number;
+  /** XP das conquistas creditadas ao concluir (já somado em xpGanho) e quais foram. */
+  xpConquistas?: number;
+  conquistas?: ConquistaGanha[];
   recordes?: string[];
 }
 
@@ -173,6 +176,8 @@ export interface SessaoResumo {
   xpGanho: number;
   /** Bônus da sequência (já somado em xpGanho). */
   xpStreak?: number;
+  /** XP das conquistas creditadas neste treino (já somado em xpGanho). */
+  xpConquistas?: number;
   recordes: number;
 }
 
@@ -203,6 +208,13 @@ export interface Conquista {
   nome: string;
   descricao: string;
   conquistada: boolean;
+}
+
+/** Conquista creditada num treino, com o XP que rendeu. */
+export interface ConquistaGanha {
+  codigo: string;
+  nome: string;
+  xp: number;
 }
 
 export interface Gamificacao {
