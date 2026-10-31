@@ -61,5 +61,8 @@ describe('familias de conquistas', () => {
     expect(metaComUnidade('Sequência', 7)).toBe('7 dias');
     expect(metaComUnidade('Nível', 5)).toBe('Nível 5');
     expect(metaComUnidade('Constância', 50)).toBe('50 treinos');
+    expect(metaComUnidade('Constância', 1)).toBe('1 treino');
+    expect(metaComUnidade('Sequência', 1)).toBe('1 dia');
+    expect(metaComUnidade('Nível', 1)).toBe('Nível 1');
   });
 });

@@ -35,7 +35,8 @@ export class ResultadoTreino implements OnInit {
   /** Largura (0-1) da barra de nível; começa no "antes" e anima até o "depois". */
   protected readonly largura = signal(0);
 
-  protected readonly subiu = (this.dados.depois?.nivel ?? 0) > (this.dados.antes?.nivel ?? 0);
+  /** Sem o "antes" não dá para saber se subiu: melhor não anunciar do que anunciar errado. */
+  protected readonly subiu = !!this.dados.antes && (this.dados.depois?.nivel ?? 0) > this.dados.antes.nivel;
   /** O título mudou com este treino (ex.: de Iniciante para Dedicado); sem o "antes" não dá para saber. */
   protected readonly tituloNovo =
     this.dados.antes?.titulo && this.dados.depois?.titulo && this.dados.antes.titulo !== this.dados.depois.titulo

@@ -42,7 +42,9 @@ function comUnidade(familia: string, valor: string): string {
 
 /** Meta de uma faixa com a unidade, para a lista expandida: "7 dias", "Nível 5", "50 treinos". */
 export function metaComUnidade(familia: string, meta: number): string {
-  return comUnidade(familia, String(meta)).replace(/^melhor: /, '');
+  // Meta 1 no singular: "1 treino", "1 recorde" (todos os sufixos fazem o plural com "s").
+  const texto = comUnidade(familia, String(meta)).replace(/^melhor: /, '');
+  return meta === 1 ? texto.replace(/s$/, '') : texto;
 }
 
 /** As que o Perfil mostra e conta: as ocultas só depois de feitas. */

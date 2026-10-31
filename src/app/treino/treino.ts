@@ -116,6 +116,8 @@ export class Treino implements OnInit, OnDestroy {
   ngOnInit(): void {
     manterTelaLigada(true);
     this.intervalo = setInterval(() => this.tique(), 1000);
+    // Aberto direto (recarregou ou reabriu o app): o resultado precisa do nível de antes para dizer se subiu.
+    if (!this.gamificacao.dados()) this.gamificacao.atualizar();
     if (this.store.sessao()) {
       this.carregando.set(false);
       this.carregarAnteriores();

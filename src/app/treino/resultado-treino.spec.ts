@@ -70,6 +70,11 @@ describe('ResultadoTreino', () => {
     expect(texto).not.toContain('melhor');
   });
 
+  it('sem o nível de antes não anuncia que subiu', () => {
+    const el = abrir({ sessao: sessao({ xpGanho: 0 }), antes: null, depois: gamificacao({ nivel: 3 }) });
+    expect(el.textContent).not.toContain('Subiu');
+  });
+
   it('sem recorde não mostra o troféu', () => {
     const el = abrir({ sessao: comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36), antes: null, depois: gamificacao({}) });
     expect(el.textContent).toContain('3/3 · 36 XP');

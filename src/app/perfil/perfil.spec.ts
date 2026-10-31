@@ -125,7 +125,7 @@ describe('PerfilTela', () => {
     expect(topo.getAttribute('aria-expanded')).toBe('true');
     const faixas = [...tela.querySelectorAll('.faixas li')];
     expect(faixas.length).toBe(3);
-    expect(faixas[0].textContent).toContain('Primeiro treino · 1 treinos');
+    expect(faixas[0].textContent).toContain('Primeiro treino · 1 treino');
     expect(faixas[2].textContent).toContain('Rotina de ferro · 50 treinos');
     expect(faixas[0].classList).toContain('ganha');
   });

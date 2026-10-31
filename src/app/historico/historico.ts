@@ -121,8 +121,10 @@ export class Historico implements OnInit {
   }
 
   protected apagar(sessao: SessaoResumo): void {
+    // Conquistas e desafios ficam com o usuário: só o XP do treino (séries, recordes e sequência) sai.
+    const xp = sessao.xpGanho - (sessao.xpConquistas ?? 0) - (sessao.xpDesafios ?? 0);
     const estorno = [
-      sessao.xpGanho > 0 ? `${sessao.xpGanho} XP` : '',
+      xp > 0 ? `${xp} XP` : '',
       sessao.recordes > 0 ? `${sessao.recordes} ${sessao.recordes === 1 ? 'recorde' : 'recordes'}` : '',
     ].filter(Boolean).join(' e ');
     this.dialogo
