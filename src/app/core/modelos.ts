@@ -220,6 +220,8 @@ export interface Conquista {
   /** De 0 até a meta (a API já limita). */
   progresso: number;
   meta: number;
+  /** Oculta (Madrugador, Coruja, Ano novo): só aparece depois de feita. */
+  oculta?: boolean;
 }
 
 /** Desafio da semana: progresso de 0 até a meta; cumprido também se o XP já foi creditado. */

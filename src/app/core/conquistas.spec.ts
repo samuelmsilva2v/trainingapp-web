@@ -1,4 +1,4 @@
-import { familias, metaComUnidade } from './conquistas';
+import { familias, metaComUnidade, visiveis } from './conquistas';
 import { Conquista } from './modelos';
 
 const faixa = (familia: string, n: number, meta: number, progresso: number, conquistada = progresso >= meta): Conquista => ({
@@ -39,6 +39,22 @@ describe('familias de conquistas', () => {
 
   it('família sem unidade conhecida mostra só os números', () => {
     expect(familias([faixa('Nova', 1, 3, 1)])[0].progresso).toBe('1/3');
+  });
+
+  it('famílias da fatia 2 têm unidade: toneladas, exercícios e blocos', () => {
+    const [volume, variedade, drop] = familias([faixa('Volume total', 1, 10, 3), faixa('Variedade', 1, 20, 7), faixa('Drop-set', 1, 1, 0),
+      faixa('Drop-set', 2, 25, 0)]);
+    expect(volume.progresso).toBe('3/10 t');
+    expect(variedade.progresso).toBe('7/20 exercícios');
+    expect(drop.progresso).toBe('0/1 blocos');
+    expect(metaComUnidade('Volume total', 100)).toBe('100 t');
+  });
+
+  it('ocultas só ficam visíveis depois de feitas', () => {
+    const coruja = { ...faixa('Coruja', 1, 1, 0), oculta: true };
+    const anoNovo = { ...faixa('Ano novo', 1, 1, 1), oculta: true };
+    const comum = faixa('De volta', 1, 1, 0);
+    expect(visiveis([coruja, anoNovo, comum]).map(c => c.familia)).toEqual(['Ano novo', 'De volta']);
   });
 
   it('meta da faixa com a unidade, sem o "melhor:"', () => {

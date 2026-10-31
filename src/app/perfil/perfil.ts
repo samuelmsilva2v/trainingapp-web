@@ -7,7 +7,7 @@ import { TelaErro } from '../compartilhado/tela-erro';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
-import { familias, metaComUnidade } from '../core/conquistas';
+import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
@@ -58,7 +58,9 @@ export class PerfilTela implements OnInit {
   private webClientId: string | null = null;
   protected readonly conquistasAbertas = signal(false);
   /** Conquistas por família (a próxima faixa em destaque) e a família com as faixas abertas. */
-  protected readonly familias = computed(() => familias(this.gamificacao.dados()?.conquistas ?? []));
+  /** As ocultas não feitas nem aparecem nem entram na contagem. */
+  protected readonly conquistasVisiveis = computed(() => visiveis(this.gamificacao.dados()?.conquistas ?? []));
+  protected readonly familias = computed(() => familias(this.conquistasVisiveis()));
   protected readonly familiaAberta = signal<string | null>(null);
   protected readonly metaComUnidade = metaComUnidade;
   protected readonly noApp = NO_APP;
@@ -81,7 +83,7 @@ export class PerfilTela implements OnInit {
     return dias <= 0 ? 'Termina hoje' : dias === 1 ? 'Falta 1 dia' : `Faltam ${dias} dias`;
   });
 
-  protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
+  protected readonly conquistadas = computed(() => this.conquistasVisiveis().filter(c => c.conquistada).length);
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
   protected readonly frequenciasPeso = [7, 15, 30];

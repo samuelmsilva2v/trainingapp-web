@@ -192,7 +192,7 @@
         <button type="button" class="conquistas-topo" [attr.aria-expanded]="conquistasAbertas()"
                 aria-controls="lista-conquistas" (click)="conquistasAbertas.set(!conquistasAbertas())">
           <span class="titulo"><span class="icone cheio laranja" aria-hidden="true">emoji_events</span> Conquistas</span>
-          <span class="contagem num">{{ conquistadas() }}/{{ g.conquistas.length }}</span>
+          <span class="contagem num">{{ conquistadas() }}/{{ conquistasVisiveis().length }}</span>
           <span class="icone" aria-hidden="true">{{ conquistasAbertas() ? 'expand_less' : 'expand_more' }}</span>
         </button>
 

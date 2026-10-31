@@ -16,6 +16,8 @@ const gamificacao: Gamificacao = {
     { codigo: 'D', nome: 'De volta', descricao: 'Volte a treinar.', conquistada: false, familia: 'De volta', faixa: 1, progresso: 0, meta: 1 },
     { codigo: 'E', nome: 'Evolução ampla', descricao: 'Recordes em 5.', conquistada: true, familia: 'Recordes variados', faixa: 1, progresso: 5, meta: 5 },
     { codigo: 'F', nome: 'Evolução geral', descricao: 'Recordes em 10.', conquistada: true, familia: 'Recordes variados', faixa: 2, progresso: 10, meta: 10 },
+    { codigo: 'MADRUGADOR', nome: 'Madrugador', descricao: 'Antes das 6h.', conquistada: false, familia: 'Madrugador', faixa: 1, progresso: 0, meta: 1, oculta: true },
+    { codigo: 'CORUJA', nome: 'Coruja', descricao: 'Depois das 22h.', conquistada: true, familia: 'Coruja', faixa: 1, progresso: 1, meta: 1, oculta: true },
   ],
 };
 
@@ -87,7 +89,7 @@ describe('PerfilTela', () => {
 
   it('conquistas ficam recolhidas e abrem no clique, uma linha por família', () => {
     const { fixture, tela } = abrir();
-    expect(tela.querySelector('.contagem')!.textContent).toBe('3/6');
+    expect(tela.querySelector('.contagem')!.textContent).toBe('4/7'); // a oculta não feita (Madrugador) não conta
     expect(tela.querySelectorAll('.familia').length).toBe(0);
 
     tela.querySelector<HTMLButtonElement>('.conquistas-topo')!.click();
@@ -95,7 +97,9 @@ describe('PerfilTela', () => {
 
     expect(tela.querySelector('.conquistas-topo')!.getAttribute('aria-expanded')).toBe('true');
     const linhas = [...tela.querySelectorAll('.familia')];
-    expect(linhas.length).toBe(3);
+    expect(linhas.length).toBe(4); // Madrugador (oculta, não feita) fica escondida; Coruja (feita) aparece
+    expect(tela.textContent).not.toContain('Madrugador');
+    expect(linhas[3].textContent).toContain('Coruja');
     // Constância: a próxima faixa em destaque, bolinhas e barra com a unidade.
     expect(linhas[0].textContent).toContain('Constância');
     expect(linhas[0].querySelector('.nome-conquista')!.textContent).toContain('Constância');

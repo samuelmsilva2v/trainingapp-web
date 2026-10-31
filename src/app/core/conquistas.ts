@@ -30,6 +30,9 @@ const UNIDADES: Record<string, Unidade> = {
   'Recordes': { sufixo: 'recordes' },
   'Recordes variados': { sufixo: 'exercícios' },
   'Nível': { prefixo: 'Nível ' },
+  'Volume total': { sufixo: 't' },
+  'Variedade': { sufixo: 'exercícios' },
+  'Drop-set': { sufixo: 'blocos' },
 };
 
 function comUnidade(familia: string, valor: string): string {
@@ -40,6 +43,11 @@ function comUnidade(familia: string, valor: string): string {
 /** Meta de uma faixa com a unidade, para a lista expandida: "7 dias", "Nível 5", "50 treinos". */
 export function metaComUnidade(familia: string, meta: number): string {
   return comUnidade(familia, String(meta)).replace(/^melhor: /, '');
+}
+
+/** As que o Perfil mostra e conta: as ocultas só depois de feitas. */
+export function visiveis(conquistas: readonly Conquista[]): Conquista[] {
+  return conquistas.filter(c => !c.oculta || c.conquistada);
 }
 
 /** Agrupa as faixas por família, na ordem em que a API manda. */
