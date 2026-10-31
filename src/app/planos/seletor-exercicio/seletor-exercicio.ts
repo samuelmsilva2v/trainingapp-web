@@ -2,7 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
-import { ExerciciosApi, mensagemDeErro } from '../../core/api';
+import { ExerciciosApi } from '../../core/api';
+import { Falha, falhaDe } from '../../core/falha';
+import { TelaErro } from '../../compartilhado/tela-erro';
 import { Equipamento, Exercicio, GrupoMuscular } from '../../core/modelos';
 import { EQUIPAMENTOS, GRUPOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 
@@ -15,6 +17,7 @@ export interface DadosSeletor {
 
 @Component({
   selector: 'app-seletor-exercicio',
+  imports: [TelaErro],
   templateUrl: './seletor-exercicio.html',
   styleUrl: './seletor-exercicio.scss',
 })
@@ -32,20 +35,22 @@ export class SeletorExercicio {
   protected readonly grupo = signal<GrupoMuscular | null>(this.dados?.grupo ?? null);
   protected readonly equipamento = signal<Equipamento | null>(null);
   protected readonly apenasMeus = signal(false);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
   protected readonly carregando = signal(true);
+  /** "Tentar de novo" da tela de erro: muda para refazer a mesma busca. */
+  protected readonly tentativa = signal(0);
 
   // Busca e grupo vão para a API (a busca ignora acento e caixa); equipamento e "meus" filtram em memória.
   private readonly resultado = toSignal(
-    toObservable(computed(() => ({ busca: this.busca(), grupo: this.grupo() }))).pipe(
+    toObservable(computed(() => ({ busca: this.busca(), grupo: this.grupo(), tentativa: this.tentativa() }))).pipe(
       debounceTime(250),
-      distinctUntilChanged((a, b) => a.busca === b.busca && a.grupo === b.grupo),
+      distinctUntilChanged((a, b) => a.busca === b.busca && a.grupo === b.grupo && a.tentativa === b.tentativa),
       switchMap(({ busca, grupo }) => {
         this.carregando.set(true);
         this.erro.set(null);
         return this.api.listar(grupo, busca).pipe(
           catchError(e => {
-            this.erro.set(mensagemDeErro(e));
+            this.erro.set(falhaDe(e));
             return of<Exercicio[]>([]);
           }),
           tap(() => this.carregando.set(false)),

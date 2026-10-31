@@ -3,13 +3,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
+import { Falha, falhaDe } from '../../core/falha';
+import { TelaErro } from '../../compartilhado/tela-erro';
 import { DiaPlano, Plano, PlanoResumo } from '../../core/modelos';
 import { rotuloObjetivo } from '../../core/rotulos';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 
 @Component({
   selector: 'app-planos-lista',
-  imports: [RouterLink],
+  imports: [RouterLink, TelaErro],
   templateUrl: './planos-lista.html',
   styleUrl: './planos-lista.scss',
 })
@@ -20,7 +22,7 @@ export class PlanosLista implements OnInit {
 
   protected readonly planos = signal<PlanoResumo[]>([]);
   protected readonly carregando = signal(true);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
   protected readonly rotuloObjetivo = rotuloObjetivo;
   protected readonly abertos = signal<ReadonlySet<string>>(new Set());
   protected readonly detalhes = signal<ReadonlyMap<string, Plano>>(new Map());
@@ -42,7 +44,7 @@ export class PlanosLista implements OnInit {
         if (ativo && !this.abertos().has(ativo.id)) this.alternar(ativo);
       },
       error: e => {
-        this.erro.set(mensagemDeErro(e));
+        this.erro.set(falhaDe(e));
         this.carregando.set(false);
       },
     });

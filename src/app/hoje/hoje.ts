@@ -8,6 +8,8 @@ import { GamificacaoStore } from '../core/gamificacao-store';
 import { atualizarContextoDoLembrete } from '../core/lembrete';
 import { diasEntre, hojeIso, pesagemPendente } from '../core/peso';
 import { TreinoStore } from '../core/treino-store';
+import { falhaDe, Falha } from '../core/falha';
+import { TelaErro } from '../compartilhado/tela-erro';
 import { seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
 import { RegistrarPeso, RegistrarPesoDados } from '../compartilhado/registrar-peso';
@@ -49,7 +51,7 @@ interface CartaoTreino {
 
 @Component({
   selector: 'app-hoje',
-  imports: [RouterLink],
+  imports: [RouterLink, TelaErro],
   templateUrl: './hoje.html',
   styleUrl: './hoje.scss',
 })
@@ -77,7 +79,7 @@ export class HojeTela implements OnInit {
   protected readonly ultimo = signal<SessaoResumo | null>(null);
   protected readonly carregando = signal(true);
   protected readonly ocupado = signal(false);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
   /** Sem rede, mas com um treino em andamento guardado no aparelho. */
   protected readonly treinoNoAparelho = signal(false);
 
@@ -180,7 +182,7 @@ export class HojeTela implements OnInit {
         this.carregando.set(false);
       },
       error: e => {
-        this.erro.set(mensagemDeErro(e));
+        this.erro.set(falhaDe(e));
         // Sem rede: o treino em andamento guardado no aparelho ainda pode continuar.
         this.treinoNoAparelho.set(this.store.abrirDoAparelho());
         this.carregando.set(false);

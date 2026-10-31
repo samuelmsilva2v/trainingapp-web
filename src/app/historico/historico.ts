@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { SessoesApi, mensagemDeErro } from '../core/api';
+import { TEXTOS_FALHA, Falha, falhaDe } from '../core/falha';
+import { TelaErro } from '../compartilhado/tela-erro';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
@@ -21,7 +23,7 @@ interface Mes {
 
 @Component({
   selector: 'app-historico',
-  imports: [RouterLink],
+  imports: [RouterLink, TelaErro],
   templateUrl: './historico.html',
   styleUrl: './historico.scss',
 })
@@ -35,7 +37,7 @@ export class Historico implements OnInit {
   protected readonly carregando = signal(true);
   protected readonly carregandoMais = signal(false);
   protected readonly temMais = signal(false);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
   protected readonly abertas = signal<ReadonlySet<string>>(new Set());
   protected readonly detalhes = signal<ReadonlyMap<string, SessaoLocal>>(new Map());
   protected readonly erroDetalhe = signal<string | null>(null);
@@ -43,6 +45,7 @@ export class Historico implements OnInit {
 
   protected readonly duracaoMinutos = duracaoMinutos;
   protected readonly xpDoTreino = xpDoTreino;
+  protected readonly textos = TEXTOS_FALHA;
   protected readonly formatarCarga = formatarCarga;
   protected readonly blocos = blocos;
   protected readonly formatarDataRelativa = formatarDataRelativa;
@@ -93,7 +96,7 @@ export class Historico implements OnInit {
         if (this.temMais() && maisAntiga && new Date(maisAntiga.iniciadaEm).getTime() >= this.cobertura) this.carregarPagina();
       },
       error: e => {
-        this.erro.set(mensagemDeErro(e));
+        this.erro.set(falhaDe(e));
         this.carregando.set(false);
         this.carregandoMais.set(false);
       },

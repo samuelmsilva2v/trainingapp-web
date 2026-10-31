@@ -2,6 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PesoApi, mensagemDeErro } from '../../core/api';
+import { Falha, falhaDe } from '../../core/falha';
+import { TelaErro } from '../../compartilhado/tela-erro';
 import { Peso } from '../../core/modelos';
 import { diasEntre, hojeIso, tendencia } from '../../core/peso';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
@@ -36,6 +38,7 @@ function formatarDia(data: string): string {
 /** Bloco de peso dos Dados pessoais do Perfil (sempre em kg): último peso, variação, gráfico com tendência e lista. */
 @Component({
   selector: 'app-peso-secao',
+  imports: [TelaErro],
   templateUrl: './peso-secao.html',
   styleUrl: './peso-secao.scss',
 })
@@ -56,7 +59,7 @@ export class PesoSecao implements OnInit {
   protected readonly altura = ALTURA;
 
   protected readonly carregando = signal(true);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
   protected readonly pesos = signal<Peso[]>([]);
   protected readonly periodo = signal<Periodo>(30);
   protected readonly listaAberta = signal(false);
@@ -146,7 +149,7 @@ export class PesoSecao implements OnInit {
         this.carregando.set(false);
       },
       error: e => {
-        this.erro.set(mensagemDeErro(e));
+        this.erro.set(falhaDe(e));
         this.carregando.set(false);
       },
     });

@@ -37,8 +37,8 @@
   </div>
 
   <div class="lista" aria-live="polite">
-    @if (erro()) {
-      <p class="aviso erro">{{ erro() }}</p>
+    @if (erro(); as falha) {
+      <app-tela-erro [falha]="falha" (tentar)="tentativa.set(tentativa() + 1)" />
     } @else if (carregando()) {
       <p class="aviso suave">Carregando…</p>
     } @else if (exibidos().length === 0) {

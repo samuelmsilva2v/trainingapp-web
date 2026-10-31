@@ -7,11 +7,8 @@
 
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando plano…</p>
-} @else if (erroCarga()) {
-  <div class="estado">
-    <p class="erro">{{ erroCarga() }}</p>
-    <button type="button" class="btn btn-secundario" (click)="carregar(id!)">Tentar de novo</button>
-  </div>
+} @else if (erroCarga(); as falha) {
+  <app-tela-erro [falha]="falha" (tentar)="carregar(id!)" />
 } @else {
   <div class="pagina">
     <section class="bloco">

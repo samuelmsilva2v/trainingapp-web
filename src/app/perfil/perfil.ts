@@ -1,6 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
+import { Falha, falhaDe } from '../core/falha';
+import { TelaErro } from '../compartilhado/tela-erro';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
@@ -18,7 +20,7 @@ const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha, PesoSecao],
+  imports: [ForcaSenha, PesoSecao, TelaErro],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -33,7 +35,7 @@ export class PerfilTela implements OnInit {
 
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
-  protected readonly erro = signal<string | null>(null);
+  protected readonly erro = signal<Falha | null>(null);
 
   protected readonly nome = signal('');
   private readonly salvo = signal<Perfil | null>(null);
@@ -86,7 +88,7 @@ export class PerfilTela implements OnInit {
         this.carregando.set(false);
       },
       error: e => {
-        this.erro.set(mensagemDeErro(e));
+        this.erro.set(falhaDe(e));
         this.carregando.set(false);
       },
     });

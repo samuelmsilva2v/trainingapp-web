@@ -5,6 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
+import { Falha, falhaDe } from '../../core/falha';
+import { TelaErro } from '../../compartilhado/tela-erro';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
@@ -56,7 +58,7 @@ type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'reps' | 'cargaAlvo' | '
 
 @Component({
   selector: 'app-plano-editor',
-  imports: [CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [CdkDropList, CdkDrag, CdkDragHandle, TelaErro],
   templateUrl: './plano-editor.html',
   styleUrl: './plano-editor.scss',
 })
@@ -74,7 +76,7 @@ export class PlanoEditor implements OnInit {
   protected readonly id = this.rota.snapshot.paramMap.get('id');
   protected readonly carregando = signal(this.id !== null);
   protected readonly salvando = signal(false);
-  protected readonly erroCarga = signal<string | null>(null);
+  protected readonly erroCarga = signal<Falha | null>(null);
 
   protected readonly nome = signal('');
   protected readonly objetivo = signal<Objetivo>('HIPERTROFIA');
@@ -122,7 +124,7 @@ export class PlanoEditor implements OnInit {
         this.carregando.set(false);
       },
       error: e => {
-        this.erroCarga.set(mensagemDeErro(e));
+        this.erroCarga.set(falhaDe(e));
         this.carregando.set(false);
       },
     });

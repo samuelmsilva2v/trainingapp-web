@@ -16,6 +16,21 @@ export const routes: Routes = [
     path: '',
     canActivate: [autenticadoGuard],
     children: [
+      // Telas cheias antes da casca: o '**' da casca pegaria qualquer caminho.
+      {
+        path: 'treino',
+        loadComponent: () => import('./treino/treino').then(m => m.Treino),
+      },
+      {
+        path: 'planos/novo',
+        loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
+        canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
+      },
+      {
+        path: 'planos/:id',
+        loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
+        canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
+      },
       {
         path: '',
         component: Casca,
@@ -37,23 +52,13 @@ export const routes: Routes = [
             path: 'perfil',
             loadComponent: () => import('./perfil/perfil').then(m => m.PerfilTela),
           },
+          // Rota inexistente: "Página não encontrada" com as abas (sem login, o guard manda para o login).
+          {
+            path: '**',
+            loadComponent: () => import('./compartilhado/tela-erro').then(m => m.PaginaNaoEncontrada),
+          },
         ],
-      },
-      {
-        path: 'treino',
-        loadComponent: () => import('./treino/treino').then(m => m.Treino),
-      },
-      {
-        path: 'planos/novo',
-        loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
-        canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
-      },
-      {
-        path: 'planos/:id',
-        loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
-        canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],
       },
     ],
   },
-  { path: '**', redirectTo: 'hoje' },
 ];

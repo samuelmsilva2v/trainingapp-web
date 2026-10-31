@@ -16,14 +16,13 @@
 
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando…</p>
-} @else if (erro()) {
-  <div class="estado">
-    <p class="erro">{{ erro() }}</p>
-    @if (treinoNoAparelho()) {
-      <button type="button" class="btn btn-primario" routerLink="/treino">Continuar o treino salvo no aparelho</button>
-    }
-    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
-  </div>
+} @else if (erro(); as falha) {
+  <app-tela-erro [falha]="falha" (tentar)="carregar()" />
+  @if (treinoNoAparelho()) {
+    <div class="estado">
+      <button type="button" class="btn btn-secundario" routerLink="/treino">Continuar o treino salvo no aparelho</button>
+    </div>
+  }
 } @else if (hoje(); as h) {
   @if (!h.planoId) {
     <div class="vazio">

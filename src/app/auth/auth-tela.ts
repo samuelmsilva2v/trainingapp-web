@@ -66,6 +66,12 @@ export class AuthTela implements OnInit {
         void this.router.navigateByUrl('/hoje');
         return;
       }
+      // Ex.: "Sua sessão expirou. Entre de novo.", deixado pela abertura do app; aparece uma vez, no lugar do erro.
+      const avisoLogin = this.auth.avisoLogin();
+      if (avisoLogin && this.modo === 'entrar') {
+        this.erro.set(avisoLogin);
+        this.auth.avisoLogin.set(null);
+      }
       this.iniciarGoogle();
     }
   }

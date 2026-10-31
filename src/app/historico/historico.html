@@ -6,10 +6,7 @@
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando…</p>
 } @else if (erro() && sessoes().length === 0) {
-  <div class="estado">
-    <p class="erro">{{ erro() }}</p>
-    <button type="button" class="btn btn-secundario" (click)="carregarPagina()">Tentar de novo</button>
-  </div>
+  <app-tela-erro [falha]="erro()!" (tentar)="carregarPagina()" />
 } @else if (sessoes().length === 0) {
   <div class="estado">
     <span class="icone circulo" aria-hidden="true">event_busy</span>
@@ -135,8 +132,8 @@
     </section>
   }
 
-  @if (erro()) {
-    <p class="erro centro">{{ erro() }}</p>
+  @if (erro(); as falha) {
+    <p class="erro centro">{{ textos[falha.tipo].frase }}</p>
   }
   @if (temMais()) {
     <button type="button" class="btn btn-secundario mais" [disabled]="carregandoMais()" (click)="carregarPagina()">

@@ -116,6 +116,61 @@ describe('login (AuthStore + interceptor)', () => {
     mock.expectOne('/api/auth/refresh').error(new ProgressEvent('error'));
     await restaurando;
     expect(auth.logado()).toBe(false);
+    expect(auth.falhaAbertura()?.tipo).toMatch(/sem-internet|indisponivel/);
+  });
+
+  const guarda = () => TestBed.runInInjectionContext(() => autenticadoGuard({} as never, {} as never));
+
+  it('API fora do ar na abertura (502): não manda para o login, liga a falha e retoma quando a nova tentativa dá certo', async () => {
+    const abrindo = auth.iniciar();
+    mock.expectOne('/api/auth/refresh').flush({}, { status: 502, statusText: 'Bad Gateway' });
+    await abrindo;
+
+    expect(auth.falhaAbertura()).toEqual({ tipo: 'indisponivel', codigo: null });
+    expect(auth.logado()).toBe(false);
+    expect(guarda()).toBe(true); // a rota pedida fica; o app mostra a tela de erro no lugar dela
+
+    const de_novo = auth.tentarAbrirDeNovo();
+    mock.expectOne('/api/auth/refresh').flush({ acesso: 't1', expiraEmSegundos: 900 });
+    await de_novo;
+    expect(auth.falhaAbertura()).toBeNull();
+    expect(auth.logado()).toBe(true);
+  });
+
+  it('403 na abertura é acesso restrito, sem ir para o login', async () => {
+    const abrindo = auth.iniciar();
+    mock.expectOne('/api/auth/refresh').flush({}, { status: 403, statusText: 'Forbidden' });
+    await abrindo;
+    expect(auth.falhaAbertura()?.tipo).toBe('restrito');
+    expect(guarda()).toBe(true);
+  });
+
+  it('refresh que não responde em 15 s é servidor demorando', async () => {
+    vi.useFakeTimers();
+    try {
+      const abrindo = auth.iniciar();
+      mock.expectOne('/api/auth/refresh'); // nunca responde
+      await vi.advanceTimersByTimeAsync(15_000);
+      await abrindo;
+      expect(auth.falhaAbertura()?.tipo).toBe('demorando');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('401 na abertura: avisa "sessão expirou" só se este navegador já tinha entrado', async () => {
+    entrar(); // marca que este navegador já entrou
+    const abrindo = auth.iniciar();
+    mock.expectOne('/api/auth/refresh').flush({}, NAO_AUTORIZADO);
+    await abrindo;
+    expect(auth.avisoLogin()).toBe('Sua sessão expirou. Entre de novo.');
+    expect(auth.falhaAbertura()).toBeNull();
+
+    auth.avisoLogin.set(null);
+    const primeira_visita = auth.iniciar(); // a marca saiu com o 401
+    mock.expectOne('/api/auth/refresh').flush({}, NAO_AUTORIZADO);
+    await primeira_visita;
+    expect(auth.avisoLogin()).toBeNull();
   });
 });
 

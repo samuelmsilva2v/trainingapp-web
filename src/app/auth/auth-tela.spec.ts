@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -15,7 +16,7 @@ describe('AuthTela', () => {
     esqueciSenha: vi.fn(() => of(undefined)),
     redefinirSenha: vi.fn(() => of(undefined)),
   };
-  const auth = { logado: () => false, entrar: vi.fn(() => of(undefined)), entrarComGoogle: vi.fn(() => of(undefined)) };
+  const auth = { logado: () => false, avisoLogin: signal<string | null>(null), entrar: vi.fn(() => of(undefined)), entrarComGoogle: vi.fn(() => of(undefined)) };
 
   function abrir(modo: string, token?: string) {
     TestBed.configureTestingModule({
@@ -142,6 +143,13 @@ describe('AuthTela', () => {
     enviar();
 
     expect(tela.querySelector('[role=alert]')!.textContent).toContain('E-mail ou senha incorretos');
+  });
+
+  it('entrar: mostra uma vez o aviso de sessão expirada deixado pela abertura do app', () => {
+    auth.avisoLogin.set('Sua sessão expirou. Entre de novo.');
+    const { tela } = abrir('entrar');
+    expect(tela.querySelector('[role=alert]')!.textContent).toContain('Sua sessão expirou. Entre de novo.');
+    expect(auth.avisoLogin()).toBeNull();
   });
 
   /** Preenche o cadastro com dados válidos e a senha dada, sem marcar os termos. */

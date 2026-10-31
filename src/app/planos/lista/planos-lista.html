@@ -5,11 +5,8 @@
 
 @if (carregando()) {
   <p class="estado suave" role="status">Carregando planos…</p>
-} @else if (erro()) {
-  <div class="estado">
-    <p class="erro">{{ erro() }}</p>
-    <button type="button" class="btn btn-secundario" (click)="carregar()">Tentar de novo</button>
-  </div>
+} @else if (erro(); as falha) {
+  <app-tela-erro [falha]="falha" (tentar)="carregar()" />
 } @else if (planos().length === 0) {
   <div class="vazio">
     <span class="icone circulo" aria-hidden="true">fitness_center</span>
