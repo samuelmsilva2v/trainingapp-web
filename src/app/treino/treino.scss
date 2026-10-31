@@ -249,6 +249,7 @@
   margin: 0;
   div { display: flex; flex-direction: column-reverse; align-items: center; padding: 12px 4px; border-radius: var(--r-md); background: var(--c-sup-3); }
   dd { margin: 0; font: 700 24px/32px var(--fonte-titulo); }
+  dd.xp-bonus { font: 600 12px/16px 'Inter', sans-serif; }
   dt { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.05em; }
 }
 .aviso { color: var(--c-secundaria); text-align: center; }

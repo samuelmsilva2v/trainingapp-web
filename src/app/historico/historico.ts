@@ -7,7 +7,7 @@ import { SessoesApi, mensagemDeErro } from '../core/api';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
-import { blocos } from '../core/series';
+import { blocos, xpDoTreino } from '../core/series';
 import { Periodo, inicioDaCobertura, partesDoTempo, resumirPeriodo, rotuloDoPeriodo } from './resumo';
 
 const TAMANHO_PAGINA = 20;
@@ -42,6 +42,7 @@ export class Historico implements OnInit {
   protected readonly periodo = signal<Periodo>('SEMANA');
 
   protected readonly duracaoMinutos = duracaoMinutos;
+  protected readonly xpDoTreino = xpDoTreino;
   protected readonly formatarCarga = formatarCarga;
   protected readonly blocos = blocos;
   protected readonly formatarDataRelativa = formatarDataRelativa;

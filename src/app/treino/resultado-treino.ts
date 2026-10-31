@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { linhasComRecorde, seriesFeitas } from '../core/series';
+import { linhasComRecorde, seriesFeitas, xpDoTreino } from '../core/series';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
 export interface ResultadoDados {
@@ -23,6 +23,10 @@ export class ResultadoTreino implements OnInit {
 
   protected readonly sessao = this.dados.sessao;
   protected readonly xp = this.sessao.xpGanho ?? 0;
+  protected readonly xpTreino = xpDoTreino(this.sessao);
+  protected readonly bonus = this.sessao.xpStreak ?? 0;
+  /** A sequência que este treino acabou de estender. */
+  protected readonly diasSequencia = this.dados.depois?.streakAtual ?? 0;
   protected readonly feitas = this.sessao.exercicios.reduce((n, e) => n + seriesFeitas(e), 0);
   protected readonly planejadas = this.sessao.exercicios.reduce((n, e) => n + e.metaSeries, 0);
 

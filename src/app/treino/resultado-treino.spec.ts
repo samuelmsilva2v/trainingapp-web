@@ -72,6 +72,29 @@ describe('ResultadoTreino', () => {
     expect(el.textContent).not.toContain('🏆');
   });
 
+  it('mostra o bônus da sequência à parte: XP do treino em destaque, linha da sequência e o total', () => {
+    const el = abrir({
+      sessao: comXpPorExercicio(sessao({ xpGanho: 51, xpSeries: 36, xpStreak: 15, recordes: [] }), 36),
+      antes: null,
+      depois: gamificacao({ streakAtual: 4 }),
+    });
+    const texto = el.textContent ?? '';
+
+    expect(el.querySelector('.grande')?.textContent).toContain('+36 XP'); // 51 − 15
+    expect(texto).toContain('+15 bônus');
+    expect(texto).toContain('Sequência (4 dias)');
+    expect(texto).toContain('Total');
+    expect(texto).toContain('+51');
+    expect(el.querySelector('.metricas dd')?.textContent).toBe('36');
+  });
+
+  it('sem bônus não mostra sequência nem total à parte', () => {
+    const el = abrir({ sessao: comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36), antes: null, depois: gamificacao({}) });
+    expect(el.querySelector('.grande')?.textContent).toContain('+36 XP');
+    expect(el.textContent).not.toContain('bônus');
+    expect(el.textContent).not.toContain('Total');
+  });
+
   it('explica por que não rendeu XP: poucas séries ou já treinou no dia', () => {
     const poucas = sessao({ xpGanho: 0 });
     poucas.exercicios[0].series = poucas.exercicios[0].series.slice(0, 2);

@@ -69,7 +69,10 @@
                   <span class="chip pr">🏆 {{ s.recordes }} PR</span>
                 }
                 @if (s.xpGanho > 0) {
-                  <span class="chip xp"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ s.xpGanho }} XP</span>
+                  <span class="chip xp"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpDoTreino(s) }} XP</span>
+                }
+                @if (s.xpStreak) {
+                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ s.xpStreak }} bônus</span>
                 }
               </span>
             </header>

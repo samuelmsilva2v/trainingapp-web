@@ -1,7 +1,9 @@
 .corpo { padding: 24px; display: flex; flex-direction: column; gap: 20px; max-height: 85dvh; overflow-y: auto; }
 section { display: flex; flex-direction: column; gap: 8px; }
 .grande { font: 800 40px/48px var(--fonte-titulo); color: var(--c-primaria); display: flex; align-items: center; gap: 8px; margin: 0; }
-.detalhe { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; justify-content: space-between; color: var(--c-texto-2); } }
+.detalhe { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; justify-content: space-between; color: var(--c-texto-2); }
+  li.xp-bonus { color: var(--c-secundaria); }
+  li.total { color: var(--c-texto); font-weight: 700; } }
 .sem-xp { margin: 0; }
 .subiu { margin: 0; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-primaria); color: var(--c-sobre-primaria); font-weight: 700; text-align: center; }
 .nivel-topo { display: flex; justify-content: space-between; font-weight: 700; }

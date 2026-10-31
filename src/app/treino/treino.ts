@@ -15,7 +15,7 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
-import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries } from '../core/series';
+import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
 import { DadosSeletor, SeletorExercicio } from '../planos/seletor-exercicio/seletor-exercicio';
@@ -56,6 +56,7 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
   protected readonly totalSeries = totalSeries;
+  protected readonly xpDoTreino = xpDoTreino;
   protected readonly maxDrops = MAX_DROPS;
   /** Sessão como a API a vê agora, com o XP que o treino renderia se fosse concluído (exato, calculado pela API). */
   protected readonly previa = signal<SessaoLocal | null>(null);

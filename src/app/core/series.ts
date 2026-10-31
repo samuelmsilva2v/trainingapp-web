@@ -62,6 +62,11 @@ export function linhasComRecorde(sessao: SessaoLocal): Set<string> {
   );
 }
 
+/** XP do treino em si (séries e recordes): o bônus da sequência aparece à parte em todas as telas. */
+export function xpDoTreino(s: { xpGanho?: number; xpStreak?: number }): number {
+  return (s.xpGanho ?? 0) - (s.xpStreak ?? 0);
+}
+
 /** Séries (blocos) concluídas: o drop-set conta uma vez. */
 export function seriesFeitas(exercicio: ExercicioLocal): number {
   return blocos(exercicio.series).filter(b => exercicio.series[b.inicio].concluida).length;

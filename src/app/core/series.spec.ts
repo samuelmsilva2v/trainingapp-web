@@ -1,4 +1,4 @@
-import { blocos, cargaDoDrop, espelharDrops, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries } from './series';
+import { blocos, cargaDoDrop, espelharDrops, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from './series';
 import { ExercicioLocal, SerieLocal, SessaoLocal } from './modelos';
 
 const exercicio = (series: SerieLocal[]): ExercicioLocal => ({
@@ -46,5 +46,13 @@ describe('séries', () => {
     expect(cargaDoDrop(10)).toBe(5);
     expect(cargaDoDrop(5)).toBeNull();
     expect(cargaDoDrop(null)).toBeNull();
+  });
+});
+
+describe('xpDoTreino', () => {
+  it('desconta o bônus da sequência do XP ganho', () => {
+    expect(xpDoTreino({ xpGanho: 51, xpStreak: 15 })).toBe(36);
+    expect(xpDoTreino({ xpGanho: 36 })).toBe(36); // API antiga ou sem bônus
+    expect(xpDoTreino({})).toBe(0);
   });
 });

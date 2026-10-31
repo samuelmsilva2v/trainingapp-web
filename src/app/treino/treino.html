@@ -214,7 +214,13 @@
       </header>
       <dl class="totais">
         <div><dd class="num">{{ store.seriesConcluidas() }}</dd><dt>séries</dt></div>
-        <div><dd class="num">{{ previa()?.xpGanho ?? '—' }}</dd><dt>xp</dt></div>
+        <div>
+          <!-- coluna invertida: o bônus vem antes no HTML para aparecer embaixo do número -->
+          @if (previa()?.xpStreak) {
+            <dd class="xp-bonus num"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ previa()!.xpStreak }} bônus</dd>
+          }
+          <dd class="num">{{ previa() ? xpDoTreino(previa()!) : '—' }}</dd><dt>xp</dt>
+        </div>
         <div><dd class="num">{{ cronometro(decorrido()) }}</dd><dt>tempo</dt></div>
       </dl>
       <ul class="resumo-exercicios">

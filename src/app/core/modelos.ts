@@ -147,6 +147,8 @@ export interface SessaoLocal {
   xpGanho?: number;
   xpSeries?: number;
   xpRecordes?: number;
+  /** Bônus da sequência de dias de treino (já somado em xpGanho). */
+  xpStreak?: number;
   recordes?: string[];
 }
 
@@ -169,6 +171,8 @@ export interface SessaoResumo {
   seriesConcluidas: number;
   volumeKg: number;
   xpGanho: number;
+  /** Bônus da sequência (já somado em xpGanho). */
+  xpStreak?: number;
   recordes: number;
 }
 
