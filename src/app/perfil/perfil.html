@@ -166,6 +166,27 @@
       </button>
     </section>
 
+    @if (gamificacao.dados()?.desafios?.length) {
+      <section class="card desafios-card" aria-label="Desafios da semana">
+        <div class="card-topo">
+          <span class="titulo"><span class="icone cheio laranja" aria-hidden="true">flag</span> Desafios da semana</span>
+          <span class="suave">{{ textoFimDaSemana() }}</span>
+        </div>
+        <ul class="desafios">
+          @for (d of gamificacao.dados()!.desafios!; track d.codigo) {
+            <li [class.cumprido]="d.cumprido">
+              <span class="icone" [class.cheio]="d.cumprido" aria-hidden="true">{{ d.cumprido ? 'check_circle' : 'radio_button_unchecked' }}</span>
+              <span class="texto">
+                <span class="nome-desafio">{{ d.nome }}</span>
+                <span class="suave num">{{ d.progresso }}/{{ d.meta }} · +{{ d.xp }} XP</span>
+              </span>
+              <span class="so-leitor">{{ d.cumprido ? '(cumprido)' : '(em andamento)' }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
     @if (gamificacao.dados(); as g) {
       <section class="card conquistas-card" aria-label="Conquistas">
         <button type="button" class="conquistas-topo" [attr.aria-expanded]="conquistasAbertas()"

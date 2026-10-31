@@ -53,6 +53,7 @@ describe('xpDoTreino', () => {
   it('desconta o bônus da sequência do XP ganho', () => {
     expect(xpDoTreino({ xpGanho: 51, xpStreak: 15 })).toBe(36);
     expect(xpDoTreino({ xpGanho: 101, xpStreak: 15, xpConquistas: 50 })).toBe(36);
+    expect(xpDoTreino({ xpGanho: 121, xpStreak: 15, xpConquistas: 50, xpDesafios: 20 })).toBe(36);
     expect(xpDoTreino({ xpGanho: 36 })).toBe(36); // API antiga ou sem bônus
     expect(xpDoTreino({})).toBe(0);
   });

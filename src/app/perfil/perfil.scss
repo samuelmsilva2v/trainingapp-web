@@ -126,3 +126,12 @@ input {
 /* Notificações: cada interruptor num bloco, com as opções logo abaixo quando ligado. */
 .notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
 .frequencias { grid-template-columns: repeat(3, 1fr); }
+
+// Desafios da semana (api#38): mesma lista das conquistas; o cumprido fica aceso.
+.desafios-card { gap: 12px; }
+.desafios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
+  li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--c-sup-3); }
+  li.cumprido .icone { color: var(--c-primaria); }
+  .texto { display: flex; flex-direction: column; gap: 2px; }
+  .nome-desafio { font-weight: 600; }
+}

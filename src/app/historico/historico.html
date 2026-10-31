@@ -80,6 +80,9 @@
                 @if (xpDoTreino(s) > 0) {
                   <span class="chip xp"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpDoTreino(s) }} XP</span>
                 }
+                @if (s.xpDesafios) {
+                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">flag</span>+{{ s.xpDesafios }}</span>
+                }
                 @if (s.xpConquistas) {
                   <span class="chip bonus"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ s.xpConquistas }}</span>
                 }

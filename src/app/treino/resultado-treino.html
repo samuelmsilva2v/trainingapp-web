@@ -18,6 +18,9 @@
       @if (xpConquistas) {
         <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ xpConquistas }} conquistas</p>
       }
+      @if (xpDesafios) {
+        <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">flag</span>+{{ xpDesafios }} desafios</p>
+      }
       <ul class="detalhe num">
         @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
         @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
@@ -27,7 +30,10 @@
         @if (xpConquistas) {
           <li class="xp-bonus"><span>Conquistas</span><span>+{{ xpConquistas }}</span></li>
         }
-        @if (bonus || xpConquistas) {
+        @if (xpDesafios) {
+          <li class="xp-bonus"><span>Desafios</span><span>+{{ xpDesafios }}</span></li>
+        }
+        @if (bonus || xpConquistas || xpDesafios) {
           <li class="total"><span>Total</span><span>+{{ xp }}</span></li>
         }
       </ul>
@@ -62,6 +68,17 @@
       <h3 class="rotulo suave">Recordes batidos</h3>
       <ul class="lista recordes">
         @for (nome of recordes; track nome) { <li>🏆 {{ nome }}</li> }
+      </ul>
+    </section>
+  }
+
+  @if (desafios.length > 0) {
+    <section aria-label="Desafios da semana">
+      <h3 class="rotulo suave">{{ desafios.length === 1 ? 'Desafio cumprido' : 'Desafios cumpridos' }}</h3>
+      <ul class="lista">
+        @for (d of desafios; track d.codigo) {
+          <li><span class="icone cheio" aria-hidden="true">flag</span> {{ d.nome }} <span class="xp-bonus num">+{{ d.xp }} XP</span></li>
+        }
       </ul>
     </section>
   }

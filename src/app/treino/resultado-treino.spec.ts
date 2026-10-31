@@ -116,6 +116,27 @@ describe('ResultadoTreino', () => {
     expect(el.querySelector('.grande')).toBeNull(); // sem XP de treino: nada de "+0 XP"
   });
 
+  it('mostra os desafios cumpridos com o XP e a linha de desafios, à parte do XP do treino', () => {
+    const el = abrir({
+      sessao: comXpPorExercicio(sessao({
+        xpGanho: 106, xpSeries: 36, xpDesafios: 70, recordes: [],
+        desafios: [
+          { codigo: 'TRES_TREINOS', nome: '3 treinos na semana', xp: 50 },
+          { codigo: 'DOIS_DIAS_SEGUIDOS', nome: 'Treinar 2 dias seguidos', xp: 20 },
+        ],
+      }), 36),
+      antes: null,
+      depois: gamificacao({}),
+    });
+    const texto = el.textContent ?? '';
+    expect(el.querySelector('.grande')?.textContent).toContain('+36 XP');
+    expect(texto).toContain('+70 desafios');
+    expect(texto).toContain('Desafios cumpridos');
+    expect(texto).toContain('3 treinos na semana');
+    expect(texto).toContain('+50 XP');
+    expect(texto).toContain('Total');
+  });
+
   it('avisa o título novo quando o treino muda a faixa de nível, e só nesse caso', () => {
     const comXp = () => comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36);
     const mudou = abrir({ sessao: comXp(), antes: gamificacao({ nivel: 4, titulo: 'Iniciante' }), depois: gamificacao({ nivel: 5, titulo: 'Dedicado' }) });

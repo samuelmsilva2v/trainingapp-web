@@ -216,6 +216,9 @@
         <div><dd class="num">{{ store.seriesConcluidas() }}</dd><dt>séries</dt></div>
         <div>
           <!-- coluna invertida: os extras vêm antes no HTML para aparecer embaixo do número -->
+          @if (previa()?.xpDesafios) {
+            <dd class="xp-bonus num"><span class="icone cheio" aria-hidden="true">flag</span>+{{ previa()!.xpDesafios }} desafios</dd>
+          }
           @if (previa()?.xpConquistas) {
             <dd class="xp-bonus num"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ previa()!.xpConquistas }} conquistas</dd>
           }

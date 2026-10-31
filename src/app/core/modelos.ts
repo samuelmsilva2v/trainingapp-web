@@ -152,6 +152,9 @@ export interface SessaoLocal {
   /** XP das conquistas creditadas ao concluir (já somado em xpGanho) e quais foram. */
   xpConquistas?: number;
   conquistas?: ConquistaGanha[];
+  /** XP dos desafios da semana cumpridos ao concluir (já somado em xpGanho) e quais foram. */
+  xpDesafios?: number;
+  desafios?: ConquistaGanha[];
   recordes?: string[];
 }
 
@@ -178,6 +181,8 @@ export interface SessaoResumo {
   xpStreak?: number;
   /** XP das conquistas creditadas neste treino (já somado em xpGanho). */
   xpConquistas?: number;
+  /** XP dos desafios da semana cumpridos neste treino (já somado em xpGanho). */
+  xpDesafios?: number;
   recordes: number;
 }
 
@@ -210,7 +215,17 @@ export interface Conquista {
   conquistada: boolean;
 }
 
-/** Conquista creditada num treino, com o XP que rendeu. */
+/** Desafio da semana: progresso de 0 até a meta; cumprido também se o XP já foi creditado. */
+export interface Desafio {
+  codigo: string;
+  nome: string;
+  progresso: number;
+  meta: number;
+  xp: number;
+  cumprido: boolean;
+}
+
+/** Conquista (ou desafio) creditado num treino, com o XP que rendeu. */
 export interface ConquistaGanha {
   codigo: string;
   nome: string;
@@ -230,6 +245,9 @@ export interface Gamificacao {
   recordes: number;
   treinouHoje: boolean;
   conquistas: Conquista[];
+  /** Desafios da semana atual e o domingo (AAAA-MM-DD) em que ela termina; ausentes em API antiga. */
+  desafios?: Desafio[];
+  semanaTerminaEm?: string;
 }
 
 /** Uma pesagem por dia; `data` é o dia (AAAA-MM-DD). */

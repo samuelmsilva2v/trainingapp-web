@@ -55,6 +55,9 @@ export class ResultadoTreino implements OnInit {
   /** Conquistas creditadas neste treino, como a API as gravou (inclui as que já valiam antes, no 1º treino depois do deploy). */
   protected readonly conquistasNovas = this.sessao.conquistas ?? [];
   protected readonly xpConquistas = this.sessao.xpConquistas ?? 0;
+  /** Desafios da semana cumpridos com este treino. */
+  protected readonly desafios = this.sessao.desafios ?? [];
+  protected readonly xpDesafios = this.sessao.xpDesafios ?? 0;
 
   /** Por que o treino não rendeu XP. */
   protected readonly motivoSemXp =

@@ -6,6 +6,7 @@ import { TelaErro } from '../compartilhado/tela-erro';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
+import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
 import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
@@ -66,6 +67,14 @@ export class PerfilTela implements OnInit {
     { valor: 5, letra: 'S', nome: 'Sexta' },
     { valor: 6, letra: 'S', nome: 'Sábado' },
   ];
+  /** "Faltam N dias" até a semana dos desafios virar (domingo é o último dia). */
+  protected readonly textoFimDaSemana = computed(() => {
+    const fim = this.gamificacao.dados()?.semanaTerminaEm;
+    if (!fim) return '';
+    const dias = diasEntre(hojeIso(), fim);
+    return dias <= 0 ? 'Termina hoje' : dias === 1 ? 'Falta 1 dia' : `Faltam ${dias} dias`;
+  });
+
   protected readonly conquistadas = computed(() => this.gamificacao.dados()?.conquistas.filter(c => c.conquistada).length ?? 0);
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);

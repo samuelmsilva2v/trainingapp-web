@@ -48,6 +48,29 @@ describe('PerfilTela', () => {
     expect(tela.querySelector('select')).toBeNull();
   });
 
+  it('desafios da semana: progresso, cumprido e quantos dias faltam', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 28, 12)); // quarta 28/10
+    try {
+      gamificacao.desafios = [
+        { codigo: 'TRES_TREINOS', nome: '3 treinos na semana', progresso: 3, meta: 3, xp: 50, cumprido: true },
+        { codigo: 'UM_RECORDE', nome: 'Bater 1 recorde', progresso: 0, meta: 1, xp: 30, cumprido: false },
+      ];
+      gamificacao.semanaTerminaEm = '2026-11-01';
+      const { tela } = abrir();
+      const cartao = tela.querySelector('.desafios-card')!;
+      expect(cartao.textContent).toContain('Desafios da semana');
+      expect(cartao.textContent).toContain('Faltam 4 dias');
+      expect(cartao.textContent).toContain('3/3 · +50 XP');
+      expect(cartao.textContent).toContain('0/1 · +30 XP');
+      expect(cartao.querySelectorAll('li.cumprido').length).toBe(1);
+    } finally {
+      delete gamificacao.desafios;
+      delete gamificacao.semanaTerminaEm;
+      vi.useRealTimers();
+    }
+  });
+
   it('o card da conta (com o Sair) fica por último, logo depois das conquistas, sem "sair de todos"', () => {
     const { tela } = abrir();
     const cards = [...tela.querySelectorAll('.card')];
