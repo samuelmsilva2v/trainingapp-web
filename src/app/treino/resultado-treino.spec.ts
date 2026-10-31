@@ -88,6 +88,16 @@ describe('ResultadoTreino', () => {
     expect(el.querySelector('.metricas dd')?.textContent).toBe('36');
   });
 
+  it('avisa o título novo quando o treino muda a faixa de nível, e só nesse caso', () => {
+    const comXp = () => comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36);
+    const mudou = abrir({ sessao: comXp(), antes: gamificacao({ nivel: 4, titulo: 'Iniciante' }), depois: gamificacao({ nivel: 5, titulo: 'Dedicado' }) });
+    expect(mudou.textContent).toContain('Novo título: Dedicado');
+
+    TestBed.resetTestingModule();
+    const igual = abrir({ sessao: comXp(), antes: gamificacao({ nivel: 6, titulo: 'Dedicado' }), depois: gamificacao({ nivel: 7, titulo: 'Dedicado' }) });
+    expect(igual.textContent).not.toContain('Novo título');
+  });
+
   it('sem bônus não mostra sequência nem total à parte', () => {
     const el = abrir({ sessao: comXpPorExercicio(sessao({ xpGanho: 36, xpSeries: 36, recordes: [] }), 36), antes: null, depois: gamificacao({}) });
     expect(el.querySelector('.grande')?.textContent).toContain('+36 XP');

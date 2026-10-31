@@ -37,7 +37,7 @@
             <span class="caixa raio"><span class="icone" aria-hidden="true">bolt</span></span>
             <span class="texto">
               <span class="rotulo suave">Nível atual</span>
-              <span class="valor num">Nível {{ g.nivel }}</span>
+              <span class="valor num">Nível {{ g.nivel }}@if (g.titulo) { · {{ g.titulo }} }</span>
             </span>
           </div>
           <div class="xp">

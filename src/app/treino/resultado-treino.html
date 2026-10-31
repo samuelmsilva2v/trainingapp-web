@@ -28,6 +28,9 @@
       @if (subiu) {
         <p class="subiu">Subiu para o nível {{ g.nivel }}!</p>
       }
+      @if (tituloNovo) {
+        <p class="subiu">Novo título: {{ tituloNovo }}</p>
+      }
       <div class="nivel-topo num">
         <span>Nível {{ g.nivel }}</span>
         <span class="suave">faltam {{ faltam }} XP para o nível {{ g.nivel + 1 }}</span>

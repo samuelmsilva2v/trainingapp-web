@@ -208,6 +208,8 @@ export interface Conquista {
 export interface Gamificacao {
   xpTotal: number;
   nivel: number;
+  /** Nome da faixa do nível (Iniciante, Dedicado, Atleta...); ausente em API antiga. */
+  titulo?: string;
   xpInicioDoNivel: number;
   xpProximoNivel: number;
   streakAtual: number;

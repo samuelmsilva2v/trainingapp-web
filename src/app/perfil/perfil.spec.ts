@@ -7,7 +7,7 @@ import { Gamificacao, Perfil, Peso } from '../core/modelos';
 import { PerfilTela } from './perfil';
 
 const gamificacao: Gamificacao = {
-  xpTotal: 182, nivel: 1, xpInicioDoNivel: 0, xpProximoNivel: 283, streakAtual: 2, melhorStreak: 2,
+  xpTotal: 182, nivel: 1, titulo: 'Iniciante', xpInicioDoNivel: 0, xpProximoNivel: 283, streakAtual: 2, melhorStreak: 2,
   treinos: 2, recordes: 0, treinouHoje: true,
   conquistas: [
     { codigo: 'A', nome: 'Primeiro treino', descricao: 'Conclua seu primeiro treino.', conquistada: true },
@@ -42,7 +42,7 @@ describe('PerfilTela', () => {
     expect(tela.querySelector('.nome')!.textContent).toBe('Samuel');
     expect(texto).toContain('Praticante de musculação');
     expect(texto).toContain('2 dias');
-    expect(texto).toContain('Nível 1');
+    expect(texto).toContain('Nível 1 · Iniciante');
     expect(texto).toContain('182 / 283 XP');
     expect(texto).not.toContain('Fuso');
     expect(tela.querySelector('select')).toBeNull();

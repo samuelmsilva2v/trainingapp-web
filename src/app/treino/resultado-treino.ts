@@ -36,6 +36,11 @@ export class ResultadoTreino implements OnInit {
   protected readonly largura = signal(0);
 
   protected readonly subiu = (this.dados.depois?.nivel ?? 0) > (this.dados.antes?.nivel ?? 0);
+  /** O título mudou com este treino (ex.: de Iniciante para Dedicado); sem o "antes" não dá para saber. */
+  protected readonly tituloNovo =
+    this.dados.antes?.titulo && this.dados.depois?.titulo && this.dados.antes.titulo !== this.dados.depois.titulo
+      ? this.dados.depois.titulo
+      : null;
   protected readonly faltam = this.dados.depois
     ? Math.max(0, this.dados.depois.xpProximoNivel - this.dados.depois.xpTotal)
     : 0;
