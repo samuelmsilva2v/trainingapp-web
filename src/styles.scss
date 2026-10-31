@@ -143,6 +143,8 @@ input, select { font: inherit; color: inherit; }
   &:active { transform: scale(0.98); }
   &:disabled { opacity: 0.45; cursor: default; }
 }
+// <a class="btn"> (routerLink) sem o sublinhado padrão de link.
+a.btn { text-decoration: none; }
 .btn-primario { background: var(--c-primaria); color: var(--c-sobre-primaria); &:hover:not(:disabled) { background: var(--c-primaria-esc); } }
 .btn-secundario { background: var(--c-sup-3); color: var(--c-texto); &:hover:not(:disabled) { background: var(--c-sup-4); } }
 .btn-perigo { background: transparent; color: #ff4d4d; }

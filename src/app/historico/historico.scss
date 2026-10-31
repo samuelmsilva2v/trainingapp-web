@@ -2,7 +2,7 @@
 
 .cabecalho { padding: 8px 0 16px; p { margin-top: 2px; } }
 
-.estado { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; a { text-decoration: none; } }
+.estado { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }
 .erro { color: var(--c-erro); }
 .centro { text-align: center; }
 .circulo { width: 80px; height: 80px; border-radius: 50%; background: var(--c-sup-3); color: var(--c-texto-2); display: flex; align-items: center; justify-content: center; font-size: 40px; }

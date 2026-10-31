@@ -54,7 +54,7 @@
 .nome { letter-spacing: -0.01em; }
 .dias { display: flex; align-items: center; gap: 6px; .icone { font-size: 16px; } }
 
-.acoes { display: flex; gap: 8px; padding-top: 8px; a { text-decoration: none; } .btn { flex: 1; min-height: 48px; } }
+.acoes { display: flex; gap: 8px; padding-top: 8px; .btn { flex: 1; min-height: 48px; } }
 .ativar .destaque { color: var(--c-primaria); font-size: 20px; }
 .editar { background: var(--c-sup-1); border-radius: var(--r-md); width: 48px; height: 48px; flex-shrink: 0; text-decoration: none; .icone { font-size: 20px; } }
 
@@ -83,4 +83,4 @@
 .dia-exercicios { margin: 0; padding-left: 14px; font-size: 12px; line-height: 16px; color: var(--c-texto-2); }
 
 .fixo { position: sticky; bottom: 80px; z-index: 30; padding: 16px 0 8px; }
-.novo { width: 100%; text-decoration: none; box-shadow: 0 8px 24px rgba(202, 243, 0, 0.25); }
+.novo { width: 100%; box-shadow: 0 8px 24px rgba(202, 243, 0, 0.25); }
