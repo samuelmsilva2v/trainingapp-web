@@ -197,18 +197,62 @@
         </button>
 
         @if (conquistasAbertas()) {
-          <ul class="conquistas" id="lista-conquistas">
-            @for (c of g.conquistas; track c.codigo) {
-              <li [class.ganha]="c.conquistada">
-                <span class="icone" [class.cheio]="c.conquistada" aria-hidden="true">{{ c.conquistada ? 'emoji_events' : 'lock' }}</span>
-                <span class="texto">
-                  <span class="nome-conquista">{{ c.nome }}</span>
-                  <span class="suave">{{ c.descricao }}</span>
-                </span>
+          <ul class="familias" id="lista-conquistas">
+            @for (f of familias(); track f.nome) {
+              <li class="familia" [class.completa]="f.completa">
+                @if (f.unica) {
+                  <div class="familia-topo">
+                    <ng-container [ngTemplateOutlet]="textoFamilia" [ngTemplateOutletContext]="{ $implicit: f }" />
+                    <span class="icone unica" [class.cheio]="f.completa" [class.ganha]="f.completa" aria-hidden="true">{{ f.completa ? 'emoji_events' : 'lock' }}</span>
+                    <span class="so-leitor">{{ f.completa ? '(conquistada)' : '(bloqueada)' }}</span>
+                  </div>
+                } @else {
+                  <button type="button" class="familia-topo" [attr.aria-expanded]="familiaAberta() === f.nome"
+                          (click)="familiaAberta.set(familiaAberta() === f.nome ? null : f.nome)">
+                    <ng-container [ngTemplateOutlet]="textoFamilia" [ngTemplateOutletContext]="{ $implicit: f }" />
+                    @if (f.completa) {
+                      <span class="selo-completa">Completa</span>
+                    } @else {
+                      <span class="bolinhas">
+                        @for (c of f.faixas; track c.codigo; let i = $index) {
+                          <span class="bolinha" [class.cheia]="c.conquistada" role="img"
+                                [attr.aria-label]="'Faixa ' + (i + 1) + ' de ' + f.faixas.length + (c.conquistada ? ', conquistada' : '')"></span>
+                        }
+                      </span>
+                    }
+                  </button>
+                  <div class="barra-familia" role="progressbar" [attr.aria-valuenow]="f.destaque.progresso" aria-valuemin="0"
+                       [attr.aria-valuemax]="f.destaque.meta" [attr.aria-label]="f.nome + ': ' + f.progresso">
+                    <span [style.width.%]="(f.destaque.progresso / f.destaque.meta) * 100"></span>
+                  </div>
+                  <span class="num suave progresso-familia">{{ f.progresso }}</span>
+                  @if (familiaAberta() === f.nome) {
+                    <ul class="faixas">
+                      @for (c of f.faixas; track c.codigo) {
+                        <li [class.ganha]="c.conquistada">
+                          <span class="icone" [class.cheio]="c.conquistada" aria-hidden="true">{{ c.conquistada ? 'check_circle' : 'lock' }}</span>
+                          <span class="texto">
+                            <span class="nome-conquista">{{ c.nome }} · {{ metaComUnidade(f.nome, c.meta) }}</span>
+                            <span class="suave">{{ c.descricao }}</span>
+                          </span>
+                          <span class="so-leitor">{{ c.conquistada ? '(conquistada)' : '(bloqueada)' }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                }
               </li>
             }
           </ul>
         }
+
+        <ng-template #textoFamilia let-f>
+          <span class="familia-texto">
+            <span class="familia-nome">{{ f.nome }}</span>
+            <span class="nome-conquista">{{ f.destaque.nome }}</span>
+            <span class="suave">{{ f.destaque.descricao }}</span>
+          </span>
+        </ng-template>
       </section>
     }
 

@@ -6,7 +6,7 @@ import { ResultadoDados, ResultadoTreino } from './resultado-treino';
 const gamificacao = (over: Partial<Gamificacao>): Gamificacao => ({
   xpTotal: 250, nivel: 1, xpInicioDoNivel: 0, xpProximoNivel: 283, streakAtual: 2, melhorStreak: 2,
   treinos: 2, recordes: 0, treinouHoje: true,
-  conquistas: [{ codigo: 'PRIMEIRO_TREINO', nome: 'Primeiro treino', descricao: '', conquistada: true }],
+  conquistas: [{ codigo: 'PRIMEIRO_TREINO', nome: 'Primeiro treino', descricao: '', conquistada: true, familia: 'Constância', faixa: 1, progresso: 1, meta: 1 }],
   ...over,
 });
 
@@ -49,8 +49,8 @@ describe('ResultadoTreino', () => {
       depois: gamificacao({
         xpTotal: 340, nivel: 2, xpInicioDoNivel: 283, xpProximoNivel: 520,
         conquistas: [
-          { codigo: 'PRIMEIRO_TREINO', nome: 'Primeiro treino', descricao: '', conquistada: true },
-          { codigo: 'PRIMEIRO_RECORDE', nome: 'Primeiro recorde', descricao: '', conquistada: true },
+          { codigo: 'PRIMEIRO_TREINO', nome: 'Primeiro treino', descricao: '', conquistada: true, familia: 'Constância', faixa: 1, progresso: 1, meta: 1 },
+          { codigo: 'PRIMEIRO_RECORDE', nome: 'Primeiro recorde', descricao: '', conquistada: true, familia: 'Constância', faixa: 1, progresso: 1, meta: 1 },
         ],
       }),
     });

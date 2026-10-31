@@ -10,8 +10,12 @@ const gamificacao: Gamificacao = {
   xpTotal: 182, nivel: 1, titulo: 'Iniciante', xpInicioDoNivel: 0, xpProximoNivel: 283, streakAtual: 2, melhorStreak: 2,
   treinos: 2, recordes: 0, treinouHoje: true,
   conquistas: [
-    { codigo: 'A', nome: 'Primeiro treino', descricao: 'Conclua seu primeiro treino.', conquistada: true },
-    { codigo: 'B', nome: 'Constância', descricao: 'Conclua 10 treinos.', conquistada: false },
+    { codigo: 'A', nome: 'Primeiro treino', descricao: 'Conclua seu primeiro treino.', conquistada: true, familia: 'Constância', faixa: 1, progresso: 1, meta: 1 },
+    { codigo: 'B', nome: 'Constância', descricao: 'Conclua 10 treinos.', conquistada: false, familia: 'Constância', faixa: 2, progresso: 2, meta: 10 },
+    { codigo: 'C', nome: 'Rotina de ferro', descricao: 'Conclua 50 treinos.', conquistada: false, familia: 'Constância', faixa: 3, progresso: 2, meta: 50 },
+    { codigo: 'D', nome: 'De volta', descricao: 'Volte a treinar.', conquistada: false, familia: 'De volta', faixa: 1, progresso: 0, meta: 1 },
+    { codigo: 'E', nome: 'Evolução ampla', descricao: 'Recordes em 5.', conquistada: true, familia: 'Recordes variados', faixa: 1, progresso: 5, meta: 5 },
+    { codigo: 'F', nome: 'Evolução geral', descricao: 'Recordes em 10.', conquistada: true, familia: 'Recordes variados', faixa: 2, progresso: 10, meta: 10 },
   ],
 };
 
@@ -81,16 +85,45 @@ describe('PerfilTela', () => {
     expect(tela.textContent).not.toContain('todos os aparelhos');
   });
 
-  it('conquistas ficam recolhidas e abrem no clique', () => {
+  it('conquistas ficam recolhidas e abrem no clique, uma linha por família', () => {
     const { fixture, tela } = abrir();
-    expect(tela.querySelector('.contagem')!.textContent).toBe('1/2');
-    expect(tela.querySelectorAll('.conquistas li').length).toBe(0);
+    expect(tela.querySelector('.contagem')!.textContent).toBe('3/6');
+    expect(tela.querySelectorAll('.familia').length).toBe(0);
 
     tela.querySelector<HTMLButtonElement>('.conquistas-topo')!.click();
     fixture.detectChanges();
 
-    expect(tela.querySelectorAll('.conquistas li').length).toBe(2);
     expect(tela.querySelector('.conquistas-topo')!.getAttribute('aria-expanded')).toBe('true');
+    const linhas = [...tela.querySelectorAll('.familia')];
+    expect(linhas.length).toBe(3);
+    // Constância: a próxima faixa em destaque, bolinhas e barra com a unidade.
+    expect(linhas[0].textContent).toContain('Constância');
+    expect(linhas[0].querySelector('.nome-conquista')!.textContent).toContain('Constância');
+    expect(linhas[0].querySelectorAll('.bolinha').length).toBe(3);
+    expect(linhas[0].querySelectorAll('.bolinha.cheia').length).toBe(1);
+    expect(linhas[0].querySelector('.bolinha')!.getAttribute('aria-label')).toBe('Faixa 1 de 3, conquistada');
+    expect(linhas[0].textContent).toContain('2/10 treinos');
+    expect(linhas[0].querySelector('[role=progressbar]')!.getAttribute('aria-valuemax')).toBe('10');
+    // Faixa única: cadeado, sem barra. Família completa: selo.
+    expect(linhas[1].querySelector('[role=progressbar]')).toBeNull();
+    expect(linhas[1].querySelector('.icone.unica')!.textContent).toBe('lock');
+    expect(linhas[2].querySelector('.selo-completa')!.textContent).toContain('Completa');
+  });
+
+  it('tocar na família lista as faixas com a meta e o check nas conquistadas', () => {
+    const { fixture, tela } = abrir();
+    tela.querySelector<HTMLButtonElement>('.conquistas-topo')!.click();
+    fixture.detectChanges();
+    const topo = tela.querySelector<HTMLButtonElement>('.familia button.familia-topo')!;
+    topo.click();
+    fixture.detectChanges();
+
+    expect(topo.getAttribute('aria-expanded')).toBe('true');
+    const faixas = [...tela.querySelectorAll('.faixas li')];
+    expect(faixas.length).toBe(3);
+    expect(faixas[0].textContent).toContain('Primeiro treino · 1 treinos');
+    expect(faixas[2].textContent).toContain('Rotina de ferro · 50 treinos');
+    expect(faixas[0].classList).toContain('ganha');
   });
 
   it('Excluir conta e apagar dados fica logo acima do Sair, depois de Trocar senha', () => {

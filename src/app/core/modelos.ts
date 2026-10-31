@@ -208,11 +208,18 @@ export interface Acesso {
   refresh?: string;
 }
 
+/** Uma faixa de uma família de conquistas (ex.: Constância, faixa 3 = "Rotina de ferro", 50 treinos). */
 export interface Conquista {
   codigo: string;
   nome: string;
   descricao: string;
   conquistada: boolean;
+  familia: string;
+  /** Começa em 1. */
+  faixa: number;
+  /** De 0 até a meta (a API já limita). */
+  progresso: number;
+  meta: number;
 }
 
 /** Desafio da semana: progresso de 0 até a meta; cumprido também se o XP já foi creditado. */

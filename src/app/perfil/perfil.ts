@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
@@ -6,6 +7,7 @@ import { TelaErro } from '../compartilhado/tela-erro';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
+import { familias, metaComUnidade } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
@@ -21,7 +23,7 @@ const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha, PesoSecao, TelaErro],
+  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -55,6 +57,10 @@ export class PerfilTela implements OnInit {
   /** Só no app: o client id web que o Credential Manager usa. */
   private webClientId: string | null = null;
   protected readonly conquistasAbertas = signal(false);
+  /** Conquistas por família (a próxima faixa em destaque) e a família com as faixas abertas. */
+  protected readonly familias = computed(() => familias(this.gamificacao.dados()?.conquistas ?? []));
+  protected readonly familiaAberta = signal<string | null>(null);
+  protected readonly metaComUnidade = metaComUnidade;
   protected readonly noApp = NO_APP;
   protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
   protected readonly avisoDescanso = signal(avisoDescansoLigado());
