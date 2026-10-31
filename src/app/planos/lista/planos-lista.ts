@@ -5,13 +5,14 @@ import { RouterLink } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { Carregando } from '../../compartilhado/carregando';
 import { DiaPlano, Plano, PlanoResumo } from '../../core/modelos';
 import { rotuloObjetivo } from '../../core/rotulos';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 
 @Component({
   selector: 'app-planos-lista',
-  imports: [RouterLink, TelaErro],
+  imports: [RouterLink, TelaErro, Carregando],
   templateUrl: './planos-lista.html',
   styleUrl: './planos-lista.scss',
 })

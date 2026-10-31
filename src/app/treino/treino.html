@@ -245,7 +245,16 @@
     </section>
   }
 } @else if (carregando()) {
-  <p class="carregando suave" role="status">Carregando treino…</p>
+  <div class="carregando esqueleto-lista" role="status" aria-busy="true" aria-label="Carregando o treino">
+    <span class="esqueleto e-caixa"></span>
+    <div class="esqueleto-cartao">
+      <span class="esqueleto" style="width: 30%"></span>
+      <span class="esqueleto e-titulo" style="width: 70%"></span>
+      <div class="esqueleto-linha"><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span></div>
+    </div>
+    <span class="esqueleto e-botao"></span>
+    <span class="esqueleto e-botao"></span>
+  </div>
 }
 
 <!-- Steppers de reps e carga de uma etapa (série normal ou drop). -->

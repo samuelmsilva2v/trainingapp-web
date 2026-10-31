@@ -6,6 +6,7 @@ import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { SessoesApi, mensagemDeErro } from '../core/api';
 import { TEXTOS_FALHA, Falha, falhaDe } from '../core/falha';
 import { TelaErro } from '../compartilhado/tela-erro';
+import { Carregando } from '../compartilhado/carregando';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
@@ -23,7 +24,7 @@ interface Mes {
 
 @Component({
   selector: 'app-historico',
-  imports: [RouterLink, TelaErro],
+  imports: [RouterLink, TelaErro, Carregando],
   templateUrl: './historico.html',
   styleUrl: './historico.scss',
 })

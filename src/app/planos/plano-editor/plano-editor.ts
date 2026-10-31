@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { Carregando } from '../../compartilhado/carregando';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
@@ -58,7 +59,7 @@ type CampoNumerico = 'series' | 'repsMin' | 'repsMax' | 'reps' | 'cargaAlvo' | '
 
 @Component({
   selector: 'app-plano-editor',
-  imports: [CdkDropList, CdkDrag, CdkDragHandle, TelaErro],
+  imports: [CdkDropList, CdkDrag, CdkDragHandle, TelaErro, Carregando],
   templateUrl: './plano-editor.html',
   styleUrl: './plano-editor.scss',
 })

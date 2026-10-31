@@ -5,6 +5,7 @@ import { catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } fr
 import { ExerciciosApi } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { Carregando } from '../../compartilhado/carregando';
 import { Equipamento, Exercicio, GrupoMuscular } from '../../core/modelos';
 import { EQUIPAMENTOS, GRUPOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 
@@ -17,7 +18,7 @@ export interface DadosSeletor {
 
 @Component({
   selector: 'app-seletor-exercicio',
-  imports: [TelaErro],
+  imports: [TelaErro, Carregando],
   templateUrl: './seletor-exercicio.html',
   styleUrl: './seletor-exercicio.scss',
 })

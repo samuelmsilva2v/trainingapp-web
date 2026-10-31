@@ -77,6 +77,8 @@ export class HojeTela implements OnInit {
   protected readonly nome = signal<string | null>(null);
   protected readonly hoje = signal<Hoje | null>(null);
   protected readonly ultimo = signal<SessaoResumo | null>(null);
+  /** O histórico já respondeu (com ou sem treino): até lá o cartão do último treino guarda o lugar. */
+  protected readonly ultimoCarregado = signal(false);
   protected readonly carregando = signal(true);
   protected readonly ocupado = signal(false);
   protected readonly erro = signal<Falha | null>(null);
@@ -189,9 +191,16 @@ export class HojeTela implements OnInit {
       },
     });
     // O último treino pode ser concluído ou abandonado; o cartão indica qual dos dois.
+    this.ultimoCarregado.set(false);
     this.api.historico(0, 1).subscribe({
-      next: lista => this.ultimo.set(lista[0] ?? null),
-      error: () => this.ultimo.set(null),
+      next: lista => {
+        this.ultimo.set(lista[0] ?? null);
+        this.ultimoCarregado.set(true);
+      },
+      error: () => {
+        this.ultimo.set(null);
+        this.ultimoCarregado.set(true);
+      },
     });
   }
 

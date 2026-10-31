@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PesoApi, mensagemDeErro } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { Carregando } from '../../compartilhado/carregando';
 import { Peso } from '../../core/modelos';
 import { diasEntre, hojeIso, tendencia } from '../../core/peso';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
@@ -38,7 +39,7 @@ function formatarDia(data: string): string {
 /** Bloco de peso dos Dados pessoais do Perfil (sempre em kg): último peso, variação, gráfico com tendência e lista. */
 @Component({
   selector: 'app-peso-secao',
-  imports: [TelaErro],
+  imports: [TelaErro, Carregando],
   templateUrl: './peso-secao.html',
   styleUrl: './peso-secao.scss',
 })

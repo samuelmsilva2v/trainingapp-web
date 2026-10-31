@@ -7,7 +7,7 @@
   </header>
 
   @if (carregando()) {
-    <p class="suave" role="status">Carregando…</p>
+    <app-carregando />
   } @else if (erro(); as falha) {
     <app-tela-erro [falha]="falha" (tentar)="carregar()" />
   } @else if (ultimo(); as u) {

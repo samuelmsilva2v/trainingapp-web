@@ -40,7 +40,7 @@
     @if (erro(); as falha) {
       <app-tela-erro [falha]="falha" (tentar)="tentativa.set(tentativa() + 1)" />
     } @else if (carregando()) {
-      <p class="aviso suave">Carregando…</p>
+      <app-carregando />
     } @else if (exibidos().length === 0) {
       <div class="aviso">
         <span class="icone grande" aria-hidden="true">search_off</span>

@@ -6,7 +6,7 @@
 </header>
 
 @if (carregando()) {
-  <p class="estado suave" role="status">Carregando plano…</p>
+  <div class="estado"><app-carregando /></div>
 } @else if (erroCarga(); as falha) {
   <app-tela-erro [falha]="falha" (tentar)="carregar(id!)" />
 } @else {

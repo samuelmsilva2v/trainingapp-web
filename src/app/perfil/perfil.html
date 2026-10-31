@@ -1,5 +1,19 @@
 @if (carregando()) {
-  <p class="estado suave" role="status">Carregando…</p>
+  <div class="esqueleto-lista" role="status" aria-busy="true" aria-label="Carregando o perfil">
+    <div class="esqueleto-cartao">
+      <div class="esqueleto-linha"><span class="esqueleto e-circulo"></span><span class="esqueleto e-titulo"></span></div>
+      <span class="esqueleto" style="width: 70%"></span>
+    </div>
+    <div class="esqueleto-cartao">
+      <span class="esqueleto" style="width: 40%"></span>
+      <div class="esqueleto-linha"><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span></div>
+      <span class="esqueleto"></span>
+    </div>
+    <div class="esqueleto-cartao">
+      <span class="esqueleto" style="width: 50%"></span>
+      <span class="esqueleto e-caixa"></span>
+    </div>
+  </div>
 } @else if (erro(); as falha) {
   <app-tela-erro [falha]="falha" (tentar)="carregar()" />
 } @else {

@@ -4,7 +4,16 @@
 </section>
 
 @if (carregando()) {
-  <p class="estado suave" role="status">Carregando planos…</p>
+  <div class="esqueleto-lista" role="status" aria-busy="true" aria-label="Carregando planos">
+    @for (i of [1, 2]; track i) {
+      <div class="esqueleto-cartao">
+        <span class="esqueleto" style="width: 35%"></span>
+        <span class="esqueleto e-titulo" style="width: 60%"></span>
+        <span class="esqueleto" style="width: 40%"></span>
+        <span class="esqueleto e-botao"></span>
+      </div>
+    }
+  </div>
 } @else if (erro(); as falha) {
   <app-tela-erro [falha]="falha" (tentar)="carregar()" />
 } @else if (planos().length === 0) {
@@ -86,7 +95,7 @@
             } @else if (erroResumo()) {
               <p class="erro">{{ erroResumo() }}</p>
             } @else {
-              <p class="suave" role="status">Carregando…</p>
+              <app-carregando [tamanho]="24" />
             }
           </div>
         }

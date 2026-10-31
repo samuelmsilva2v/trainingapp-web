@@ -4,7 +4,19 @@
 </section>
 
 @if (carregando()) {
-  <p class="estado suave" role="status">Carregando…</p>
+  <div class="esqueleto-lista" role="status" aria-busy="true" aria-label="Carregando o histórico">
+    <div class="esqueleto-cartao">
+      <span class="esqueleto" style="width: 30%"></span>
+      <div class="esqueleto-linha"><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span></div>
+    </div>
+    @for (i of [1, 2, 3]; track i) {
+      <div class="esqueleto-cartao">
+        <span class="esqueleto" style="width: 25%"></span>
+        <span class="esqueleto e-titulo" style="width: 50%"></span>
+        <span class="esqueleto" style="width: 60%"></span>
+      </div>
+    }
+  </div>
 } @else if (erro() && sessoes().length === 0) {
   <app-tela-erro [falha]="erro()!" (tentar)="carregarPagina()" />
 } @else if (sessoes().length === 0) {
@@ -119,7 +131,7 @@
                 } @else if (erroDetalhe()) {
                   <p class="erro">{{ erroDetalhe() }}</p>
                 } @else {
-                  <p class="suave" role="status">Carregando…</p>
+                  <app-carregando [tamanho]="24" />
                 }
                 <button type="button" class="btn btn-perigo apagar" (click)="apagar(s)">
                   <span class="icone" aria-hidden="true">delete</span> Apagar treino

@@ -15,7 +15,13 @@
 </section>
 
 @if (carregando()) {
-  <p class="estado suave" role="status">Carregando…</p>
+  <div class="esqueleto-cartao" role="status" aria-busy="true" aria-label="Carregando o treino de hoje">
+    <span class="esqueleto" style="width: 45%"></span>
+    <span class="esqueleto e-titulo" style="width: 55%"></span>
+    <span class="esqueleto" style="width: 80%"></span>
+    <span class="esqueleto" style="width: 70%"></span>
+    <span class="esqueleto e-botao"></span>
+  </div>
 } @else if (erro(); as falha) {
   <app-tela-erro [falha]="falha" (tentar)="carregar()" />
   @if (treinoNoAparelho()) {
@@ -120,7 +126,13 @@
     }
   }
 
-  @if (ultimo(); as u) {
+  @if (!ultimoCarregado()) {
+    <div class="esqueleto-cartao ultimo" role="status" aria-busy="true" aria-label="Carregando o último treino">
+      <span class="esqueleto" style="width: 30%"></span>
+      <span class="esqueleto" style="width: 50%"></span>
+      <div class="esqueleto-linha"><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span><span class="esqueleto e-caixa"></span></div>
+    </div>
+  } @else if (ultimo(); as u) {
     <section class="cartao ultimo">
       <header class="ultimo-topo">
         <h2 class="rotulo suave">Último treino</h2>
