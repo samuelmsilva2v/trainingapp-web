@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NO_APP } from '../core/cofre';
+import { PASSOS_CARGA, PassoCarga, lerPassoCarga, salvarPassoCarga } from '../core/carga';
+import { kg } from '../core/formatos';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
 import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
 
@@ -13,6 +15,9 @@ import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
 export class ConfiguracoesTela {
   private readonly roteador = inject(Router);
   protected readonly noApp = NO_APP;
+  protected readonly kg = kg;
+  protected readonly passos = PASSOS_CARGA;
+  protected readonly passo = signal<PassoCarga>(lerPassoCarga());
   protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
   protected readonly avisoDescanso = signal(avisoDescansoLigado());
   protected readonly diasDaSemana = [
@@ -24,6 +29,11 @@ export class ConfiguracoesTela {
     { valor: 5, letra: 'S', nome: 'Sexta' },
     { valor: 6, letra: 'S', nome: 'Sábado' },
   ];
+
+  protected mudarPasso(passo: PassoCarga): void {
+    this.passo.set(passo);
+    salvarPassoCarga(passo);
+  }
 
   /** Aviso de fim do descanso: desligar cancela o aviso já agendado. */
   protected alternarAvisoDescanso(): void {

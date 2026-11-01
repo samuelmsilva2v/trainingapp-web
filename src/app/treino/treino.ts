@@ -8,7 +8,7 @@ import { agendarFimDoDescanso, avisoDescansoLigado, cancelarFimDoDescanso, mante
 import { alarmeExato, devePedirAlarmeExato, pedirAlarmeExato } from '../core/alarme-exato';
 import { atualizarContextoDoLembrete, reagendarLembretes } from '../core/lembrete';
 import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
-import { limparCarga, passoCarga } from '../core/carga';
+import { lerPassoCarga, limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, kg } from '../core/formatos';
 import { Anterior, Exercicio, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
 import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
@@ -52,6 +52,8 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly rotuloEquipamento = rotuloEquipamento;
   protected readonly formatarCarga = formatarCarga;
   protected readonly kg = kg;
+  /** Lido ao abrir o treino: o passo muda só em Configurações. */
+  protected readonly passo = lerPassoCarga();
   protected readonly faixaReps = faixaReps;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
@@ -272,7 +274,7 @@ export class Treino implements OnInit, OnDestroy {
     vibrar('leve');
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
-      carga: passoCarga(s.carga ?? 0, delta),
+      carga: passoCarga(s.carga ?? 0, delta, this.passo),
     }));
   }
 

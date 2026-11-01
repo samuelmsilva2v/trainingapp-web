@@ -6,6 +6,23 @@
 </header>
 
 <div class="pagina">
+  <section class="card" aria-label="Execução">
+    <header class="card-topo">
+      <h2 class="titulo"><span class="icone" aria-hidden="true">fitness_center</span> Execução</h2>
+    </header>
+
+    <div class="campo">
+      <span class="legenda" id="rotulo-passo">Passo da carga</span>
+      <div class="tema passos" role="group" aria-labelledby="rotulo-passo">
+        @for (p of passos; track p) {
+          <button type="button" class="opcao" [class.sel]="passo() === p" [attr.aria-pressed]="passo() === p"
+                  (click)="mudarPasso(p)">{{ kg(p) }} kg</button>
+        }
+      </div>
+      <p class="suave dica">Vale para o +/− da carga no treino e no editor de plano.</p>
+    </div>
+  </section>
+
   @if (noApp) {
     <section class="card" aria-label="Notificações">
       <header class="card-topo">

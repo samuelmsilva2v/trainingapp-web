@@ -10,7 +10,7 @@ import { TelaErro } from '../../compartilhado/tela-erro';
 import { Carregando } from '../../compartilhado/carregando';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
-import { PASSO_CARGA, limparCarga, passoCarga } from '../../core/carga';
+import { lerPassoCarga, limparCarga, passoCarga } from '../../core/carga';
 import { MAX_DROPS, repsDoDrop } from '../../core/series';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
@@ -258,8 +258,8 @@ export class PlanoEditor implements OnInit {
     this.atualizarItem(indice, item => {
       switch (campo) {
         case 'cargaAlvo':
-          // Mesma grade de 2,5 kg do treino; de vazio, "+" começa em 2,5 e "−" até zero volta a vazio.
-          if (item.cargaAlvo === null) return definirCampo(item, campo, sinal > 0 ? PASSO_CARGA : null);
+          // Mesma grade do treino (passo das Configurações); de vazio, "+" começa no passo e "−" até zero volta a vazio.
+          if (item.cargaAlvo === null) return definirCampo(item, campo, sinal > 0 ? lerPassoCarga() : null);
           return definirCampo(item, campo, passoCarga(item.cargaAlvo, sinal));
         case 'descansoSegundos':
           return definirCampo(item, campo, this.passo(item.descansoSegundos, sinal, DESCANSO.passo, DESCANSO.max));
