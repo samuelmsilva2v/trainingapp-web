@@ -25,7 +25,7 @@ describe('definirCampo', () => {
   });
 
   it('etapas do drop-set contam a primeira: 2 a 4, gravadas como drops (só o interruptor volta a 0)', () => {
-    expect(definirCampo(item, 'etapas', 3).drops).toBe(2); // 8-6-4
+    expect(definirCampo(item, 'etapas', 3).drops).toBe(2); // 6-8-10
     expect(definirCampo(item, 'etapas', 7).drops).toBe(3);
     expect(definirCampo(item, 'etapas', 1).drops).toBe(1);
     expect(definirCampo(item, 'etapas', null).drops).toBe(1);
@@ -105,5 +105,17 @@ describe('PlanoEditor: peso corporal', () => {
     editor.salvar();
     const req = TestBed.inject(HttpTestingController).expectOne(r => r.method === 'POST');
     expect(req.request.body.dias[0].exercicios[0]).toEqual(expect.objectContaining({ cargaAlvo: null, drops: 0 }));
+  });
+});
+
+describe('PlanoEditor: drop-set', () => {
+  it('a 1ª etapa tem menos reps e cada drop sobe 2 (6 com 3 etapas = 6, 8 e 10)', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+    const fixture = TestBed.createComponent(PlanoEditor);
+    (fixture.componentInstance as unknown as { dias: { set(v: unknown): void } }).dias.set([{ nome: 'Treino A', exercicios: [
+      { ...item, exercicioNome: 'Supino', grupoMuscular: 'PEITO', equipamento: 'BARRA', repsMin: 6, repsMax: 6, cargaAlvo: 30, drops: 2 },
+    ] }]);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('.dica-drops')?.textContent).toContain('Etapas: 6, 8 e 10 reps');
   });
 });

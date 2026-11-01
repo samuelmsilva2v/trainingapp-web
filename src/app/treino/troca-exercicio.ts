@@ -25,7 +25,7 @@ export class TrocaExercicio {
   protected readonly pesoCorporal = ehPesoCorporal(this.dados.exercicio);
   protected readonly dropSet = signal(false);
   protected readonly reps = signal(this.dados.reps);
-  /** Etapas contando a primeira (8 com 3 etapas = 8-6-4), como no editor de plano. */
+  /** Etapas contando a primeira (6 com 3 etapas = 6-8-10), como no editor de plano. */
   protected readonly etapas = signal(2);
 
   protected readonly sequencia = computed(() => {

@@ -47,9 +47,12 @@ export function cargaDoDrop(anterior: number | null): number | null {
   return carga > 0 ? carga : null;
 }
 
-/** Reps sugeridas do drop: 2 a menos que a etapa anterior (8 → 6 → 4), no mínimo 1; anterior vazia, o drop começa vazio. */
+/**
+ * Reps sugeridas do drop: 2 a mais que a etapa anterior (6 → 8 → 10), porque a carga cai; a 1ª etapa é a mais pesada
+ * e com menos reps (web#59). Anterior vazia, o drop começa vazio.
+ */
 export function repsDoDrop(anterior: number | null): number | null {
-  return anterior === null ? null : Math.max(1, anterior - 2);
+  return anterior === null ? null : anterior + 2;
 }
 
 /** Ids (da linha do exercício) que levam o 🏆: o recorde vale uma vez por exercício, na primeira linha em que ele aparece. */

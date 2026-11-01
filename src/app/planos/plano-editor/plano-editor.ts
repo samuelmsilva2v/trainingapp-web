@@ -37,7 +37,7 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       novo.repsMin = Math.min(novo.repsMin, novo.repsMax);
       break;
     case 'reps':
-      // Drop-set: um número só (as reps da primeira etapa); os drops caem de 2 em 2 a partir dele.
+      // Drop-set: um número só (as reps da primeira etapa); os drops sobem de 2 em 2 a partir dele.
       if (valor !== null) novo.repsMin = novo.repsMax = limitar(valor, REPS.min, REPS.max);
       break;
     case 'cargaAlvo':
@@ -47,7 +47,7 @@ export function definirCampo(item: ItemPlano, campo: CampoNumerico, valor: numbe
       novo.descansoSegundos = valor === null || valor <= 0 ? null : limitar(valor, 1, DESCANSO.max);
       break;
     case 'etapas':
-      // Etapas do drop-set contando a primeira (8 com 3 etapas = 8-6-4): 2 a 4, gravadas como drops = etapas - 1.
+      // Etapas do drop-set contando a primeira (6 com 3 etapas = 6-8-10): 2 a 4, gravadas como drops = etapas - 1.
       // Só o interruptor volta a 0 drops (série normal).
       novo.drops = limitar((valor ?? 2) - 1, 1, MAX_DROPS);
       break;
@@ -243,7 +243,7 @@ export class PlanoEditor implements OnInit {
     );
   }
 
-  /** Reps de cada etapa, para mostrar no card: 10 reps com 3 etapas dá "10, 8 e 6". */
+  /** Reps de cada etapa, para mostrar no card: 6 reps com 3 etapas dá "6, 8 e 10". */
   protected repsDasEtapas(item: ItemPlano): string {
     const reps: number[] = [item.repsMin];
     let atual: number | null = item.repsMin;

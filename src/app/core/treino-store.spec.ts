@@ -59,8 +59,8 @@ describe('TreinoStore', () => {
     const ex = store.sessao()!.exercicios[0];
     expect(ex.metaDrops).toBe(2);
     expect(ex.series.map(x => [x.tipo, x.carga, x.reps])).toEqual([
-      ['NORMAL', 100, 8], ['DROP', 80, 6], ['DROP', 65, 4],
-      ['NORMAL', 100, 8], ['DROP', 80, 6], ['DROP', 65, 4],
+      ['NORMAL', 100, 8], ['DROP', 80, 10], ['DROP', 65, 12],
+      ['NORMAL', 100, 8], ['DROP', 80, 10], ['DROP', 65, 12],
     ]);
     expect(store.totalSeries()).toBe(2);
   });

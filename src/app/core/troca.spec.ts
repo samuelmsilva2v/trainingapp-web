@@ -31,14 +31,14 @@ describe('trocarExercicio', () => {
     expect(r.series.map(s => s.carga)).toEqual([50, 55, 55]);
   });
 
-  it('com drop-set, as reps da 1ª etapa caem de 2 em 2 e o drop usa o do último treino ou 80% em cadeia', () => {
+  it('com drop-set, as reps sobem de 2 em 2 a partir da 1ª etapa e o drop usa o do último treino ou 80% em cadeia', () => {
     const r = trocarExercicio({ ...original, series: original.series.slice(0, 2) }, curvada, { drops: 2, reps: 10 }, anterior([
       { ordem: 0, reps: 10, carga: 60, tipo: 'NORMAL' }, { ordem: 1, reps: 8, carga: 45, tipo: 'DROP' },
     ]), nova);
     expect([r.metaRepsMin, r.metaRepsMax, r.metaDrops]).toEqual([10, 10, 2]);
     expect(r.series.map(s => [s.tipo, s.reps, s.carga])).toEqual([
-      ['NORMAL', 10, 60], ['DROP', 8, 45], ['DROP', 6, 35],
-      ['NORMAL', 10, 60], ['DROP', 8, 50], ['DROP', 6, 40],
+      ['NORMAL', 10, 60], ['DROP', 12, 45], ['DROP', 14, 35],
+      ['NORMAL', 10, 60], ['DROP', 12, 50], ['DROP', 14, 40],
     ]);
   });
 

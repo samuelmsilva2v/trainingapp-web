@@ -30,10 +30,9 @@ describe('séries', () => {
     expect([d1.concluida, d2.concluida, d3.concluida]).toEqual([true, false, false]);
   });
 
-  it('reps do drop: 2 a menos que a etapa anterior, no mínimo 1', () => {
-    expect(repsDoDrop(8)).toBe(6);
-    expect(repsDoDrop(6)).toBe(4);
-    expect(repsDoDrop(2)).toBe(1);
+  it('reps do drop: 2 a mais que a etapa anterior (6 × 30 → 8 × 25 → 10 × 20)', () => {
+    expect(repsDoDrop(6)).toBe(8);
+    expect(repsDoDrop(8)).toBe(10);
     expect(repsDoDrop(null)).toBeNull();
   });
 

@@ -171,7 +171,7 @@ export class TreinoStore {
     return { id: novoId(), reps, carga, concluida: false, tipo };
   }
 
-  /** As séries da meta, cada uma seguida dos drops planejados, com carga e reps sugeridas em cadeia (80% e 2 a menos que a anterior). */
+  /** As séries da meta, cada uma seguida dos drops planejados, com carga e reps sugeridas em cadeia (80% e 2 reps a mais que a anterior). */
   private seriesDoPlano(item: ItemPlano): SerieLocal[] {
     // Peso corporal: só reps (um plano antigo pode ter carga alvo ou drop-set).
     const pesoCorporal = ehPesoCorporal(item);
