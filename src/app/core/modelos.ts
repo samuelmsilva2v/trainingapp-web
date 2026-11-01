@@ -176,6 +176,8 @@ export interface SessaoResumo {
   exercicios: number;
   seriesConcluidas: number;
   volumeKg: number;
+  /** Reps em exercícios de peso corporal, fora do volume. */
+  repsPesoCorporal?: number;
   xpGanho: number;
   /** Bônus da sequência (já somado em xpGanho). */
   xpStreak?: number;

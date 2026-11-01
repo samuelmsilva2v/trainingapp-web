@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Exercicio } from '../core/modelos';
-import { MAX_DROPS, repsDoDrop } from '../core/series';
+import { MAX_DROPS, ehPesoCorporal, repsDoDrop } from '../core/series';
 import { ConfigTroca } from '../core/troca';
 
 export interface DadosTroca {
@@ -22,6 +22,7 @@ export class TrocaExercicio {
   protected readonly dados = inject<DadosTroca>(MAT_DIALOG_DATA);
   private readonly ref = inject(MatDialogRef<TrocaExercicio, ConfigTroca>);
 
+  protected readonly pesoCorporal = ehPesoCorporal(this.dados.exercicio);
   protected readonly dropSet = signal(false);
   protected readonly reps = signal(this.dados.reps);
   /** Etapas contando a primeira (8 com 3 etapas = 8-6-4), como no editor de plano. */

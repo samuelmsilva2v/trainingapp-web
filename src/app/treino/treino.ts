@@ -16,7 +16,7 @@ import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { verFotos } from '../compartilhado/ver-fotos';
-import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
+import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, ehPesoCorporal, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
 import { ConfiguracoesTreino } from './configuracoes-treino';
@@ -56,6 +56,7 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly rotuloEquipamento = rotuloEquipamento;
   protected readonly formatarCarga = formatarCarga;
   protected readonly kg = kg;
+  protected readonly pesoCorporal = ehPesoCorporal;
   /** Relido ao fechar a folha de configurações, que pode mudá-lo no meio do treino. */
   protected readonly passo = signal(lerPassoCarga());
   protected readonly faixaReps = faixaReps;
@@ -175,12 +176,17 @@ export class Treino implements OnInit, OnDestroy {
     const d = atual[k].drops.indexOf(indice);
     const s = series[d === -1 ? outro.inicio : outro.drops[d]];
     if (!s || s.reps === null) return null;
-    return s.carga === null ? `${s.reps}` : `${s.reps} × ${this.kg(s.carga)}`;
+    // Peso corporal ignora a carga, inclusive a gravada em treinos antigos.
+    return s.carga === null || ehPesoCorporal(ex) ? `${s.reps} reps` : `${s.reps} × ${this.kg(s.carga)} kg`;
   }
 
   /** Ex.: "4 × 10 @ 62,5 kg" (nº de séries × reps da melhor série @ carga). */
   protected resumoAnterior(ex: ExercicioLocal): string | null {
     const series = this.anteriores().get(ex.exercicioId)?.series ?? [];
+    if (ehPesoCorporal(ex)) {
+      const reps = series.map(s => s.reps ?? 0);
+      return reps.length === 0 ? null : `${blocos(series).length} × ${Math.max(...reps)} reps`;
+    }
     const comCarga = series.filter(s => s.reps !== null && s.carga !== null);
     if (comCarga.length === 0) return null;
     const melhor = comCarga.reduce((m, s) => ((s.carga ?? 0) > (m.carga ?? 0) ? s : m));
@@ -333,7 +339,7 @@ export class Treino implements OnInit, OnDestroy {
   protected adicionarSerie(): void {
     this.store.atualizarExercicio(this.indice(), e => {
       const ultima: SerieLocal | undefined = e.series.filter(s => !ehDrop(s)).at(-1);
-      const nova = this.store.serieNova(ultima?.reps ?? e.metaRepsMin, ultima?.carga ?? e.metaCarga);
+      const nova = this.store.serieNova(ultima?.reps ?? e.metaRepsMin, ehPesoCorporal(e) ? null : ultima?.carga ?? e.metaCarga);
       return { ...e, series: [...e.series, nova] };
     });
     this.serieAberta.set(this.blocos().length - 1);

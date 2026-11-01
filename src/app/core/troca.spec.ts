@@ -52,3 +52,23 @@ describe('trocarExercicio', () => {
     expect(r.series.map(s => s.tipo)).toEqual(['NORMAL', 'NORMAL']); // 2 séries (blocos), sem drops
   });
 });
+
+describe('trocarExercicio: peso corporal', () => {
+  const barra: Exercicio = {
+    id: 'barra-fixa', nome: 'Barra fixa', grupoMuscular: 'COSTAS', equipamento: 'PESO_CORPORAL', personalizado: false, imagens: [],
+  };
+
+  it('para um de peso corporal, descarta as cargas (inclusive as do último treino) e não há drop-set', () => {
+    const r = trocarExercicio(original, barra, { drops: 2, reps: 10 }, {
+      exercicioId: barra.id, sessaoId: 'x', iniciadaEm: '', series: [{ ordem: 0, reps: 12, carga: 20, tipo: 'NORMAL' }],
+    }, nova);
+    expect([r.equipamento, r.metaCarga, r.metaDrops]).toEqual(['PESO_CORPORAL', null, 0]);
+    expect(r.series.map(s => [s.tipo, s.reps, s.carga])).toEqual([['NORMAL', 8, null], ['NORMAL', 8, null], ['NORMAL', 8, null]]);
+  });
+
+  it('de peso corporal para um com carga, segue a regra de sempre (cargas do último treino)', () => {
+    const deBarra: ExercicioLocal = { ...original, equipamento: 'PESO_CORPORAL', metaCarga: null, series: original.series.map(s => ({ ...s, carga: null })) };
+    const r = trocarExercicio(deBarra, curvada, { drops: 0, reps: 8 }, anterior([{ ordem: 0, reps: 10, carga: 50, tipo: 'NORMAL' }]), nova);
+    expect(r.series.map(s => s.carga)).toEqual([50, 50, 50]);
+  });
+});

@@ -38,3 +38,4 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .btn-texto { background: transparent; color: var(--c-texto-2); }
 .erro { color: var(--c-erro); }
 .plano-salvo { margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-2); font-size: 14px; line-height: 20px; .icone { color: var(--c-destaque); font-size: 20px; flex-shrink: 0; } }
+.metricas div:nth-child(3) { grid-column: 1 / -1; }

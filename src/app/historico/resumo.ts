@@ -8,6 +8,7 @@ export interface Resumo {
   minutos: number;
   series: number;
   xp: number;
+  repsPesoCorporal: number;
 }
 
 const mesCurto = (d: Date) => d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
@@ -28,7 +29,7 @@ export function limitesDoPeriodo(periodo: Periodo, data: Date): { inicio: Date; 
 /** Só treinos concluídos entram: treino abandonado não conta. */
 export function resumirPeriodo(sessoes: SessaoResumo[], periodo: Periodo, data: Date): Resumo {
   const { inicio, fim } = limitesDoPeriodo(periodo, data);
-  const resumo: Resumo = { treinos: 0, minutos: 0, series: 0, xp: 0 };
+  const resumo: Resumo = { treinos: 0, minutos: 0, series: 0, xp: 0, repsPesoCorporal: 0 };
   for (const s of sessoes) {
     const quando = new Date(s.iniciadaEm).getTime();
     if (s.estado !== 'CONCLUIDA' || quando < inicio.getTime() || quando >= fim.getTime()) continue;
@@ -36,6 +37,7 @@ export function resumirPeriodo(sessoes: SessaoResumo[], periodo: Periodo, data: 
     resumo.minutos += duracaoMinutos(s.iniciadaEm, s.finalizadaEm);
     resumo.series += s.seriesConcluidas;
     resumo.xp += s.xpGanho;
+    resumo.repsPesoCorporal += s.repsPesoCorporal ?? 0;
   }
   return resumo;
 }

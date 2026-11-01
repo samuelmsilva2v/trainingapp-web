@@ -11,7 +11,7 @@ import { TreinoStore } from '../core/treino-store';
 import { falhaDe, Falha } from '../core/falha';
 import { CuboGelo } from '../compartilhado/cubo-gelo';
 import { TelaErro } from '../compartilhado/tela-erro';
-import { seriesFeitas, totalSeries } from '../core/series';
+import { ehPesoCorporal, seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
 import { RegistrarPeso, RegistrarPesoDados } from '../compartilhado/registrar-peso';
 
@@ -98,7 +98,7 @@ export class HojeTela implements OnInit {
     if (s) {
       const itens = s.exercicios.map(e => ({
         id: e.id, nome: e.nome, series: e.metaSeries, repsMin: e.metaRepsMin, repsMax: e.metaRepsMax,
-        carga: e.metaCarga, descanso: e.metaDescansoSegundos,
+        carga: ehPesoCorporal(e) ? null : e.metaCarga, descanso: e.metaDescansoSegundos,
         feitas: seriesFeitas(e), total: totalSeries(e),
       }));
       return {
@@ -113,7 +113,7 @@ export class HojeTela implements OnInit {
       andamento: false, titulo: dia.nome, ordem: dia.ordem, iniciadaEm: null, feitas: 0, totalSeries: 0, atual: 0,
       itens: dia.exercicios.map(e => ({
         id: e.id, nome: e.exercicioNome, series: e.series, repsMin: e.repsMin, repsMax: e.repsMax,
-        carga: e.cargaAlvo, descanso: e.descansoSegundos, feitas: 0, total: e.series,
+        carga: ehPesoCorporal(e) ? null : e.cargaAlvo, descanso: e.descansoSegundos, feitas: 0, total: e.series,
       })),
     };
   });

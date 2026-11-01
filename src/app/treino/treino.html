@@ -54,7 +54,11 @@
         <div class="ex-titulo">
           <div class="ex-nome">
             <h2 class="titulo-md">{{ ex.nome }}</h2>
-            <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} · {{ rotuloEquipamento(ex.equipamento) }}</p>
+            @if (pesoCorporal(ex)) {
+              <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} <span class="chip peso">Peso corporal</span></p>
+            } @else {
+              <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} · {{ rotuloEquipamento(ex.equipamento) }}</p>
+            }
           </div>
           <!-- Só antes da primeira série concluída; vale nesta sessão (ao concluir, pode ir para o plano). -->
           @if (podeTrocar()) {
@@ -72,9 +76,11 @@
             </button>
           }
         </div>
-        <dl class="metas">
+        <dl class="metas" [class.sem-carga]="pesoCorporal(ex)">
           <div><dt>Meta</dt><dd class="num">{{ ex.metaSeries }} × {{ faixaReps(ex.metaRepsMin, ex.metaRepsMax) }}</dd></div>
-          <div><dt>Alvo</dt><dd class="num alvo">{{ ex.metaCarga === null ? '—' : kg(ex.metaCarga) + ' kg' }}</dd></div>
+          @if (!pesoCorporal(ex)) {
+            <div><dt>Alvo</dt><dd class="num alvo">{{ ex.metaCarga === null ? '—' : kg(ex.metaCarga) + ' kg' }}</dd></div>
+          }
           <div><dt>Descanso</dt><dd class="num">{{ ex.metaDescansoSegundos === null ? '—' : ex.metaDescansoSegundos + 's' }}</dd></div>
         </dl>
       </section>
@@ -87,11 +93,11 @@
           }
         </div>
 
-        <div class="tabela" role="table" aria-label="Registro de séries">
+        <div class="tabela" [class.sem-carga]="pesoCorporal(ex)" role="table" aria-label="Registro de séries">
           <div class="cabecalho-tabela" role="row">
             <span role="columnheader">Série</span>
             <span role="columnheader">Reps</span>
-            <span role="columnheader">Carga (kg)</span>
+            @if (!pesoCorporal(ex)) { <span role="columnheader">Carga (kg)</span> }
             <span role="columnheader">Feito</span>
           </div>
 
@@ -125,7 +131,7 @@
                   </button>
                 </div>
                 @if (textoAnterior(ex, i); as prev) {
-                  <p class="suave num atual-anterior">Anterior: {{ prev }} kg</p>
+                  <p class="suave num atual-anterior">Anterior: {{ prev }}</p>
                 }
                 @for (d of b.drops; track d; let n = $index) {
                   @let drop = ex.series[d];
@@ -133,7 +139,7 @@
                     <header class="atual-topo">
                       <span class="rotulo suave">Drop {{ n + 1 }}</span>
                       @if (textoAnterior(ex, d); as prev) {
-                        <span class="suave num atual-prev">Anterior: {{ prev }} kg</span>
+                        <span class="suave num atual-prev">Anterior: {{ prev }}</span>
                       } @else {
                         <span class="atual-prev"></span>
                       }
@@ -156,7 +162,7 @@
                    (click)="ativarSerie(k)" (keydown.enter)="ativarSerie(k)">
                 <span class="numero num" role="cell">{{ k + 1 }}</span>
                 <span class="valor num" role="cell">{{ serie.reps ?? '—' }}</span>
-                <span class="valor num" role="cell">{{ serie.carga === null ? '—' : kg(serie.carga) }}</span>
+                @if (!pesoCorporal(ex)) { <span class="valor num" role="cell">{{ serie.carga === null ? '—' : kg(serie.carga) }}</span> }
                 <button type="button" class="check mini" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
                         [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (k + 1)"
                         (click)="alternarConcluida(i); $event.stopPropagation()">
@@ -167,7 +173,7 @@
                   <!-- Drop nas mesmas colunas da série: ícone de carga caindo no lugar do número, sem check próprio. -->
                   <span class="etapa-seta" role="cell" aria-label="Drop"><span class="icone" aria-hidden="true">trending_down</span></span>
                   <span class="valor num etapa" role="cell">{{ drop.reps ?? '—' }}</span>
-                  <span class="valor num etapa" role="cell">{{ drop.carga === null ? '—' : kg(drop.carga) }}</span>
+                  @if (!pesoCorporal(ex)) { <span class="valor num etapa" role="cell">{{ drop.carga === null ? '—' : kg(drop.carga) }}</span> }
                   <span role="cell"></span>
                 }
               </div>
@@ -271,7 +277,7 @@
 
 <!-- Steppers de reps e carga de uma etapa (série normal ou drop). -->
 <ng-template #steppers let-serie let-i="i">
-  <div class="steppers">
+  <div class="steppers" [class.so-reps]="pesoCorporal(exercicio()!)">
     <div class="stepper">
       <span class="rotulo suave">Reps</span>
       <div class="controle">
@@ -281,6 +287,7 @@
         <button type="button" aria-label="Mais uma repetição" (click)="ajustarReps(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
       </div>
     </div>
+    @if (!pesoCorporal(exercicio()!)) {
     <div class="stepper">
       <span class="rotulo suave">Carga (kg)</span>
       <div class="controle">
@@ -290,5 +297,6 @@
         <button type="button" [attr.aria-label]="'Mais ' + kg(passo()) + ' kg'" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
       </div>
     </div>
+    }
   </div>
 </ng-template>

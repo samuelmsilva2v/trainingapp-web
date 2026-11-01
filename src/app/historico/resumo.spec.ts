@@ -52,15 +52,15 @@ describe('resumirPeriodo', () => {
   ];
 
   it('soma só treinos concluídos da semana', () => {
-    expect(resumirPeriodo(sessoes, 'SEMANA', dia(10))).toEqual({ treinos: 2, minutos: 105, series: 28, xp: 150 });
+    expect(resumirPeriodo(sessoes, 'SEMANA', dia(10))).toEqual({ treinos: 2, minutos: 105, series: 28, xp: 150, repsPesoCorporal: 0 });
   });
 
   it('soma só treinos concluídos do mês', () => {
-    expect(resumirPeriodo(sessoes, 'MES', dia(10))).toEqual({ treinos: 3, minutos: 145, series: 38, xp: 250 });
+    expect(resumirPeriodo(sessoes, 'MES', dia(10))).toEqual({ treinos: 3, minutos: 145, series: 38, xp: 250, repsPesoCorporal: 0 });
   });
 
   it('sem treinos no período, tudo zero', () => {
-    expect(resumirPeriodo([], 'SEMANA', dia(10))).toEqual({ treinos: 0, minutos: 0, series: 0, xp: 0 });
+    expect(resumirPeriodo([], 'SEMANA', dia(10))).toEqual({ treinos: 0, minutos: 0, series: 0, xp: 0, repsPesoCorporal: 0 });
   });
 });
 
@@ -78,5 +78,17 @@ describe('partesDoTempo', () => {
     expect(partesDoTempo(45)).toEqual({ valor: '45', unidade: 'min' });
     expect(partesDoTempo(60)).toEqual({ valor: '1h00', unidade: '' });
     expect(partesDoTempo(130)).toEqual({ valor: '2h10', unidade: '' });
+  });
+});
+
+describe('resumirPeriodo: peso corporal', () => {
+  it('soma as reps de peso corporal só dos treinos concluídos do período', () => {
+    const sessoes = [
+      sessao(dia(6), 60, { repsPesoCorporal: 40 }),
+      sessao(dia(7), 60, { repsPesoCorporal: 25 }),
+      sessao(dia(8), 60, { repsPesoCorporal: 99, estado: 'ABANDONADA' }),
+      sessao(dia(9), 60),
+    ];
+    expect(resumirPeriodo(sessoes, 'SEMANA', dia(10)).repsPesoCorporal).toBe(65);
   });
 });

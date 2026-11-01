@@ -11,7 +11,7 @@ import { Carregando } from '../../compartilhado/carregando';
 import { DiaPlano, Exercicio, ItemPlano, Objetivo, Plano, PlanoRequest } from '../../core/modelos';
 import { OBJETIVOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
 import { lerPassoCarga, limparCarga, passoCarga } from '../../core/carga';
-import { MAX_DROPS, repsDoDrop } from '../../core/series';
+import { MAX_DROPS, ehPesoCorporal, repsDoDrop } from '../../core/series';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
 import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
@@ -73,6 +73,7 @@ export class PlanoEditor implements OnInit {
   protected readonly objetivos = OBJETIVOS;
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
+  protected readonly pesoCorporal = ehPesoCorporal;
 
   protected readonly id = this.rota.snapshot.paramMap.get('id');
   protected readonly carregando = signal(this.id !== null);
@@ -312,9 +313,9 @@ export class PlanoEditor implements OnInit {
           series: i.series,
           repsMin: i.repsMin,
           repsMax: i.repsMax,
-          cargaAlvo: i.cargaAlvo,
+          cargaAlvo: ehPesoCorporal(i) ? null : i.cargaAlvo,
           descansoSegundos: i.descansoSegundos,
-          drops: i.drops ?? 0,
+          drops: ehPesoCorporal(i) ? 0 : i.drops ?? 0,
         })),
       })),
     };

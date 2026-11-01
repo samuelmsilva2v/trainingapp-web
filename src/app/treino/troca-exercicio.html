@@ -10,6 +10,8 @@
     </button>
   </header>
 
+  <!-- Peso corporal não tem drop-set (api#43). -->
+  @if (!pesoCorporal) {
   <div class="opcao">
     <label class="alternar">
       <input type="checkbox" role="switch" [checked]="dropSet()" (change)="dropSet.set(!dropSet())" />
@@ -24,6 +26,7 @@
       </div>
     }
   </div>
+  }
 
   @if (dropSet()) {
     <div class="opcao coluna">

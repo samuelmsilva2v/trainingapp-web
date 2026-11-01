@@ -4,7 +4,7 @@ import { Network } from '@capacitor/network';
 import { firstValueFrom } from 'rxjs';
 import { SessoesApi, mensagemDeErro } from './api';
 import { DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
-import { cargaDoDrop, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
+import { cargaDoDrop, ehPesoCorporal, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
 
 export type StatusSincronia = 'salvo' | 'salvando' | 'offline' | 'erro';
 
@@ -155,9 +155,9 @@ export class TreinoStore {
         metaSeries: item.series,
         metaRepsMin: item.repsMin,
         metaRepsMax: item.repsMax,
-        metaCarga: item.cargaAlvo,
+        metaCarga: ehPesoCorporal(item) ? null : item.cargaAlvo,
         metaDescansoSegundos: item.descansoSegundos,
-        metaDrops: item.drops ?? 0,
+        metaDrops: ehPesoCorporal(item) ? 0 : item.drops ?? 0,
         series: this.seriesDoPlano(item),
       })),
     };
@@ -173,12 +173,15 @@ export class TreinoStore {
 
   /** As séries da meta, cada uma seguida dos drops planejados, com carga e reps sugeridas em cadeia (80% e 2 a menos que a anterior). */
   private seriesDoPlano(item: ItemPlano): SerieLocal[] {
+    // Peso corporal: só reps (um plano antigo pode ter carga alvo ou drop-set).
+    const pesoCorporal = ehPesoCorporal(item);
+    const cargaAlvo = pesoCorporal ? null : item.cargaAlvo;
     const series: SerieLocal[] = [];
     for (let s = 0; s < item.series; s++) {
-      series.push(this.serieNova(item.repsMin, item.cargaAlvo));
-      let carga = item.cargaAlvo;
+      series.push(this.serieNova(item.repsMin, cargaAlvo));
+      let carga = cargaAlvo;
       let reps: number | null = item.repsMin;
-      for (let d = 0; d < (item.drops ?? 0); d++) {
+      for (let d = 0; d < (pesoCorporal ? 0 : item.drops ?? 0); d++) {
         carga = cargaDoDrop(carga);
         reps = repsDoDrop(reps);
         series.push(this.serieNova(reps, carga, 'DROP'));

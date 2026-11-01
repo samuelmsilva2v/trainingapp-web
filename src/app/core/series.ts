@@ -1,4 +1,4 @@
-import { ExercicioLocal, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
+import { Equipamento, ExercicioLocal, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
 
 /** Máximo de drops depois de uma série, no plano e na execução (igual à API). */
 export const MAX_DROPS = 3;
@@ -70,6 +70,19 @@ export function xpDoTreino(s: { xpGanho?: number; xpStreak?: number; xpConquista
 /** Séries (blocos) concluídas: o drop-set conta uma vez. */
 export function seriesFeitas(exercicio: ExercicioLocal): number {
   return blocos(exercicio.series).filter(b => exercicio.series[b.inicio].concluida).length;
+}
+
+/** Peso corporal (api#43): só reps; sem carga, sem drop-set. */
+export function ehPesoCorporal(exercicio: { equipamento: Equipamento }): boolean {
+  return exercicio.equipamento === 'PESO_CORPORAL';
+}
+
+/** Reps concluídas nos exercícios de peso corporal, que ficam fora do volume (como `repsPesoCorporal` da API). */
+export function repsPesoCorporal(sessao: SessaoLocal): number {
+  return sessao.exercicios
+    .filter(ehPesoCorporal)
+    .flatMap(e => e.series)
+    .reduce((n, s) => n + (s.concluida ? s.reps ?? 0 : 0), 0);
 }
 
 /** Séries (blocos) do exercício: o drop-set conta uma vez. */

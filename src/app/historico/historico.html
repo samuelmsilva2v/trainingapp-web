@@ -51,6 +51,9 @@
         <div><dt>Séries</dt><dd class="num">{{ r.series }}</dd></div>
         <div><dt>XP</dt><dd class="num xp">+{{ r.xp }}</dd></div>
       </dl>
+      @if (r.repsPesoCorporal > 0) {
+        <p class="suave num reps-pc">Reps (peso corporal): {{ r.repsPesoCorporal }}</p>
+      }
     }
   </section>
 
@@ -95,6 +98,9 @@
             <ul class="dados">
               <li><span class="icone" aria-hidden="true">timer</span><span class="num">{{ duracaoMinutos(s.iniciadaEm, s.finalizadaEm) }} min</span></li>
               <li><span class="icone" aria-hidden="true">format_list_numbered</span><span class="num">{{ s.seriesConcluidas }} séries</span></li>
+              @if (s.repsPesoCorporal) {
+                <li><span class="icone" aria-hidden="true">fitness_center</span><span class="num">{{ s.repsPesoCorporal }} reps</span></li>
+              }
             </ul>
 
             <button type="button" class="detalhes" [attr.aria-expanded]="abertas().has(s.id)" (click)="alternar(s)">
@@ -107,6 +113,7 @@
               <div class="expandido">
                 @if (detalhes().get(s.id); as d) {
                   @for (e of d.exercicios; track e.id) {
+                    @let pc = pesoCorporal(e);
                     <div class="ex">
                       <h4 class="ex-nome">{{ e.nome }}</h4>
                       <ul class="series">
@@ -118,7 +125,11 @@
                             <span class="rotulo suave">S{{ k + 1 }}</span>
                             <span class="etapas num">
                               @if (serie.concluida) {
-                                <span>{{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}</span>
+                                @if (pc) {
+                                  <span>{{ serie.reps }} reps</span>
+                                } @else {
+                                  <span>{{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}</span>
+                                }
                                 @for (d of b.drops; track d) {
                                   @let drop = e.series[d];
                                   @if (drop.concluida) {

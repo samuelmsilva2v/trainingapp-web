@@ -111,7 +111,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  &.largo, &.descanso, &.drops { grid-column: 1 / -1; }
+  &.largo, &.descanso, &.drops, &.inteira { grid-column: 1 / -1; }
 }
 
 .reps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

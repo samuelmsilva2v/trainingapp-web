@@ -33,6 +33,8 @@ const UNIDADES: Record<string, Unidade> = {
   'Volume total': { sufixo: 't' },
   'Variedade': { sufixo: 'exercícios' },
   'Drop-set': { sufixo: 'blocos' },
+  'Reps de peso corporal': { sufixo: 'reps' },
+  'Série longa': { sufixo: 'reps' },
 };
 
 function comUnidade(familia: string, valor: string): string {

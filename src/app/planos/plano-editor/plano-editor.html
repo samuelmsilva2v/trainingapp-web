@@ -63,6 +63,8 @@
 
         <div class="exercicios" cdkDropList (cdkDropListDropped)="reordenar($event)">
           @for (item of d.exercicios; track $index; let i = $index) {
+            <!-- Peso corporal (api#43): sem carga alvo e sem drop-set; ao salvar, os dois vão vazios. -->
+            @let pc = pesoCorporal(item);
             <article class="exercicio" cdkDrag cdkDragLockAxis="y">
               <header class="ex-topo">
                 <button type="button" class="btn-icone alca" cdkDragHandle [attr.aria-label]="'Mover ' + item.exercicioNome">
@@ -80,7 +82,7 @@
                 </button>
               </header>
 
-              <div class="stepper">
+              <div class="stepper" [class.inteira]="pc">
                 <span class="rotulo suave">Séries</span>
                 <div class="controle">
                   <button type="button" aria-label="Menos séries" (click)="ajustar(i, 'series', -1)"><span class="icone" aria-hidden="true">remove</span></button>
@@ -89,6 +91,7 @@
                 </div>
               </div>
 
+              @if (!pc) {
               <div class="stepper">
                 <span class="rotulo suave">Carga alvo (kg)</span>
                 <div class="controle">
@@ -97,9 +100,10 @@
                   <button type="button" aria-label="Mais carga" (click)="ajustar(i, 'cargaAlvo', 1)"><span class="icone" aria-hidden="true">add</span></button>
                 </div>
               </div>
+              }
 
               <div class="stepper largo">
-                @if ((item.drops ?? 0) > 0) {
+                @if ((item.drops ?? 0) > 0 && !pc) {
                   <!-- Drop-set: só as reps da primeira etapa; os drops caem de 2 em 2. -->
                   <span class="rotulo suave">Repetições</span>
                   <div class="reps unica">
@@ -137,6 +141,7 @@
               </div>
 
               <!-- Normal por padrão; ligado, cada série vira drop-set com 2 a 4 etapas (a primeira e 1 a 3 drops). -->
+              @if (!pc) {
               <div class="stepper drops">
                 <label class="alternar">
                   <input type="checkbox" role="switch" [checked]="(item.drops ?? 0) > 0" (change)="alternarDropSet(i)" />
@@ -151,6 +156,7 @@
                   </div>
                 }
               </div>
+              }
             </article>
           } @empty {
             <p class="vazio suave">Nenhum exercício neste dia ainda.</p>

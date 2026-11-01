@@ -81,6 +81,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0;
+  &.sem-carga { grid-template-columns: repeat(2, 1fr); }
   // Rótulo e valor sempre numa linha só; a fonte do valor encolhe com a largura da tela.
   div { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 8px 10px; border-radius: var(--r-md); background: var(--c-sup-3); }
   dd { margin: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 clamp(14px, 4.8vw, 20px)/28px var(--fonte-titulo); }
@@ -94,6 +95,7 @@
 
 // Tabela: Série | Anterior | Reps | Carga | Feito
 .tabela { display: flex; flex-direction: column; gap: 6px; --colunas: 32px minmax(0, 1fr) minmax(0, 1fr) 40px; }
+.tabela.sem-carga { --colunas: 32px minmax(0, 1fr) 40px; }
 .cabecalho-tabela, .linha {
   display: grid;
   grid-template-columns: var(--colunas);
@@ -155,6 +157,7 @@
 }
 
 .steppers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.steppers.so-reps { grid-template-columns: minmax(0, 1fr); }
 .stepper { min-width: 0; padding: 8px; border-radius: var(--r-md); background: var(--c-sup-3); display: flex; flex-direction: column; gap: 4px; }
 .controle {
   display: flex;

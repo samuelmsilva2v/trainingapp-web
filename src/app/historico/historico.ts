@@ -10,7 +10,7 @@ import { Carregando } from '../compartilhado/carregando';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
 import { SessaoLocal, SessaoResumo } from '../core/modelos';
-import { blocos, xpDoTreino } from '../core/series';
+import { blocos, ehPesoCorporal, xpDoTreino } from '../core/series';
 import { Periodo, inicioDaCobertura, partesDoTempo, resumirPeriodo, rotuloDoPeriodo } from './resumo';
 
 const TAMANHO_PAGINA = 20;
@@ -49,6 +49,7 @@ export class Historico implements OnInit {
   protected readonly textos = TEXTOS_FALHA;
   protected readonly formatarCarga = formatarCarga;
   protected readonly blocos = blocos;
+  protected readonly pesoCorporal = ehPesoCorporal;
   protected readonly formatarDataRelativa = formatarDataRelativa;
   protected readonly partesDoTempo = partesDoTempo;
 

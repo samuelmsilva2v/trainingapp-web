@@ -245,3 +245,22 @@ describe('ResultadoTreino', () => {
     });
   });
 });
+
+describe('ResultadoTreino: peso corporal', () => {
+  it('mostra o total de reps de peso corporal só quando o treino teve algum', () => {
+    const barra = {
+      id: 'b', exercicioId: 'x2', nome: 'Barra fixa', grupoMuscular: 'COSTAS' as const, equipamento: 'PESO_CORPORAL' as const,
+      metaSeries: 2, metaRepsMin: 8, metaRepsMax: 12, metaCarga: null, metaDescansoSegundos: null,
+      series: [
+        { id: 'b1', reps: 10, carga: null, concluida: true },
+        { id: 'b2', reps: 7, carga: null, concluida: true },
+        { id: 'b3', reps: 9, carga: null, concluida: false },
+      ],
+    };
+    const com = abrir({ sessao: sessao({ exercicios: [...sessao({}).exercicios, barra] }), antes: null, depois: null });
+    expect(com.querySelector('.metricas')?.textContent).toContain('17reps (peso corporal)');
+    TestBed.resetTestingModule();
+    const sem = abrir({ sessao: sessao({}), antes: null, depois: null });
+    expect(sem.textContent).not.toContain('peso corporal');
+  });
+});

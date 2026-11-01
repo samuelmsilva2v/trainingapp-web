@@ -122,3 +122,27 @@ describe('Treino: fotos do exercício', () => {
     expect(abrir(undefined).querySelectorAll('.fotos img').length).toBe(0);
   });
 });
+
+describe('Treino: peso corporal', () => {
+  it('o card só tem reps: sem stepper nem coluna de carga, com o chip "Peso corporal"', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SessoesApi, useValue: { anteriores: () => of([]), salvar: (s: SessaoLocal) => of(s) } },
+      ],
+    });
+    const s = sessao();
+    s.exercicios[0] = { ...s.exercicios[0], nome: 'Barra fixa', equipamento: 'PESO_CORPORAL', series: [{ id: 'r1', reps: 8, carga: null, concluida: false }] };
+    TestBed.inject(TreinoStore).retomar(s);
+    const fixture = TestBed.createComponent(Treino);
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+
+    expect(el.querySelector('[aria-label="Repetições"]')).not.toBeNull();
+    expect(el.querySelector('[aria-label="Carga em quilos"]')).toBeNull();
+    expect(el.querySelector('.cabecalho-tabela')?.textContent).not.toContain('Carga');
+    expect(el.querySelector('.chip.peso')?.textContent).toContain('Peso corporal');
+  });
+});

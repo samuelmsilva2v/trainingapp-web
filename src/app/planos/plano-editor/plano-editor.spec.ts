@@ -1,6 +1,6 @@
 import { CdkDropList } from '@angular/cdk/drag-drop';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
@@ -80,5 +80,30 @@ describe('PlanoEditor: reordenar dias', () => {
 
     expect(abas()).toEqual(['Treino C', 'Treino A', 'Treino B']);
     expect(tela.querySelector('.dia.sel .nome-aba')!.textContent!.trim()).toBe('Treino C');
+  });
+});
+
+describe('PlanoEditor: peso corporal', () => {
+  it('sem carga alvo nem drop-set; ao salvar, um item antigo vai sem carga e sem drops', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+    const fixture = TestBed.createComponent(PlanoEditor);
+    const editor = fixture.componentInstance as unknown as {
+      nome: { set(v: string): void };
+      dias: { set(v: unknown): void };
+      salvar(): void;
+    };
+    editor.nome.set('Calistenia');
+    editor.dias.set([{ nome: 'Treino A', exercicios: [
+      { ...item, exercicioNome: 'Barra fixa', grupoMuscular: 'COSTAS', equipamento: 'PESO_CORPORAL', cargaAlvo: 30, drops: 2 },
+    ] }]);
+    fixture.detectChanges();
+    const tela: HTMLElement = fixture.nativeElement;
+    expect(tela.querySelector('[aria-label="Carga alvo em quilos"]')).toBeNull();
+    expect(tela.textContent).not.toContain('DROP-SET');
+    expect(tela.textContent).not.toContain('1ª etapa');
+
+    editor.salvar();
+    const req = TestBed.inject(HttpTestingController).expectOne(r => r.method === 'POST');
+    expect(req.request.body.dias[0].exercicios[0]).toEqual(expect.objectContaining({ cargaAlvo: null, drops: 0 }));
   });
 });
