@@ -1,0 +1,70 @@
+<!-- Opções de treino: a tela de Configurações e a folha aberta no treino usam as mesmas. -->
+<section class="card" aria-label="Execução">
+  <header class="card-topo">
+    <h2 class="titulo"><span class="icone" aria-hidden="true">fitness_center</span> Execução</h2>
+  </header>
+
+  <div class="campo">
+    <span class="legenda" id="rotulo-passo">Passo da carga</span>
+    <div class="tema passos" role="group" aria-labelledby="rotulo-passo">
+      @for (p of passos; track p) {
+        <button type="button" class="opcao" [class.sel]="passo() === p" [attr.aria-pressed]="passo() === p"
+                (click)="mudarPasso(p)">{{ kg(p) }} kg</button>
+      }
+    </div>
+    <p class="suave dica">Vale para o +/− da carga no treino e no editor de plano.</p>
+  </div>
+
+  <div class="bloco">
+    <label class="alternar">
+      <input type="checkbox" role="switch" [checked]="salvarNoPlano()" (change)="alternarSalvarNoPlano()" />
+      <span class="trilho" aria-hidden="true"></span>
+      <span class="legenda">Salvar mudanças do treino no plano</span>
+    </label>
+    <p class="suave dica">Ligado, trocas de exercício, séries e drop-set feitos no treino vão para o plano ao concluir. Desligado, o app pergunta antes.</p>
+  </div>
+</section>
+
+@if (noApp) {
+  <section class="card" aria-label="Notificações">
+    <header class="card-topo">
+      <h2 class="titulo"><span class="icone" aria-hidden="true">notifications</span> Notificações</h2>
+    </header>
+
+    <div class="bloco">
+      <label class="alternar">
+        <input type="checkbox" role="switch" [checked]="avisoDescanso()" (change)="alternarAvisoDescanso()" />
+        <span class="trilho" aria-hidden="true"></span>
+        <span class="legenda">Aviso de fim do descanso</span>
+      </label>
+      <p class="suave dica">Notificação quando o descanso entre séries acaba, mesmo com a tela bloqueada. Desligado, o fim do descanso fica só no cronômetro do treino.</p>
+    </div>
+
+    @if (comLembrete()) {
+      <div class="bloco">
+        <label class="alternar">
+          <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
+          <span class="trilho" aria-hidden="true"></span>
+          <span class="legenda">Lembrete de treino</span>
+        </label>
+        @if (lembrete().ligado) {
+          <label class="campo">
+            <span class="legenda">Horário</span>
+            <span class="entrada">
+              <!-- Sem ícone próprio: o seletor de horário do Android já desenha o dele. -->
+              <input type="time" required [value]="lembrete().hora" (change)="mudarHora($any($event.target).value)" />
+            </span>
+          </label>
+          <div class="tema dias" role="group" aria-label="Dias da semana">
+            @for (dia of diasDaSemana; track dia.valor) {
+              <button type="button" class="opcao" [class.sel]="lembrete().dias.includes(dia.valor)"
+                      [attr.aria-pressed]="lembrete().dias.includes(dia.valor)" [attr.aria-label]="dia.nome"
+                      (click)="alternarDia(dia.valor)">{{ dia.letra }}</button>
+            }
+          </div>
+          <p class="suave dica">Não avisa no dia em que você já treinou. Os avisos valem por 14 dias e se renovam quando você abre o app.</p>
+        }
+      </div>
+    }
+  </section>
+}

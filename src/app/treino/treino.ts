@@ -18,6 +18,7 @@ import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
+import { ConfiguracoesTreino } from './configuracoes-treino';
 import { DadosSeletor, SeletorExercicio } from '../planos/seletor-exercicio/seletor-exercicio';
 import { ConfigTroca, trocarExercicio } from '../core/troca';
 import { mudancasDoPlano } from '../core/plano-da-sessao';
@@ -54,8 +55,8 @@ export class Treino implements OnInit, OnDestroy {
   protected readonly rotuloEquipamento = rotuloEquipamento;
   protected readonly formatarCarga = formatarCarga;
   protected readonly kg = kg;
-  /** Lido ao abrir o treino: o passo muda só em Configurações. */
-  protected readonly passo = lerPassoCarga();
+  /** Relido ao fechar a folha de configurações, que pode mudá-lo no meio do treino. */
+  protected readonly passo = signal(lerPassoCarga());
   protected readonly faixaReps = faixaReps;
   protected readonly cronometro = cronometro;
   protected readonly seriesFeitas = seriesFeitas;
@@ -250,6 +251,14 @@ export class Treino implements OnInit, OnDestroy {
       });
   }
 
+  /** Configurações por cima do treino: sair da tela encerraria o descanso em curso. */
+  protected abrirConfiguracoes(): void {
+    this.dialogo
+      .open(ConfiguracoesTreino, { panelClass: 'dialogo-folha', position: { bottom: '0' }, width: '512px', maxWidth: '100vw' })
+      .afterClosed()
+      .subscribe(() => this.passo.set(lerPassoCarga()));
+  }
+
   private aplicarTroca(indice: number, novo: Exercicio, config: ConfigTroca): void {
     // Sem histórico (ou se a busca falhar) as cargas começam vazias.
     this.api.anteriores([novo.id]).pipe(catchError(() => of([]))).subscribe(lista => {
@@ -276,7 +285,7 @@ export class Treino implements OnInit, OnDestroy {
     vibrar('leve');
     this.store.atualizarSerie(this.indice(), serie, s => ({
       ...s,
-      carga: passoCarga(s.carga ?? 0, delta, this.passo),
+      carga: passoCarga(s.carga ?? 0, delta, this.passo()),
     }));
   }
 
