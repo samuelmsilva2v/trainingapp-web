@@ -9,6 +9,7 @@ import { atualizarContextoDoLembrete } from '../core/lembrete';
 import { diasEntre, hojeIso, pesagemPendente } from '../core/peso';
 import { TreinoStore } from '../core/treino-store';
 import { falhaDe, Falha } from '../core/falha';
+import { CuboGelo } from '../compartilhado/cubo-gelo';
 import { TelaErro } from '../compartilhado/tela-erro';
 import { seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
@@ -51,7 +52,7 @@ interface CartaoTreino {
 
 @Component({
   selector: 'app-hoje',
-  imports: [RouterLink, TelaErro],
+  imports: [RouterLink, TelaErro, CuboGelo],
   templateUrl: './hoje.html',
   styleUrl: './hoje.scss',
 })

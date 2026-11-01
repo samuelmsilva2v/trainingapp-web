@@ -60,7 +60,8 @@ describe('PerfilTela', () => {
     let metrica = tela.querySelector('.metrica')!;
     expect(metrica.classList).not.toContain('congelada');
     expect(metrica.querySelector('.caixa')!.textContent).toContain('local_fire_department');
-    expect(metrica.querySelector('.congelamentos')!.textContent).toContain('0/2');
+    expect(metrica.querySelector('app-cubo-gelo')).toBeNull();
+    expect(tela.querySelector('.congelamentos')!.textContent).toContain('0/2');
 
     TestBed.resetTestingModule();
     Object.assign(gamificacao, { congelada: true, congelamentos: 1 });
@@ -68,9 +69,11 @@ describe('PerfilTela', () => {
       ({ tela } = abrir());
       metrica = tela.querySelector('.metrica')!;
       expect(metrica.classList).toContain('congelada');
-      expect(metrica.querySelector('.caixa')!.textContent).toContain('ac_unit');
-      expect(metrica.querySelector('.congelamentos')!.textContent).toContain('1/2');
-      expect(metrica.querySelector('.congelamentos')!.getAttribute('aria-label')).toContain('São usados automaticamente');
+      expect(metrica.querySelector('.caixa app-cubo-gelo')).not.toBeNull();
+      const congelamentos = tela.querySelector('.congelamentos')!;
+      expect(congelamentos.textContent).toContain('Congelamentos');
+      expect(congelamentos.textContent).toContain('1/2');
+      expect(congelamentos.getAttribute('aria-label')).toContain('São usados automaticamente');
     } finally {
       delete gamificacao.congelada;
       delete gamificacao.congelamentos;

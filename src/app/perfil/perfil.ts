@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
 import { Falha, falhaDe } from '../core/falha';
 import { TelaErro } from '../compartilhado/tela-erro';
+import { CuboGelo } from '../compartilhado/cubo-gelo';
 import { ForcaSenha } from '../compartilhado/forca-senha';
 import { AuthStore } from '../core/auth';
 import { formatarKg } from '../core/formatos';
@@ -25,7 +26,7 @@ const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip],
+  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip, CuboGelo],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
