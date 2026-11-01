@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CofreRefresh } from './cofre';
 import {
-  Acesso, Anterior, Exercicio, ExercicioRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Peso, Plano, PlanoRequest, PlanoResumo,
+  Acesso, Anterior, Exercicio, ExercicioRequest, FeedbackRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Peso, Plano, PlanoRequest, PlanoResumo,
   SessaoLocal, SessaoResumo,
 } from './modelos';
 
@@ -121,6 +121,15 @@ export class PerfilApi {
 
   atualizar(perfil: PerfilRequest): Observable<Perfil> {
     return this.http.put<Perfil>(`${API_URL}/perfil`, perfil);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class FeedbackApi {
+  private readonly http = inject(HttpClient);
+
+  enviar(feedback: FeedbackRequest): Observable<void> {
+    return this.http.post<void>(`${API_URL}/feedback`, feedback);
   }
 }
 

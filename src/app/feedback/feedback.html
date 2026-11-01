@@ -1,0 +1,56 @@
+<header class="topo">
+  <button type="button" class="btn-icone" aria-label="Voltar" (click)="voltar()">
+    <span class="icone" aria-hidden="true">arrow_back</span>
+  </button>
+  <h1 class="titulo-sm">Reportar bug ou sugestão</h1>
+</header>
+
+<div class="pagina">
+  <p class="suave apoio">Conte o que aconteceu ou o que podia ser melhor. Respondemos pelo seu e-mail.</p>
+
+  <form class="card" (submit)="$event.preventDefault(); enviar()">
+    <label class="campo">
+      <span class="rotulo suave">Nome</span>
+      <span class="entrada">
+        <span class="icone" aria-hidden="true">person</span>
+        <input type="text" name="nome" autocomplete="name" [attr.maxlength]="nomeMax"
+               [value]="nome()" (input)="nome.set($any($event.target).value)" />
+      </span>
+    </label>
+
+    <label class="campo">
+      <span class="rotulo suave">Categoria</span>
+      <span class="entrada">
+        <span class="icone" aria-hidden="true">{{ icone() }}</span>
+        <select name="categoria" (change)="escolherCategoria($event)">
+          <option value="" [selected]="categoria() === null">Selecione…</option>
+          @for (c of categorias; track c.valor) {
+            <option [value]="c.valor" [selected]="categoria() === c.valor">{{ c.rotulo }}</option>
+          }
+        </select>
+        <span class="icone seta" aria-hidden="true">expand_more</span>
+      </span>
+    </label>
+
+    <label class="campo">
+      <span class="rotulo suave">Mensagem</span>
+      <span class="area">
+        <textarea name="mensagem" rows="6" [attr.maxlength]="mensagemMax"
+                  placeholder="Descreva o que aconteceu, como chegar ao problema ou a sua ideia."
+                  [value]="mensagem()" (input)="mensagem.set($any($event.target).value)"></textarea>
+        <span class="contador num suave" aria-live="polite">{{ tamanho() }}/{{ mensagemMax }}</span>
+      </span>
+    </label>
+
+    @if (erro()) {
+      <p class="erro" role="alert">{{ erro() }}</p>
+    }
+
+    <button type="submit" class="btn btn-primario" [disabled]="!valido() || enviando()">
+      {{ enviando() ? 'Enviando…' : 'Enviar' }}
+      <span class="icone" aria-hidden="true">send</span>
+    </button>
+  </form>
+
+  <p class="suave nota">Enviamos junto a versão do app e o aparelho para ajudar a investigar.</p>
+</div>

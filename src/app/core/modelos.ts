@@ -193,6 +193,21 @@ export interface Perfil {
   temSenha: boolean;
   /** A cada quantos dias lembrar de se pesar (7, 15 ou 30); null = desligado. */
   lembretePesoDias: number | null;
+  /** Falso quando a API não tem para onde mandar os relatos: o item "Reportar bug ou sugestão" some. */
+  feedbackAtivo?: boolean;
+}
+
+export type CategoriaFeedback = 'BUG' | 'MELHORIA' | 'FUNCIONALIDADE' | 'OUTRO';
+
+/** Relato de bug ou sugestão; o contexto (plataforma em diante) vai sem a pessoa digitar. */
+export interface FeedbackRequest {
+  nome: string;
+  categoria: CategoriaFeedback;
+  mensagem: string;
+  plataforma: 'web' | 'android';
+  versaoApp: string | null;
+  tela: string | null;
+  userAgent: string;
 }
 
 export interface PerfilRequest {

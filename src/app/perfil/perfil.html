@@ -313,7 +313,13 @@
             </div>
           }
         </div>
-      } @else {
+      }
+      @if (feedbackAtivo()) {
+        <button type="button" class="acao" (click)="abrirFeedback()">
+          <span class="texto"><span class="legenda-forte">Reportar bug ou sugestão</span></span>
+        </button>
+      }
+      @if (!excluindo()) {
         <button type="button" class="acao perigo" (click)="abrirExclusao()">
           <span class="texto"><span class="legenda-forte">Excluir conta e apagar dados</span></span>
         </button>

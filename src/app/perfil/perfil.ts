@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
 import { Falha, falhaDe } from '../core/falha';
 import { TelaErro } from '../compartilhado/tela-erro';
@@ -32,6 +33,7 @@ export class PerfilTela implements OnInit {
   private readonly aviso = inject(MatSnackBar);
   private readonly auth = inject(AuthStore);
   private readonly authApi = inject(AuthApi);
+  private readonly roteador = inject(Router);
   protected readonly gamificacao = inject(GamificacaoStore);
   protected readonly formatar = formatarKg;
   protected readonly titulo = TITULO_PADRAO;
@@ -45,6 +47,7 @@ export class PerfilTela implements OnInit {
   protected readonly nomeSalvo = computed(() => this.salvo()?.nome ?? '');
   protected readonly email = computed(() => this.salvo()?.email ?? '');
   protected readonly temSenha = computed(() => this.salvo()?.temSenha ?? false);
+  protected readonly feedbackAtivo = computed(() => this.salvo()?.feedbackAtivo ?? false);
   protected readonly trocandoSenha = signal(false);
   protected readonly senhaAtual = signal('');
   protected readonly novaSenha = signal('');
@@ -257,6 +260,12 @@ export class PerfilTela implements OnInit {
   protected alternarDia(dia: number): void {
     const dias = this.lembrete().dias;
     this.alterarLembrete({ dias: dias.includes(dia) ? dias.filter(d => d !== dia) : [...dias, dia].sort() });
+  }
+
+  /** Leva junto a tela de onde a pessoa veio para o Perfil, que vai no contexto do relato. */
+  protected abrirFeedback(): void {
+    const tela = this.roteador.lastSuccessfulNavigation()?.previousNavigation?.finalUrl?.toString() ?? null;
+    void this.roteador.navigate(['/feedback'], { state: { tela } });
   }
 
   protected sair(): void {

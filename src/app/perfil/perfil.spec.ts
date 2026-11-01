@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthApi, GamificacaoApi, PerfilApi, PesoApi } from '../core/api';
@@ -135,6 +136,16 @@ describe('PerfilTela', () => {
     const botoes = [...tela.querySelectorAll('[aria-label="Conta"] button')].map(b => b.textContent!.trim());
 
     expect(botoes).toEqual(['Trocar senha', 'Excluir conta e apagar dados', 'Sair']);
+  });
+
+  it('Reportar bug ou sugestão só aparece com o feedback ativo, antes do Excluir conta, e abre /feedback', () => {
+    const { tela } = abrir({ temSenha: true, feedbackAtivo: true });
+    const botoes = [...tela.querySelectorAll<HTMLButtonElement>('[aria-label="Conta"] button')];
+    expect(botoes.map(b => b.textContent!.trim())).toEqual(['Trocar senha', 'Reportar bug ou sugestão', 'Excluir conta e apagar dados', 'Sair']);
+
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    botoes[1].click();
+    expect(navigate).toHaveBeenCalledWith(['/feedback'], { state: { tela: null } });
   });
 
   it('excluir com senha: pede confirmação com aviso, só habilita com a senha e manda a senha à API', () => {
