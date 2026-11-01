@@ -15,6 +15,7 @@ import { rotuloEquipamento, rotuloGrupo } from '../core/rotulos';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
+import { verFotos } from '../compartilhado/ver-fotos';
 import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
@@ -223,6 +224,10 @@ export class Treino implements OnInit, OnDestroy {
   });
 
   /** Seletor no grupo do original, folha "Trocar por" (normal ou drop-set) e "Anterior" do exercício novo. */
+  protected ampliarFoto(nome: string, fotos: readonly string[], indice: number): void {
+    verFotos(this.dialogo, { nome, fotos, indice });
+  }
+
   protected trocarExercicio(): void {
     const ex = this.exercicio();
     if (!ex || !this.podeTrocar()) return;

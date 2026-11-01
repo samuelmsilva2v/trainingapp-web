@@ -48,23 +48,28 @@
       </div>
     } @else {
       @for (e of exibidos(); track e.id) {
-        <button type="button" class="item" (click)="escolher(e)">
-          <span class="miniatura">
-            <span class="icone" aria-hidden="true">fitness_center</span>
-            @if (e.imagens[0]; as foto) {
-              <img [src]="foto" alt="" loading="lazy" (error)="$any($event.target).remove()" />
-            }
-          </span>
-          <span class="texto">
-            <span class="nome">{{ e.nome }}</span>
-            <span class="tags">
-              <span class="tag">{{ rotuloGrupo(e.grupoMuscular) }}</span>
-              <span class="tag">{{ rotuloEquipamento(e.equipamento) }}</span>
-              @if (e.personalizado) { <span class="tag meu">Meu</span> }
+        <div class="item">
+          @if (e.imagens[0]; as foto) {
+            <!-- A miniatura abre as fotos; o resto do item escolhe o exercício. -->
+            <button type="button" class="miniatura" [attr.aria-label]="'Ver fotos de ' + e.nome" (click)="ampliarFoto(e)">
+              <span class="icone" aria-hidden="true">fitness_center</span>
+              <img [src]="foto" alt="" loading="lazy" (error)="semFoto($event)" />
+            </button>
+          } @else {
+            <span class="miniatura"><span class="icone" aria-hidden="true">fitness_center</span></span>
+          }
+          <button type="button" class="escolher" (click)="escolher(e)">
+            <span class="texto">
+              <span class="nome">{{ e.nome }}</span>
+              <span class="tags">
+                <span class="tag">{{ rotuloGrupo(e.grupoMuscular) }}</span>
+                <span class="tag">{{ rotuloEquipamento(e.equipamento) }}</span>
+                @if (e.personalizado) { <span class="tag meu">Meu</span> }
+              </span>
             </span>
-          </span>
-          <span class="mais"><span class="icone" aria-hidden="true">add</span></span>
-        </button>
+            <span class="mais"><span class="icone" aria-hidden="true">add</span></span>
+          </button>
+        </div>
       }
       @if (excedente() > 0) {
         <p class="aviso suave">Mostrando {{ exibidos().length }} de {{ filtrados().length }}. Refine a busca para ver o resto.</p>

@@ -220,6 +220,8 @@ a.btn { text-decoration: none; }
 .dialogo-confirmar .mat-mdc-dialog-surface { border-radius: var(--r-lg) !important; background: var(--c-sup-1) !important; }
 // Folha na base da tela (formulário "Novo exercício")
 .dialogo-folha .mat-mdc-dialog-surface { border-radius: 24px 24px 0 0 !important; background: var(--c-sup-2) !important; }
+// Fotos do exercício em tela cheia
+.dialogo-fotos .mat-mdc-dialog-surface { border-radius: 0 !important; background: #000 !important; }
 
 // Arrastar e soltar (o preview é anexado ao body, fora do escopo dos componentes)
 .cdk-drag-preview { box-sizing: border-box; border-radius: var(--r-md); background: var(--c-sup-2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }

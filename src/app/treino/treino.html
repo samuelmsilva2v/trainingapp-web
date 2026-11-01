@@ -65,8 +65,11 @@
         </div>
         <div class="fotos">
           @for (foto of ex.imagens ?? []; track foto) {
-            <img [src]="foto" [alt]="'Execução de ' + ex.nome + ', posição ' + ($index === 0 ? 'inicial' : 'final')"
-                 (error)="$any($event.target).remove()" />
+            <button type="button" class="foto" [attr.aria-label]="'Ampliar foto ' + ($index + 1) + ' de ' + ex.nome"
+                    (click)="ampliarFoto(ex.nome, ex.imagens ?? [], $index)">
+              <img [src]="foto" [alt]="'Execução de ' + ex.nome + ', posição ' + ($index === 0 ? 'inicial' : 'final')"
+                   (error)="$any($event.target).parentElement.remove()" />
+            </button>
           }
         </div>
         <dl class="metas">

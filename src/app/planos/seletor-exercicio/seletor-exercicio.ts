@@ -1,10 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { ExerciciosApi } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { verFotos } from '../../compartilhado/ver-fotos';
 import { Carregando } from '../../compartilhado/carregando';
 import { Equipamento, Exercicio, GrupoMuscular } from '../../core/modelos';
 import { EQUIPAMENTOS, GRUPOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
@@ -25,6 +26,7 @@ export interface DadosSeletor {
 export class SeletorExercicio {
   private readonly api = inject(ExerciciosApi);
   private readonly ref = inject(MatDialogRef<SeletorExercicio, Exercicio>);
+  private readonly dialogo = inject(MatDialog);
   private readonly dados = inject<DadosSeletor | null>(MAT_DIALOG_DATA, { optional: true });
 
   protected readonly grupos = GRUPOS;
@@ -76,6 +78,17 @@ export class SeletorExercicio {
   protected escolherEquipamento(evento: Event): void {
     const valor = (evento.target as HTMLSelectElement).value;
     this.equipamento.set(valor ? (valor as Equipamento) : null);
+  }
+
+  protected ampliarFoto(exercicio: Exercicio): void {
+    verFotos(this.dialogo, { nome: exercicio.nome, fotos: exercicio.imagens, indice: 0 });
+  }
+
+  /** Miniatura que não carregou (404 do dataset): fica o ícone e o toque nela não abre nada. */
+  protected semFoto(evento: Event): void {
+    const img = evento.target as HTMLImageElement;
+    (img.parentElement as HTMLButtonElement).disabled = true;
+    img.remove();
   }
 
   protected escolher(exercicio: Exercicio): void {

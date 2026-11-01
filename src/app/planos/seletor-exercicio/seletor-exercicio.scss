@@ -68,12 +68,24 @@
   flex-shrink: 0;
   width: 100%;
   min-height: 64px;
-  padding: 12px 16px;
-  border: 0;
+  padding-left: 16px;
   border-radius: var(--r-md);
   background: var(--c-sup-2);
+  &:has(.escolher:active) { background: var(--c-sup-4); }
+}
+button.miniatura { padding: 0; border: 0; }
+/* Ocupa o resto do item até as bordas: tocar fora da miniatura escolhe o exercício. */
+.escolher {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 12px 0;
+  border: 0;
+  background: none;
   text-align: left;
-  &:active { background: var(--c-sup-4); }
 }
 .texto { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .nome { font: 600 16px/24px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
@@ -90,7 +102,7 @@
   align-items: center;
   justify-content: center;
 }
-.item:hover .mais { background: var(--c-primaria); color: var(--c-sobre-primaria); }
+.escolher:hover .mais { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 
 .aviso { text-align: center; padding: 24px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .aviso.erro { color: var(--c-erro); }

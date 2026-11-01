@@ -72,7 +72,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   &:not(:has(img)) { display: none; }
-  img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--r-sm); background: var(--c-sup-3); }
+  .foto { padding: 0; border: 0; background: none; display: block; }
+  img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--r-sm); background: var(--c-sup-3); }
 }
 .ex-sub { margin: 0; font: 400 14px/20px 'Inter', sans-serif; color: var(--c-texto-2); }
 .metas {

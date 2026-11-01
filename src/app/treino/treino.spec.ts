@@ -1,8 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogState } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
+import { IntegracaoAndroid } from '../core/android';
 import { SessoesApi } from '../core/api';
 import { SessaoLocal } from '../core/modelos';
 import { TreinoStore } from '../core/treino-store';
@@ -37,6 +39,8 @@ const sessao = (imagens?: string[]): SessaoLocal => ({
 });
 
 describe('Treino: fotos do exercício', () => {
+  let fixture: ComponentFixture<Treino>;
+
   function abrir(imagens?: string[]): HTMLElement {
     TestBed.configureTestingModule({
       providers: [
@@ -47,10 +51,60 @@ describe('Treino: fotos do exercício', () => {
       ],
     });
     TestBed.inject(TreinoStore).retomar(sessao(imagens));
-    const fixture = TestBed.createComponent(Treino);
+    fixture = TestBed.createComponent(Treino);
     fixture.detectChanges();
     return fixture.nativeElement;
   }
+
+  /** Fechar espera a animação: basta o diálogo ter saído do estado aberto. */
+  const aberto = () => TestBed.inject(MatDialog).openDialogs.some(d => d.getState() === MatDialogState.OPEN);
+  const visor = () => document.querySelector('app-ver-fotos');
+  const botao = (rotulo: string) => visor()?.querySelector<HTMLButtonElement>(`[aria-label="${rotulo}"]`);
+  async function atualizar() {
+    fixture.detectChanges();
+    await fixture.whenStable();
+  }
+
+  afterEach(() => TestBed.inject(MatDialog).closeAll());
+
+  it('tocar numa foto abre o visualizador nela; as setas trocam e o X fecha', async () => {
+    const tela = abrir(['http://img/a/0.jpg', 'http://img/a/1.jpg']);
+    tela.querySelectorAll<HTMLButtonElement>('.fotos .foto')[1].click();
+    await atualizar();
+
+    expect(visor()?.textContent).toContain('Supino');
+    expect(visor()?.textContent).toContain('2/2');
+    botao('Foto anterior')!.click();
+    await atualizar();
+    expect(visor()?.textContent).toContain('1/2');
+
+    botao('Fechar')!.click();
+    await atualizar();
+    expect(aberto()).toBe(false);
+  });
+
+  it('o voltar do Android fecha o visualizador sem sair do treino', async () => {
+    const tela = abrir(['http://img/a/0.jpg', 'http://img/a/1.jpg']);
+    tela.querySelector<HTMLButtonElement>('.fotos .foto')!.click();
+    await atualizar();
+    expect(aberto()).toBe(true);
+
+    TestBed.inject(IntegracaoAndroid).voltar(true);
+    await atualizar();
+    expect(aberto()).toBe(false);
+    expect(tela.querySelector('.fotos img')).not.toBeNull();
+  });
+
+  it('foto que falha no visualizador sai da lista, sem setas', async () => {
+    const tela = abrir(['http://img/a/0.jpg', 'http://img/a/1.jpg']);
+    tela.querySelector<HTMLButtonElement>('.fotos .foto')!.click();
+    await atualizar();
+    visor()!.querySelectorAll('img')[1].dispatchEvent(new Event('error'));
+    await atualizar();
+
+    expect(visor()?.querySelectorAll('img').length).toBe(1);
+    expect(botao('Próxima foto')).toBeNull();
+  });
 
   it('mostra a foto inicial e a final', () => {
     const tela = abrir(['http://img/a/0.jpg', 'http://img/a/1.jpg']);
