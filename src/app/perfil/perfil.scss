@@ -36,6 +36,9 @@
   .valor { display: inline-flex; align-items: center; gap: 4px; .icone { font-size: 16px; } }
 }
 .metrica .rotulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+// "Congelamentos" quando cabe; senão "Congelamento", sem reticências (o "s" some pela largura do texto).
+.congelamentos .texto { flex: 1; container-type: inline-size; }
+@container (max-width: 109px) { .plural { display: none; } }
 .metrica.inteira { grid-column: 1 / -1; }
 .raio { color: var(--c-destaque); }
 .valor { font: 700 14px/20px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
