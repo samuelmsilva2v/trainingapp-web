@@ -13,8 +13,6 @@ import { formatarKg } from '../core/formatos';
 import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
-import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
-import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -70,18 +68,6 @@ export class PerfilTela implements OnInit {
   protected readonly familias = computed(() => familias(this.conquistasVisiveis()));
   protected readonly familiaAberta = signal<string | null>(null);
   protected readonly metaComUnidade = metaComUnidade;
-  protected readonly noApp = NO_APP;
-  protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
-  protected readonly avisoDescanso = signal(avisoDescansoLigado());
-  protected readonly diasDaSemana = [
-    { valor: 0, letra: 'D', nome: 'Domingo' },
-    { valor: 1, letra: 'S', nome: 'Segunda' },
-    { valor: 2, letra: 'T', nome: 'Terça' },
-    { valor: 3, letra: 'Q', nome: 'Quarta' },
-    { valor: 4, letra: 'Q', nome: 'Quinta' },
-    { valor: 5, letra: 'S', nome: 'Sexta' },
-    { valor: 6, letra: 'S', nome: 'Sábado' },
-  ];
   /** "Faltam N dias" até a semana dos desafios virar (domingo é o último dia). */
   protected readonly textoFimDaSemana = computed(() => {
     const fim = this.gamificacao.dados()?.semanaTerminaEm;
@@ -245,25 +231,8 @@ export class PerfilTela implements OnInit {
     });
   }
 
-  /** Aviso de fim do descanso: guardado no aparelho; desligar cancela o aviso já agendado. */
-  protected alternarAvisoDescanso(): void {
-    this.avisoDescanso.update(ligado => !ligado);
-    salvarAvisoDescanso(this.avisoDescanso());
-  }
-
-  /** Lembrete de treino: guardado no aparelho e reagendado a cada mudança. */
-  protected alterarLembrete(mudanca: Partial<ConfigLembrete>): void {
-    this.lembrete.update(atual => ({ ...atual, ...mudanca }));
-    void salvarLembrete(this.lembrete());
-  }
-
-  protected mudarHora(hora: string): void {
-    if (/^d{2}:d{2}$/.test(hora)) this.alterarLembrete({ hora });
-  }
-
-  protected alternarDia(dia: number): void {
-    const dias = this.lembrete().dias;
-    this.alterarLembrete({ dias: dias.includes(dia) ? dias.filter(d => d !== dia) : [...dias, dia].sort() });
+  protected abrirConfiguracoes(): void {
+    void this.roteador.navigate(['/configuracoes']);
   }
 
   /** Leva junto a tela de onde a pessoa veio para o Perfil, que vai no contexto do relato. */

@@ -128,43 +128,16 @@
             </div>
           }
         </div>
-
-        @if (noApp) {
-          <div class="notificacao">
-            <label class="alternar">
-              <input type="checkbox" role="switch" [checked]="avisoDescanso()" (change)="alternarAvisoDescanso()" />
-              <span class="trilho" aria-hidden="true"></span>
-              <span class="legenda">Aviso de fim do descanso</span>
-            </label>
-            <p class="suave dica">Notificação quando o descanso entre séries acaba, mesmo com a tela bloqueada. Desligado, o fim do descanso fica só no cronômetro do treino.</p>
-          </div>
-
-          <div class="notificacao">
-            <label class="alternar">
-              <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
-              <span class="trilho" aria-hidden="true"></span>
-              <span class="legenda">Lembrete de treino</span>
-            </label>
-            @if (lembrete().ligado) {
-              <label class="campo">
-                <span class="legenda">Horário</span>
-                <span class="entrada">
-                  <!-- Sem ícone próprio: o seletor de horário do Android já desenha o dele. -->
-                  <input type="time" required [value]="lembrete().hora" (change)="mudarHora($any($event.target).value)" />
-                </span>
-              </label>
-              <div class="tema dias" role="group" aria-label="Dias da semana">
-                @for (dia of diasDaSemana; track dia.valor) {
-                  <button type="button" class="opcao" [class.sel]="lembrete().dias.includes(dia.valor)"
-                          [attr.aria-pressed]="lembrete().dias.includes(dia.valor)" [attr.aria-label]="dia.nome"
-                          (click)="alternarDia(dia.valor)">{{ dia.letra }}</button>
-                }
-              </div>
-              <p class="suave dica">Não avisa no dia em que você já treinou. Os avisos valem por 14 dias e se renovam quando você abre o app.</p>
-            }
-          </div>
-        }
       </div>
+
+      <button type="button" class="acao" (click)="abrirConfiguracoes()">
+        <span class="caixa"><span class="icone" aria-hidden="true">tune</span></span>
+        <span class="texto">
+          <span class="legenda-forte">Configurações de treino</span>
+          <span class="suave">Passo da carga, plano e notificações do treino</span>
+        </span>
+        <span class="icone" aria-hidden="true">chevron_right</span>
+      </button>
     </section>
 
     <section class="card" aria-label="Dados do treino">
