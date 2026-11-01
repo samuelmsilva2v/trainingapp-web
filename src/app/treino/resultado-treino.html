@@ -42,6 +42,34 @@
     <p class="sem-xp suave">{{ motivoSemXp }}</p>
   }
 
+  @if (mudancas; as m) {
+    @if (estadoPlano() === 'salvo') {
+      <p class="plano-salvo" role="status"><span class="icone cheio" aria-hidden="true">check_circle</span> Plano atualizado: {{ resumoMudancas }}.</p>
+    } @else if (automatico && estadoPlano() === 'salvando') {
+      <p class="suave" role="status">Atualizando o plano…</p>
+    } @else if (estadoPlano() !== 'dispensado') {
+      <section class="mudancas" aria-label="Mudanças no plano">
+        <h3 class="mudancas-titulo"><span class="icone" aria-hidden="true">edit_note</span> Mudanças no plano</h3>
+        @if (estadoPlano() === 'erro') {
+          <p class="erro" role="alert">Não foi possível atualizar o plano. Tente de novo ou mude no editor de planos.</p>
+        } @else {
+          <p class="suave">Você mudou o treino. Levar para o {{ sessao.diaNome }} do plano?</p>
+        }
+        <ul class="lista-mudancas">
+          @for (mudanca of m.mudancas; track mudanca.texto) {
+            <li><span class="icone" [class.laranja]="mudanca.icone === 'trending_down'" aria-hidden="true">{{ mudanca.icone }}</span> {{ mudanca.texto }}</li>
+          }
+        </ul>
+        <div class="acoes">
+          <button type="button" class="btn btn-primario" [disabled]="estadoPlano() === 'salvando'" (click)="salvarPlano()">
+            {{ estadoPlano() === 'erro' ? 'Tentar de novo' : 'Salvar no plano' }}
+          </button>
+          <button type="button" class="btn btn-texto" (click)="estadoPlano.set('dispensado')">Agora não</button>
+        </div>
+      </section>
+    }
+  }
+
   @if (dados.depois; as g) {
     <section aria-label="Nível">
       @if (subiu) {

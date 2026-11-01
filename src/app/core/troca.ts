@@ -10,7 +10,7 @@ export interface ConfigTroca {
 type NovaSerie = (reps: number | null, carga: number | null, tipo: TipoSerie) => SerieLocal;
 
 /**
- * Troca o exercício só nesta sessão (o plano não muda). Ficam o id da linha, o número de séries e o descanso; as
+ * Troca o exercício só nesta sessão (levar ao plano é ao concluir, em plano-da-sessao.ts). Ficam o id da linha, o número de séries e o descanso; as
  * séries são remontadas. A carga alvo do original não serve para outro aparelho: cada série começa com a carga da
  * mesma posição no último treino do exercício novo (as que sobram repetem a última) e cada drop com o drop
  * correspondente, ou 80% em cadeia; sem histórico, as cargas ficam vazias. Quem chama garante que não há série feita.

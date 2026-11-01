@@ -1,5 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable, of, throwError } from 'rxjs';
+import { vi } from 'vitest';
+import { PlanosApi } from '../core/api';
+import { MudancasDoPlano } from '../core/plano-da-sessao';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 import { ResultadoDados, ResultadoTreino } from './resultado-treino';
 
@@ -26,15 +30,22 @@ const comXpPorExercicio = (s: SessaoLocal, xp: number): SessaoLocal => {
   return s;
 };
 
+let respostaPlano: () => Observable<unknown> = () => of({});
+const atualizarPlano = vi.fn(() => respostaPlano());
+let fixtureAtual: { detectChanges(): void } | null = null;
+
 function abrir(dados: ResultadoDados): HTMLElement {
+  atualizarPlano.mockClear();
   TestBed.configureTestingModule({
     providers: [
       { provide: MAT_DIALOG_DATA, useValue: dados },
       { provide: MatDialogRef, useValue: { close: () => {} } },
+      { provide: PlanosApi, useValue: { atualizar: atualizarPlano } },
     ],
   });
   const fixture = TestBed.createComponent(ResultadoTreino);
   fixture.detectChanges();
+  fixtureAtual = fixture;
   return fixture.nativeElement as HTMLElement;
 }
 
@@ -168,5 +179,69 @@ describe('ResultadoTreino', () => {
     TestBed.resetTestingModule();
     expect(abrir({ sessao: sessao({ xpGanho: 0 }), antes: null, depois: gamificacao({}) }).textContent)
       .toContain('Só o primeiro treino do dia rende XP.');
+  });
+
+  describe('mudanças no plano', () => {
+    const mudancas: MudancasDoPlano = {
+      mudancas: [
+        { icone: 'sync_alt', texto: 'Supino reto → Supino inclinado' },
+        { icone: 'add', texto: 'Remada: 3 → 4 séries' },
+      ],
+      plano: { nome: 'ABC', objetivo: 'HIPERTROFIA', dias: [] },
+    };
+    const comMudancas = (): ResultadoDados => ({ sessao: sessao({ planoId: 'p1' }), antes: null, depois: null, mudancas });
+    const botao = (el: HTMLElement, texto: string) =>
+      [...el.querySelectorAll<HTMLButtonElement>('button')].find(b => b.textContent!.includes(texto))!;
+    const clicar = (el: HTMLElement, texto: string) => {
+      botao(el, texto).click();
+      fixtureAtual!.detectChanges();
+    };
+
+    beforeEach(() => {
+      localStorage.clear();
+      respostaPlano = () => of({});
+    });
+
+    it('sem mudanças, não mostra o card', () => {
+      const el = abrir({ sessao: sessao({ planoId: 'p1' }), antes: null, depois: null, mudancas: null });
+      expect(el.textContent).not.toContain('Mudanças no plano');
+    });
+
+    it('desligado: pergunta com a lista; "Salvar no plano" grava e mostra a linha', () => {
+      const el = abrir(comMudancas());
+      expect(el.textContent).toContain('Levar para o Push do plano?');
+      expect(el.textContent).toContain('Supino reto → Supino inclinado');
+      expect(atualizarPlano).not.toHaveBeenCalled();
+      clicar(el, 'Salvar no plano');
+      expect(atualizarPlano).toHaveBeenCalledWith('p1', mudancas.plano);
+      expect(el.textContent).toContain('Plano atualizado: Supino reto → Supino inclinado; Remada: 3 → 4 séries.');
+      expect(el.textContent).not.toContain('Agora não');
+    });
+
+    it('"Agora não" esconde o card sem gravar', () => {
+      const el = abrir(comMudancas());
+      clicar(el, 'Agora não');
+      expect(el.textContent).not.toContain('Mudanças no plano');
+      expect(atualizarPlano).not.toHaveBeenCalled();
+    });
+
+    it('ligado: aplica ao abrir e só mostra a linha', () => {
+      localStorage.setItem('trainingapp.salvarNoPlano', 'ligado');
+      const el = abrir(comMudancas());
+      expect(atualizarPlano).toHaveBeenCalledWith('p1', mudancas.plano);
+      expect(el.textContent).toContain('Plano atualizado:');
+      expect(el.querySelector('.mudancas')).toBeNull();
+    });
+
+    it('se a gravação falha, mostra o erro e deixa tentar de novo', () => {
+      respostaPlano = () => throwError(() => new Error('sem rede'));
+      localStorage.setItem('trainingapp.salvarNoPlano', 'ligado');
+      const el = abrir(comMudancas());
+      expect(el.textContent).toContain('Não foi possível atualizar o plano');
+      respostaPlano = () => of({});
+      clicar(el, 'Tentar de novo');
+      expect(atualizarPlano).toHaveBeenCalledTimes(2);
+      expect(el.textContent).toContain('Plano atualizado:');
+    });
   });
 });

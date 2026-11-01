@@ -7,7 +7,7 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 import { agendarFimDoDescanso, avisoDescansoLigado, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
 import { alarmeExato, devePedirAlarmeExato, pedirAlarmeExato } from '../core/alarme-exato';
 import { atualizarContextoDoLembrete, reagendarLembretes } from '../core/lembrete';
-import { GamificacaoApi, SessoesApi, mensagemDeErro } from '../core/api';
+import { GamificacaoApi, PlanosApi, SessoesApi, mensagemDeErro } from '../core/api';
 import { lerPassoCarga, limparCarga, passoCarga } from '../core/carga';
 import { cronometro, faixaReps, formatarCarga, kg } from '../core/formatos';
 import { Anterior, Exercicio, ExercicioLocal, Gamificacao, SerieLocal, SessaoLocal } from '../core/modelos';
@@ -20,6 +20,7 @@ import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
 import { DadosSeletor, SeletorExercicio } from '../planos/seletor-exercicio/seletor-exercicio';
 import { ConfigTroca, trocarExercicio } from '../core/troca';
+import { mudancasDoPlano } from '../core/plano-da-sessao';
 
 const REPS_MAX = 1000;
 
@@ -34,6 +35,7 @@ export class Treino implements OnInit, OnDestroy {
   private readonly api = inject(SessoesApi);
   private readonly gamificacao = inject(GamificacaoStore);
   private readonly gamificacaoApi = inject(GamificacaoApi);
+  private readonly planosApi = inject(PlanosApi);
   private readonly roteador = inject(Router);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
@@ -490,13 +492,16 @@ export class Treino implements OnInit, OnDestroy {
     try {
       const depois = await firstValueFrom(this.gamificacaoApi.resumo());
       this.gamificacao.dados.set(depois);
+      // Sem o plano (rede, plano apagado), só não oferece levar as mudanças para ele.
+      const plano = sessao.planoId ? await firstValueFrom(this.planosApi.obter(sessao.planoId)).catch(() => null) : null;
+      const mudancas = plano ? mudancasDoPlano(sessao, plano) : null;
       await firstValueFrom(
         this.dialogo
           .open(ResultadoTreino, {
             panelClass: 'dialogo-confirmar',
             maxWidth: '95vw',
             width: '480px',
-            data: { sessao, antes, depois },
+            data: { sessao, antes, depois, mudancas },
           })
           .afterClosed(),
         { defaultValue: undefined },

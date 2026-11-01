@@ -26,3 +26,15 @@ section { display: flex; flex-direction: column; gap: 8px; }
   // Os dados do exercício (4/4 · 20 XP 🏆) nunca quebram de linha; só o nome pode.
   .dados { flex-shrink: 0; white-space: nowrap; }
 }
+
+// Mudanças no plano (web#48, Stitch "Treino concluído"): lista do que mudou e a pergunta; ou a linha de confirmação.
+.mudancas { padding: 16px; border-radius: var(--r-md); background: var(--c-sup-2); gap: 12px; p { margin: 0; } }
+.mudancas-titulo { margin: 0; display: flex; align-items: center; gap: 8px; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-primaria); font-size: 20px; } }
+.lista-mudancas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
+  li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-sup-3); font-size: 14px; line-height: 20px; }
+  .icone { font-size: 18px; color: var(--c-texto-2); flex-shrink: 0; }
+  .icone.laranja { color: var(--c-secundaria); } }
+.acoes { display: flex; gap: 8px; .btn-primario { flex: 1; } }
+.btn-texto { background: transparent; color: var(--c-texto-2); }
+.erro { color: var(--c-erro); }
+.plano-salvo { margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-2); font-size: 14px; line-height: 20px; .icone { color: var(--c-primaria); font-size: 20px; flex-shrink: 0; } }

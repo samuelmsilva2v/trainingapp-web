@@ -1,12 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { linhasComRecorde, seriesFeitas, xpDoTreino } from '../core/series';
+import { PlanosApi } from '../core/api';
+import { MudancasDoPlano, salvarNoPlanoLigado } from '../core/plano-da-sessao';
 import { Gamificacao, SessaoLocal } from '../core/modelos';
 
 export interface ResultadoDados {
   sessao: SessaoLocal;
   antes: Gamificacao | null;
   depois: Gamificacao | null;
+  /** Mudanças na estrutura do dia para levar ao plano; null quando não há o que oferecer. */
+  mudancas?: MudancasDoPlano | null;
 }
 
 const MINIMO_SERIES_XP = 3;
@@ -20,6 +24,7 @@ const MINIMO_SERIES_XP = 3;
 export class ResultadoTreino implements OnInit {
   protected readonly dados = inject<ResultadoDados>(MAT_DIALOG_DATA);
   protected readonly ref = inject(MatDialogRef<ResultadoTreino>);
+  private readonly planos = inject(PlanosApi);
 
   protected readonly sessao = this.dados.sessao;
   protected readonly xp = this.sessao.xpGanho ?? 0;
@@ -60,6 +65,12 @@ export class ResultadoTreino implements OnInit {
   protected readonly desafios = this.sessao.desafios ?? [];
   protected readonly xpDesafios = this.sessao.xpDesafios ?? 0;
 
+  /** Mudanças no plano: com "Salvar mudanças do treino no plano" ligado, aplicadas sozinhas ao abrir. */
+  protected readonly mudancas = this.dados.mudancas ?? null;
+  protected readonly automatico = salvarNoPlanoLigado();
+  protected readonly estadoPlano = signal<'pergunta' | 'salvando' | 'salvo' | 'erro' | 'dispensado'>('pergunta');
+  protected readonly resumoMudancas = (this.mudancas?.mudancas ?? []).map(m => m.texto).join('; ');
+
   /** Por que o treino não rendeu XP. */
   protected readonly motivoSemXp =
     this.feitas < MINIMO_SERIES_XP
@@ -67,9 +78,21 @@ export class ResultadoTreino implements OnInit {
       : 'Só o primeiro treino do dia rende XP.';
 
   ngOnInit(): void {
+    if (this.automatico) this.salvarPlano();
     this.largura.set(this.subiu ? 0 : this.fracao(this.dados.antes));
     // Depois da primeira pintura, para a transição da barra rodar.
     setTimeout(() => this.largura.set(this.fracao(this.dados.depois)), 50);
+  }
+
+  /** Grava o plano inteiro (PUT) com o dia atualizado; se falhar, a pessoa pode tentar de novo ou refazer no editor. */
+  protected salvarPlano(): void {
+    const planoId = this.sessao.planoId;
+    if (!this.mudancas || !planoId || this.estadoPlano() === 'salvando') return;
+    this.estadoPlano.set('salvando');
+    this.planos.atualizar(planoId, this.mudancas.plano).subscribe({
+      next: () => this.estadoPlano.set('salvo'),
+      error: () => this.estadoPlano.set('erro'),
+    });
   }
 
   private fracao(g: Gamificacao | null): number {

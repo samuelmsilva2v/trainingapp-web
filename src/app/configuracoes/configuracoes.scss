@@ -62,4 +62,4 @@ input {
 .passos { grid-template-columns: repeat(3, 1fr); }
 
 /* Cada opção num bloco, com os detalhes logo abaixo quando ligada. */
-.notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
+.bloco { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }

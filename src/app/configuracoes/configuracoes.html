@@ -21,6 +21,15 @@
       </div>
       <p class="suave dica">Vale para o +/− da carga no treino e no editor de plano.</p>
     </div>
+
+    <div class="bloco">
+      <label class="alternar">
+        <input type="checkbox" role="switch" [checked]="salvarNoPlano()" (change)="alternarSalvarNoPlano()" />
+        <span class="trilho" aria-hidden="true"></span>
+        <span class="legenda">Salvar mudanças do treino no plano</span>
+      </label>
+      <p class="suave dica">Ligado, trocas de exercício, séries e drop-set feitos no treino vão para o plano ao concluir. Desligado, o app pergunta antes.</p>
+    </div>
   </section>
 
   @if (noApp) {
@@ -29,7 +38,7 @@
         <h2 class="titulo"><span class="icone" aria-hidden="true">notifications</span> Notificações</h2>
       </header>
 
-      <div class="notificacao">
+      <div class="bloco">
         <label class="alternar">
           <input type="checkbox" role="switch" [checked]="avisoDescanso()" (change)="alternarAvisoDescanso()" />
           <span class="trilho" aria-hidden="true"></span>
@@ -38,7 +47,7 @@
         <p class="suave dica">Notificação quando o descanso entre séries acaba, mesmo com a tela bloqueada. Desligado, o fim do descanso fica só no cronômetro do treino.</p>
       </div>
 
-      <div class="notificacao">
+      <div class="bloco">
         <label class="alternar">
           <input type="checkbox" role="switch" [checked]="lembrete().ligado" (change)="alterarLembrete({ ligado: !lembrete().ligado })" />
           <span class="trilho" aria-hidden="true"></span>

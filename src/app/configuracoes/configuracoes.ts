@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NO_APP } from '../core/cofre';
 import { PASSOS_CARGA, PassoCarga, lerPassoCarga, salvarPassoCarga } from '../core/carga';
 import { kg } from '../core/formatos';
+import { salvarNoPlanoLigado, salvarSalvarNoPlano } from '../core/plano-da-sessao';
 import { ConfigLembrete, lerLembrete, salvarLembrete } from '../core/lembrete';
 import { avisoDescansoLigado, salvarAvisoDescanso } from '../core/android';
 
@@ -18,6 +19,7 @@ export class ConfiguracoesTela {
   protected readonly kg = kg;
   protected readonly passos = PASSOS_CARGA;
   protected readonly passo = signal<PassoCarga>(lerPassoCarga());
+  protected readonly salvarNoPlano = signal(salvarNoPlanoLigado());
   protected readonly lembrete = signal<ConfigLembrete>(lerLembrete());
   protected readonly avisoDescanso = signal(avisoDescansoLigado());
   protected readonly diasDaSemana = [
@@ -33,6 +35,11 @@ export class ConfiguracoesTela {
   protected mudarPasso(passo: PassoCarga): void {
     this.passo.set(passo);
     salvarPassoCarga(passo);
+  }
+
+  protected alternarSalvarNoPlano(): void {
+    this.salvarNoPlano.update(ligado => !ligado);
+    salvarSalvarNoPlano(this.salvarNoPlano());
   }
 
   /** Aviso de fim do descanso: desligar cancela o aviso já agendado. */

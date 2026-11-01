@@ -53,7 +53,7 @@
             <h2 class="titulo-md">{{ ex.nome }}</h2>
             <p class="ex-sub">{{ rotuloGrupo(ex.grupoMuscular) }} · {{ rotuloEquipamento(ex.equipamento) }}</p>
           </div>
-          <!-- Só antes da primeira série concluída; vale só nesta sessão (o plano não muda). -->
+          <!-- Só antes da primeira série concluída; vale nesta sessão (ao concluir, pode ir para o plano). -->
           @if (podeTrocar()) {
             <button type="button" class="btn-icone trocar" aria-label="Trocar exercício" title="Trocar exercício" (click)="trocarExercicio()">
               <span class="icone" aria-hidden="true">find_replace</span>
