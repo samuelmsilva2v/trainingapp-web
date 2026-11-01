@@ -35,9 +35,51 @@
   display: flex;
   align-items: center;
   > .icone { position: absolute; left: 12px; color: var(--c-texto-2); font-size: 20px; pointer-events: none; }
-  > .seta { left: auto; right: 12px; }
 }
-input, select, textarea {
+.dropdown { position: relative; }
+.gatilho, .opcao {
+  width: 100%;
+  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  font: 400 16px/24px 'Inter', sans-serif;
+  .valor { flex: 1; }
+  .icone { font-size: 20px; color: var(--c-texto-2); }
+}
+.gatilho {
+  height: 48px;
+  padding: 0 12px;
+  border-radius: var(--r-sm);
+  background: var(--c-sup-3);
+  color: var(--c-texto);
+  &:focus-visible, &[aria-expanded='true'] { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+}
+// Tocar fora fecha a lista.
+.fundo { position: fixed; inset: 0; z-index: 10; }
+.lista {
+  position: absolute;
+  inset: calc(100% + 6px) 0 auto 0;
+  z-index: 11;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: var(--r-md);
+  background: var(--c-sup-4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.opcao {
+  min-height: var(--alvo);
+  padding: 0 10px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--c-texto);
+  &:hover, &:focus-visible { background: var(--c-sup-3); outline: none; }
+  &.sel { color: var(--c-primaria); .icone { color: var(--c-primaria); } }
+}
+
+input, textarea {
   width: 100%;
   border: 0;
   border-radius: var(--r-sm);
@@ -46,8 +88,7 @@ input, select, textarea {
   font: 400 16px/24px 'Inter', sans-serif;
   &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
 }
-input, select { height: 48px; padding: 0 14px 0 44px; }
-select { appearance: none; padding-right: 40px; }
+input { height: 48px; padding: 0 14px 0 44px; }
 .area { position: relative; display: block; }
 textarea { display: block; padding: 12px 14px 28px; resize: vertical; min-height: 144px; }
 .contador { position: absolute; right: 12px; bottom: 8px; font-size: 11px; line-height: 14px; pointer-events: none; }

@@ -33,10 +33,10 @@ describe('FeedbackTela', () => {
       campo.dispatchEvent(new Event('input'));
       fixture.detectChanges();
     };
-    const escolher = (valor: string) => {
-      const select = tela$.querySelector('select')!;
-      select.value = valor;
-      select.dispatchEvent(new Event('change'));
+    const escolher = (rotulo: string) => {
+      tela$.querySelector<HTMLButtonElement>('.gatilho')!.click();
+      fixture.detectChanges();
+      [...tela$.querySelectorAll<HTMLButtonElement>('[role=option]')].find(o => o.textContent!.includes(rotulo))!.click();
       fixture.detectChanges();
     };
     const botao = () => tela$.querySelector<HTMLButtonElement>('button[type=submit]')!;
@@ -48,18 +48,38 @@ describe('FeedbackTela', () => {
     return { fixture, tela: tela$, digitar, escolher, botao, submeter };
   }
 
-  it('o nome já vem do perfil; as quatro categorias estão no seletor', () => {
-    const { tela } = abrir();
+  it('o nome já vem do perfil; o dropdown abre com as quatro categorias e fecha ao escolher', () => {
+    const { fixture, tela, escolher } = abrir();
     expect(tela.querySelector<HTMLInputElement>('input[name=nome]')!.value).toBe('Samuel');
-    const opcoes = [...tela.querySelectorAll('option')].map(o => o.textContent?.trim());
-    expect(opcoes).toEqual(['Selecione…', 'Reportar bug', 'Sugestão de melhoria', 'Nova funcionalidade', 'Outro']);
+    const gatilho = tela.querySelector<HTMLButtonElement>('.gatilho')!;
+    expect(gatilho.textContent).toContain('Selecione…');
+    expect(tela.querySelector('[role=listbox]')).toBeNull();
+
+    gatilho.click();
+    fixture.detectChanges();
+    expect(gatilho.getAttribute('aria-expanded')).toBe('true');
+    const opcoes = [...tela.querySelectorAll('[role=option] .valor')].map(o => o.textContent?.trim());
+    expect(opcoes).toEqual(['Reportar bug', 'Sugestão de melhoria', 'Nova funcionalidade', 'Outro']);
+
+    // Tocar fora fecha sem escolher.
+    tela.querySelector<HTMLElement>('.fundo')!.click();
+    fixture.detectChanges();
+    expect(tela.querySelector('[role=listbox]')).toBeNull();
+
+    escolher('Sugestão de melhoria');
+    expect(tela.querySelector('[role=listbox]')).toBeNull();
+    expect(gatilho.textContent).toContain('Sugestão de melhoria');
+    expect(gatilho.textContent).toContain('lightbulb');
   });
 
   it('só habilita o Enviar com nome, categoria e mensagem de 10 a 2.000 caracteres (sem contar espaços nas pontas)', () => {
     const { tela, digitar, escolher, botao } = abrir();
     expect(botao().disabled).toBe(true);
 
-    escolher('BUG');
+    digitar('textarea', 'O treino travou ao concluir');
+    expect(botao().disabled).toBe(true); // sem categoria
+
+    escolher('Reportar bug');
     digitar('textarea', '   curta    ');
     expect(tela.querySelector('.contador')!.textContent).toBe('5/2000');
     expect(botao().disabled).toBe(true);
@@ -73,16 +93,12 @@ describe('FeedbackTela', () => {
 
     digitar('textarea', 'a'.repeat(2001));
     expect(botao().disabled).toBe(true);
-
-    escolher('');
-    digitar('textarea', 'O treino travou ao concluir');
-    expect(botao().disabled).toBe(true);
   });
 
   it('envia os campos aparados com o contexto, agradece e volta ao Perfil', async () => {
     const { digitar, escolher, submeter } = abrir('/historico');
     digitar('input[name=nome]', '  Samuel S.  ');
-    escolher('MELHORIA');
+    escolher('Sugestão de melhoria');
     digitar('textarea', '  Mostrar o volume por semana  ');
 
     await submeter();
@@ -101,7 +117,7 @@ describe('FeedbackTela', () => {
 
   it('sem a tela anterior, o contexto vai com tela nula', async () => {
     const { digitar, escolher, submeter } = abrir();
-    escolher('OUTRO');
+    escolher('Outro');
     digitar('textarea', 'Uma dúvida sobre o app');
     await submeter();
     expect(enviar.mock.calls[0][0].tela).toBeNull();
@@ -110,7 +126,7 @@ describe('FeedbackTela', () => {
   it('sem rede: avisa e mantém o texto no formulário', async () => {
     const { tela, digitar, escolher, submeter, botao } = abrir();
     resposta = () => throwError(() => new HttpErrorResponse({ status: 0 }));
-    escolher('BUG');
+    escolher('Reportar bug');
     digitar('textarea', 'O treino travou ao concluir');
 
     await submeter();
@@ -124,7 +140,7 @@ describe('FeedbackTela', () => {
   it('429: avisa que o limite do dia acabou', async () => {
     const { tela, digitar, escolher, submeter } = abrir();
     resposta = () => throwError(() => new HttpErrorResponse({ status: 429 }));
-    escolher('BUG');
+    escolher('Reportar bug');
     digitar('textarea', 'O treino travou ao concluir');
 
     await submeter();

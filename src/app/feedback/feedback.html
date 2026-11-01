@@ -18,19 +18,35 @@
       </span>
     </label>
 
-    <label class="campo">
-      <span class="rotulo suave">Categoria</span>
-      <span class="entrada">
-        <span class="icone" aria-hidden="true">{{ icone() }}</span>
-        <select name="categoria" (change)="escolherCategoria($event)">
-          <option value="" [selected]="categoria() === null">Selecione…</option>
-          @for (c of categorias; track c.valor) {
-            <option [value]="c.valor" [selected]="categoria() === c.valor">{{ c.rotulo }}</option>
-          }
-        </select>
-        <span class="icone seta" aria-hidden="true">expand_more</span>
-      </span>
-    </label>
+    <div class="campo">
+      <span class="rotulo suave" id="rotulo-categoria">Categoria</span>
+      <!-- Dropdown próprio: o <select> nativo abre o diálogo padrão do Android, fora do visual do app. -->
+      <div class="dropdown" (keydown.escape)="aberto.set(false)">
+        <button type="button" class="gatilho" aria-haspopup="listbox" [attr.aria-expanded]="aberto()"
+                aria-labelledby="rotulo-categoria valor-categoria" (click)="aberto.set(!aberto())">
+          <span class="icone" aria-hidden="true">{{ icone() }}</span>
+          <span class="valor" id="valor-categoria" [class.suave]="!categoria()">{{ rotuloCategoria() }}</span>
+          <span class="icone" aria-hidden="true">{{ aberto() ? 'expand_less' : 'expand_more' }}</span>
+        </button>
+        @if (aberto()) {
+          <div class="fundo" aria-hidden="true" (click)="aberto.set(false)"></div>
+          <ul class="lista" role="listbox" aria-labelledby="rotulo-categoria">
+            @for (c of categorias; track c.valor) {
+              <li>
+                <button type="button" class="opcao" role="option" [attr.aria-selected]="categoria() === c.valor"
+                        [class.sel]="categoria() === c.valor" (click)="escolherCategoria(c.valor)">
+                  <span class="icone" aria-hidden="true">{{ c.icone }}</span>
+                  <span class="valor">{{ c.rotulo }}</span>
+                  @if (categoria() === c.valor) {
+                    <span class="icone" aria-hidden="true">check</span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
 
     <label class="campo">
       <span class="rotulo suave">Mensagem</span>

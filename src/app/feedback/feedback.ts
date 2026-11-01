@@ -52,7 +52,10 @@ export class FeedbackTela implements OnInit {
   /** A tela de onde a pessoa chegou ao Perfil (vem no state da navegação; some se a página for recarregada). */
   private readonly tela: string | null = (history.state?.tela as string | undefined) ?? null;
 
-  protected readonly icone = computed(() => CATEGORIAS.find(c => c.valor === this.categoria())?.icone ?? 'chat');
+  protected readonly aberto = signal(false);
+  private readonly escolhida = computed(() => CATEGORIAS.find(c => c.valor === this.categoria()));
+  protected readonly icone = computed(() => this.escolhida()?.icone ?? 'chat');
+  protected readonly rotuloCategoria = computed(() => this.escolhida()?.rotulo ?? 'Selecione…');
   protected readonly tamanho = computed(() => this.mensagem().trim().length);
   protected readonly nomeValido = computed(() => this.nome().trim().length > 0);
   protected readonly mensagemValida = computed(() => this.tamanho() >= MENSAGEM_MIN && this.tamanho() <= MENSAGEM_MAX);
@@ -62,8 +65,9 @@ export class FeedbackTela implements OnInit {
     this.perfil.obter().subscribe({ next: p => { if (!this.nome()) this.nome.set(p.nome); }, error: () => {} });
   }
 
-  protected escolherCategoria(evento: Event): void {
-    this.categoria.set(((evento.target as HTMLSelectElement).value || null) as CategoriaFeedback | null);
+  protected escolherCategoria(valor: CategoriaFeedback): void {
+    this.categoria.set(valor);
+    this.aberto.set(false);
   }
 
   protected async enviar(): Promise<void> {
