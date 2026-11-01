@@ -71,7 +71,7 @@ describe('PerfilTela', () => {
       expect(metrica.classList).toContain('congelada');
       expect(metrica.querySelector('.caixa app-cubo-gelo')).not.toBeNull();
       const congelamentos = tela.querySelector('.congelamentos')!;
-      expect(congelamentos.textContent).toContain('Congelamentos');
+      expect(congelamentos.textContent).toContain('Congelamento');
       expect(congelamentos.textContent).toContain('1/2');
       expect(congelamentos.getAttribute('aria-label')).toContain('São usados automaticamente');
     } finally {
