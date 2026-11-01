@@ -57,7 +57,7 @@ export interface RegistrarPesoDados {
     }
     .cabecalho { display: flex; align-items: center; justify-content: space-between; }
     .cabecalho .titulo-sm { display: flex; align-items: center; gap: 8px; }
-    .cabecalho .titulo-sm .icone { color: var(--c-primaria); }
+    .cabecalho .titulo-sm .icone { color: var(--c-destaque); }
     .campo { display: flex; flex-direction: column; gap: 4px; }
     input {
       width: 100%;
@@ -70,7 +70,7 @@ export interface RegistrarPesoDados {
       font: 400 16px/24px 'Inter', sans-serif;
       color-scheme: dark;
     }
-    input:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-3); }
+    input:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-3); }
     input::placeholder { color: var(--c-texto-2); opacity: 0.6; }
     .dica { font-size: 12px; line-height: 16px; }
     .erro { color: var(--c-erro); }

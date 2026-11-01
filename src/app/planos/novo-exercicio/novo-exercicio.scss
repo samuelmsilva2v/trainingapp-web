@@ -24,7 +24,7 @@ input, select {
   background: var(--c-sup-0);
   color: var(--c-texto);
   font: 400 16px/24px 'Inter', sans-serif;
-  &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-3); }
+  &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-3); }
   &::placeholder { color: var(--c-texto-2); opacity: 0.6; }
 }
 

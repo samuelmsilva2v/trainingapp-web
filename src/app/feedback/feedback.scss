@@ -9,9 +9,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(18, 20, 22, 0.85);
+  background: color-mix(in srgb, var(--c-fundo) 85%, transparent);
   backdrop-filter: blur(20px);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
 }
 
 .pagina { max-width: 640px; margin: 0 auto; padding: 80px 16px 32px; display: flex; flex-direction: column; gap: 16px; }
@@ -23,7 +23,7 @@
   padding: 16px;
   border-radius: var(--r-md);
   background: var(--c-sup-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -54,7 +54,7 @@
   border-radius: var(--r-sm);
   background: var(--c-sup-3);
   color: var(--c-texto);
-  &:focus-visible, &[aria-expanded='true'] { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+  &:focus-visible, &[aria-expanded='true'] { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 // Tocar fora fecha a lista.
 .fundo { position: fixed; inset: 0; z-index: 10; }
@@ -67,7 +67,7 @@
   list-style: none;
   border-radius: var(--r-md);
   background: var(--c-sup-4);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--c-sombra) 50%, transparent);
 }
 .opcao {
   min-height: var(--alvo);
@@ -76,7 +76,7 @@
   background: transparent;
   color: var(--c-texto);
   &:hover, &:focus-visible { background: var(--c-sup-3); outline: none; }
-  &.sel { color: var(--c-primaria); .icone { color: var(--c-primaria); } }
+  &.sel { color: var(--c-destaque); .icone { color: var(--c-destaque); } }
 }
 
 input, textarea {
@@ -86,7 +86,7 @@ input, textarea {
   background: var(--c-sup-3);
   color: var(--c-texto);
   font: 400 16px/24px 'Inter', sans-serif;
-  &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+  &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 input { height: 48px; padding: 0 14px 0 44px; }
 .area { position: relative; display: block; }

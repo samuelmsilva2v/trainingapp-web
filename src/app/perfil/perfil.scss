@@ -12,24 +12,24 @@
   padding: 16px;
   border-radius: var(--r-md);
   background: var(--c-sup-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 .card-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-primaria); font-size: 20px; } .icone.laranja { color: var(--c-secundaria); } }
+.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-destaque); font-size: 20px; } .icone.laranja { color: var(--c-secundaria); } }
 .texto { display: flex; flex-direction: column; min-width: 0; }
 .caixa { flex-shrink: 0; width: 36px; height: 36px; border-radius: var(--r-sm); background: var(--c-sup-3); display: flex; align-items: center; justify-content: center; .icone { font-size: 20px; } }
 
 /* Card do usuário: sem foto, só nome, título e progresso. */
-.usuario::before { content: ''; position: absolute; top: -40px; right: -40px; width: 144px; height: 144px; border-radius: 50%; background: rgba(202, 243, 0, 0.06); filter: blur(24px); pointer-events: none; }
+.usuario::before { content: ''; position: absolute; top: -40px; right: -40px; width: 144px; height: 144px; border-radius: 50%; background: color-mix(in srgb, var(--c-primaria) 6%, transparent); filter: blur(24px); pointer-events: none; }
 .identidade { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; p { margin: 0; } }
 .nome { margin: 0; font: 600 20px/28px var(--fonte-titulo); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .metricas { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 8px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
 .metrica { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.fogo { color: var(--c-secundaria); }
+.fogo { color: var(--c-secundaria-texto); }
 .congelada .fogo, .congelada .valor, .gelo { color: var(--c-gelo); }
 .congelamentos {
   padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
@@ -37,11 +37,11 @@
 }
 .metrica .rotulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .metrica.inteira { grid-column: 1 / -1; }
-.raio { color: var(--c-primaria); }
+.raio { color: var(--c-destaque); }
 .valor { font: 700 14px/20px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .xp { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 4px; }
 .xp-topo { display: flex; justify-content: space-between; gap: 8px; font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; }
-.destaque { color: var(--c-primaria); }
+.destaque { color: var(--c-destaque); }
 .barra { height: 6px; border-radius: 9999px; background: var(--c-sup-4); overflow: hidden; span { display: block; height: 100%; border-radius: inherit; background: var(--c-primaria); } }
 
 /* Preferências */
@@ -58,7 +58,7 @@ input {
   background: var(--c-sup-3);
   color: var(--c-texto);
   font: 400 16px/24px 'Inter', sans-serif;
-  &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+  &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 
 .tema { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--r-sm); background: var(--c-sup-3); }
@@ -83,10 +83,10 @@ input {
 .email { overflow-wrap: anywhere; }
 .campos { display: flex; flex-direction: column; gap: 12px; }
 .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.acao.perigo .legenda-forte { color: #ff4d4d; }
-.exclusao { padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); box-shadow: inset 0 0 0 1px rgba(255, 77, 77, 0.4); display: flex; flex-direction: column; gap: 12px; }
-.exclusao-titulo { margin: 0; font: 700 14px/20px 'Inter', sans-serif; color: #ff4d4d; }
-.btn-excluir { background: #93000a; color: #ffdad6; &:hover:not(:disabled) { background: #b3000f; } }
+.acao.perigo .legenda-forte { color: var(--c-perigo); }
+.exclusao { padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-perigo) 40%, transparent); display: flex; flex-direction: column; gap: 12px; }
+.exclusao-titulo { margin: 0; font: 700 14px/20px 'Inter', sans-serif; color: var(--c-perigo); }
+.btn-excluir { background: var(--c-perigo-fundo); color: var(--c-sobre-perigo); &:hover:not(:disabled) { background: var(--c-perigo-fundo-hover); } }
 
 /* Dados do treino */
 .acao {
@@ -106,7 +106,7 @@ input {
   .suave { font-size: 11px; line-height: 14px; }
   &:disabled { cursor: default; }
 }
-.breve { flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; background: var(--c-secundaria); color: #561f00; font: 700 10px/14px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+.breve { flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; background: var(--c-secundaria); color: var(--c-sobre-secundaria); font: 700 10px/14px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
 
 /* Conquistas: dropdown */
 .conquistas-card { gap: 12px; }
@@ -123,7 +123,7 @@ input {
   text-align: left;
   .titulo { flex: 1; }
 }
-.contagem { padding: 2px 10px; border-radius: 9999px; background: var(--c-sup-4); color: var(--c-primaria); font: 700 12px/16px 'Inter', sans-serif; }
+.contagem { padding: 2px 10px; border-radius: 9999px; background: var(--c-sup-4); color: var(--c-destaque); font: 700 12px/16px 'Inter', sans-serif; }
 /* Uma linha por família (mock do Stitch aprovado na web#36): próxima faixa, bolinhas, barra com unidade, selo "Completa". */
 .familias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .familia { display: flex; flex-direction: column; gap: 8px; padding: 14px 0; border-top: 1px solid var(--c-sup-4); }
@@ -135,26 +135,26 @@ input {
 .bolinhas { display: flex; gap: 6px; padding-top: 4px; flex-shrink: 0; }
 .bolinha { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--c-sup-4); box-sizing: border-box; }
 .bolinha.cheia { background: var(--c-primaria); border-color: var(--c-primaria); }
-.selo-completa { flex-shrink: 0; padding: 2px 10px; border-radius: 9999px; border: 1px solid var(--c-secundaria); background: rgba(254, 107, 0, 0.15); color: var(--c-secundaria); font: 700 10px/16px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+.selo-completa { flex-shrink: 0; padding: 2px 10px; border-radius: 9999px; border: 1px solid var(--c-secundaria); background: color-mix(in srgb, var(--c-secundaria) 15%, transparent); color: var(--c-secundaria-texto); font: 700 10px/16px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
 .icone.unica { font-size: 22px; color: var(--c-texto-2); flex-shrink: 0; }
 .icone.unica.ganha { color: var(--c-secundaria); }
 .barra-familia { height: 4px; border-radius: 9999px; background: var(--c-sup-4); overflow: hidden; span { display: block; height: 100%; background: var(--c-primaria); } }
 .progresso-familia { align-self: flex-end; font-size: 12px; }
 .faixas { list-style: none; margin: 4px 0 0; padding: 8px 12px; border-radius: var(--r-md); background: var(--c-sup-3); display: flex; flex-direction: column; gap: 10px;
   li { display: flex; align-items: center; gap: 10px; opacity: 0.6; }
-  li.ganha { opacity: 1; .icone { color: var(--c-primaria); } }
+  li.ganha { opacity: 1; .icone { color: var(--c-destaque); } }
   .texto { display: flex; flex-direction: column; gap: 2px; }
 }
 
 /* Notificações: cada interruptor num bloco, com as opções logo abaixo quando ligado. */
 .notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
-.frequencias { grid-template-columns: repeat(3, 1fr); }
+.frequencias, .temas { grid-template-columns: repeat(3, 1fr); }
 
 // Desafios da semana (api#38): mesma lista das conquistas; o cumprido fica aceso.
 .desafios-card { gap: 12px; }
 .desafios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;
   li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--c-sup-3); }
-  li.cumprido .icone { color: var(--c-primaria); }
+  li.cumprido .icone { color: var(--c-destaque); }
   .texto { display: flex; flex-direction: column; gap: 2px; }
   .nome-desafio { font-weight: 600; }
 }

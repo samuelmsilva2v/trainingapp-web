@@ -6,14 +6,16 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#121416">
+  <!-- Tema escolhido (core/tema.ts) antes da primeira pintura, para não piscar o escuro. -->
+  <script>try { document.documentElement.dataset.tema = localStorage.getItem('trainingapp.tema') || 'escuro'; } catch (e) {}</script>
   <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="16x16 32x32 48x48">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
   <app-root>
     <!-- Splash: aparece antes do Angular subir e some sozinha quando ele desenha a primeira tela (o raio de assets/logo.svg). -->
-    <div role="status" aria-label="Abrindo o TrainingApp" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#121416">
-      <svg viewBox="0 0 24 24" width="96" height="96" aria-hidden="true"><path fill="#caf300" d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg>
+    <div role="status" aria-label="Abrindo o TrainingApp" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--c-fundo,#121416)">
+      <svg viewBox="0 0 24 24" width="96" height="96" aria-hidden="true"><path style="fill:var(--c-destaque,#caf300)" d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg>
     </div>
   </app-root>
 </body>

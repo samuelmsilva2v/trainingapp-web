@@ -7,6 +7,7 @@ import { IntegracaoAndroid } from './core/android';
 import { AuthStore } from './core/auth';
 import { autenticacaoInterceptor } from './core/auth.interceptor';
 import { NO_APP } from './core/cofre';
+import { iniciarTema } from './core/tema';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([autenticacaoInterceptor])),
     // Antes da primeira rota: restaura o login pelo cookie, para o guard já saber se há sessão.
     provideAppInitializer(() => inject(AuthStore).iniciar()),
+    provideAppInitializer(iniciarTema),
     provideAppInitializer(() => {
       if (NO_APP) inject(IntegracaoAndroid).iniciar();
     }),

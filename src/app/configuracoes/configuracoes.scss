@@ -9,9 +9,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(18, 20, 22, 0.85);
+  background: color-mix(in srgb, var(--c-fundo) 85%, transparent);
   backdrop-filter: blur(20px);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
 }
 
 .pagina { max-width: 640px; margin: 0 auto; padding: 80px 16px 32px; display: flex; flex-direction: column; gap: 16px; }

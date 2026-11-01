@@ -13,6 +13,7 @@ import { formatarKg } from '../core/formatos';
 import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
+import { Tema, lerTema, salvarTema } from '../core/tema';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -80,6 +81,12 @@ export class PerfilTela implements OnInit {
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
   protected readonly frequenciasPeso = [7, 15, 30];
+  protected readonly temas: readonly { valor: Tema; rotulo: string; icone: string }[] = [
+    { valor: 'escuro', rotulo: 'Escuro', icone: 'dark_mode' },
+    { valor: 'claro', rotulo: 'Claro', icone: 'light_mode' },
+    { valor: 'sistema', rotulo: 'Sistema', icone: 'brightness_auto' },
+  ];
+  protected readonly tema = signal<Tema>(lerTema());
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
@@ -126,6 +133,11 @@ export class PerfilTela implements OnInit {
   }
 
   /** Salva na hora, com o nome já salvo: o que está sendo digitado no campo de nome continua lá. */
+  protected escolherTema(tema: Tema): void {
+    salvarTema(tema);
+    this.tema.set(tema);
+  }
+
   protected mudarLembretePeso(dias: number | null): void {
     const salvo = this.salvo();
     if (!salvo || salvo.lembretePesoDias === dias) return;

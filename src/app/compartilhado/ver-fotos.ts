@@ -1,5 +1,8 @@
 import { Component, ElementRef, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { NO_APP } from '../core/cofre';
+import { aplicarTema } from '../core/tema';
 
 export interface VerFotosDados {
   nome: string;
@@ -17,7 +20,7 @@ const DESLIZE_MIN = 50;
 /** Abre as fotos do exercício em tela cheia (o voltar do Android fecha, como qualquer diálogo). */
 export function verFotos(dialogo: MatDialog, dados: VerFotosDados): void {
   if (!dados.fotos.length) return;
-  dialogo.open(VerFotos, {
+  const ref = dialogo.open(VerFotos, {
     data: dados,
     panelClass: 'dialogo-fotos',
     width: '100vw',
@@ -25,6 +28,11 @@ export function verFotos(dialogo: MatDialog, dados: VerFotosDados): void {
     maxWidth: '100vw',
     maxHeight: '100dvh',
   });
+  // Fundo preto também no tema claro: ícones claros nas barras do Android enquanto estiver aberto.
+  if (NO_APP) {
+    void SystemBars.setStyle({ style: SystemBarsStyle.Dark }).catch(() => undefined);
+    ref.afterClosed().subscribe(() => aplicarTema());
+  }
 }
 
 /** Visualizador das fotos: deslizar ou setas trocam a foto; pinça, roda do mouse, dois toques ou clique dão zoom. */

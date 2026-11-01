@@ -98,15 +98,17 @@
 
       <div class="campo">
         <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
-        <div class="tema" role="group" aria-labelledby="rotulo-tema">
-          <button type="button" class="opcao sel" aria-pressed="true">
-            <span class="icone" aria-hidden="true">dark_mode</span> Escuro
-          </button>
-          <button type="button" class="opcao" aria-pressed="false" disabled>
-            <span class="icone" aria-hidden="true">light_mode</span> Claro
-          </button>
+        <div class="tema temas" role="group" aria-labelledby="rotulo-tema">
+          @for (t of temas; track t.valor) {
+            <button type="button" class="opcao" [class.sel]="tema() === t.valor" [attr.aria-pressed]="tema() === t.valor"
+                    (click)="escolherTema(t.valor)">
+              <span class="icone" aria-hidden="true">{{ t.icone }}</span> {{ t.rotulo }}
+            </button>
+          }
         </div>
-        <p class="suave dica">O tema claro chega em breve.</p>
+        @if (tema() === 'sistema') {
+          <p class="suave dica">Segue o tema claro ou escuro do aparelho.</p>
+        }
       </div>
 
       <div class="campos" role="group" aria-labelledby="rotulo-notificacoes">

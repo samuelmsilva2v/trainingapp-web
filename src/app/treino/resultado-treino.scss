@@ -1,8 +1,8 @@
 .corpo { padding: 24px; display: flex; flex-direction: column; gap: 20px; max-height: 85dvh; overflow-y: auto; }
 section { display: flex; flex-direction: column; gap: 8px; }
-.grande { font: 800 40px/48px var(--fonte-titulo); color: var(--c-primaria); display: flex; align-items: center; gap: 8px; margin: 0; }
+.grande { font: 800 40px/48px var(--fonte-titulo); color: var(--c-destaque); display: flex; align-items: center; gap: 8px; margin: 0; }
 .detalhe { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; li { display: flex; justify-content: space-between; color: var(--c-texto-2); }
-  li.xp-bonus { color: var(--c-secundaria); }
+  li.xp-bonus { color: var(--c-secundaria-texto); }
   li.total { color: var(--c-texto); font-weight: 700; } }
 .sem-xp { margin: 0; }
 .subiu { margin: 0; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-primaria); color: var(--c-sobre-primaria); font-weight: 700; text-align: center; }
@@ -29,7 +29,7 @@ section { display: flex; flex-direction: column; gap: 8px; }
 
 // Mudanças no plano (web#48, Stitch "Treino concluído"): lista do que mudou e a pergunta; ou a linha de confirmação.
 .mudancas { padding: 16px; border-radius: var(--r-md); background: var(--c-sup-2); gap: 12px; p { margin: 0; } }
-.mudancas-titulo { margin: 0; display: flex; align-items: center; gap: 8px; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-primaria); font-size: 20px; } }
+.mudancas-titulo { margin: 0; display: flex; align-items: center; gap: 8px; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-destaque); font-size: 20px; } }
 .lista-mudancas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;
   li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-sup-3); font-size: 14px; line-height: 20px; }
   .icone { font-size: 18px; color: var(--c-texto-2); flex-shrink: 0; }
@@ -37,4 +37,4 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .acoes { display: flex; gap: 8px; .btn-primario { flex: 1; } }
 .btn-texto { background: transparent; color: var(--c-texto-2); }
 .erro { color: var(--c-erro); }
-.plano-salvo { margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-2); font-size: 14px; line-height: 20px; .icone { color: var(--c-primaria); font-size: 20px; flex-shrink: 0; } }
+.plano-salvo { margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-2); font-size: 14px; line-height: 20px; .icone { color: var(--c-destaque); font-size: 20px; flex-shrink: 0; } }

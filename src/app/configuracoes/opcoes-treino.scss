@@ -5,13 +5,13 @@
   padding: 16px;
   border-radius: var(--r-md);
   background: var(--c-sup-2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 .card-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-primaria); font-size: 20px; } }
+.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-destaque); font-size: 20px; } }
 
 .campo { display: flex; flex-direction: column; gap: 6px; }
 .legenda { font: 600 12px/16px 'Inter', sans-serif; color: var(--c-texto-2); }
@@ -25,7 +25,7 @@ input {
   background: var(--c-sup-3);
   color: var(--c-texto);
   font: 400 16px/24px 'Inter', sans-serif;
-  &:focus { outline: 2px solid var(--c-primaria); background: var(--c-sup-4); }
+  &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 
 .tema { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--r-sm); background: var(--c-sup-3); }

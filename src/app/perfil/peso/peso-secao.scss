@@ -26,7 +26,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 .grade { stroke: var(--c-sup-4); stroke-width: 1; }
 .rotulo-eixo { fill: var(--c-texto-2); font: 400 10px 'Inter', sans-serif; }
 .ponto { fill: var(--c-secundaria); stroke: var(--c-sup-1); stroke-width: 1.5; }
-.linha-pesos { fill: none; stroke: var(--c-primaria); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.linha-pesos { fill: none; stroke: var(--c-destaque); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .tendencia { fill: none; stroke: var(--c-texto-2); stroke-width: 1.5; stroke-dasharray: 4 4; stroke-linecap: round; }
 .legenda-grafico { display: flex; gap: 16px; font-size: 11px; line-height: 14px; > span { display: inline-flex; align-items: center; gap: 6px; } }
 .marca-pesagem { position: relative; width: 16px; height: 2px; background: var(--c-primaria); &::after { content: ''; position: absolute; left: 4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--c-secundaria); } }

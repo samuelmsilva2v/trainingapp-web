@@ -23,7 +23,7 @@
     border-radius: var(--r-sm);
     background: var(--c-sup-0);
     color: var(--c-texto);
-    &:focus { outline: 2px solid var(--c-primaria); }
+    &:focus { outline: 2px solid var(--c-destaque); }
   }
 }
 
@@ -91,7 +91,7 @@ button.miniatura { padding: 0; border: 0; }
 .nome { font: 600 16px/24px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { padding: 2px 8px; border-radius: 4px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }
-.tag.meu { background: rgba(254, 107, 0, 0.15); color: var(--c-secundaria); }
+.tag.meu { background: color-mix(in srgb, var(--c-secundaria) 15%, transparent); color: var(--c-secundaria-texto); }
 .mais {
   flex-shrink: 0;
   width: 48px;
