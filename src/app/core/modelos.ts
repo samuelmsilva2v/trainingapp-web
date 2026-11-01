@@ -265,6 +265,9 @@ export interface Gamificacao {
   xpProximoNivel: number;
   streakAtual: number;
   melhorStreak: number;
+  /** Congelamentos guardados (0 a 2) e se hoje a sequência está coberta por um; ausentes em API antiga. */
+  congelamentos?: number;
+  congelada?: boolean;
   treinos: number;
   recordes: number;
   treinouHoje: boolean;

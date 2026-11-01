@@ -55,6 +55,28 @@ describe('PerfilTela', () => {
     expect(tela.querySelector('select')).toBeNull();
   });
 
+  it('sequência: chama e 0/2 sem congelamento; gelo azul e o contador quando congelada', () => {
+    let { tela } = abrir();
+    let metrica = tela.querySelector('.metrica')!;
+    expect(metrica.classList).not.toContain('congelada');
+    expect(metrica.querySelector('.caixa')!.textContent).toContain('local_fire_department');
+    expect(metrica.querySelector('.congelamentos')!.textContent).toContain('0/2');
+
+    TestBed.resetTestingModule();
+    Object.assign(gamificacao, { congelada: true, congelamentos: 1 });
+    try {
+      ({ tela } = abrir());
+      metrica = tela.querySelector('.metrica')!;
+      expect(metrica.classList).toContain('congelada');
+      expect(metrica.querySelector('.caixa')!.textContent).toContain('ac_unit');
+      expect(metrica.querySelector('.congelamentos')!.textContent).toContain('1/2');
+      expect(metrica.querySelector('.congelamentos')!.getAttribute('aria-label')).toContain('São usados automaticamente');
+    } finally {
+      delete gamificacao.congelada;
+      delete gamificacao.congelamentos;
+    }
+  });
+
   it('desafios da semana: progresso, cumprido e quantos dias faltam', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(2026, 9, 28, 12)); // quarta 28/10

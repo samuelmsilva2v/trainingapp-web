@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { AuthApi, PerfilApi, ProvaDeIdentidade, mensagemDeErro } from '../core/api';
 import { Falha, falhaDe } from '../core/falha';
@@ -24,7 +25,7 @@ const TITULO_PADRAO = 'Praticante de musculação';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet],
+  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -37,6 +38,8 @@ export class PerfilTela implements OnInit {
   protected readonly gamificacao = inject(GamificacaoStore);
   protected readonly formatar = formatarKg;
   protected readonly titulo = TITULO_PADRAO;
+  protected readonly regraCongelamento =
+    'Congelamentos mantêm sua sequência por 2 dias quando ela ia quebrar. São usados automaticamente. Você ganha um com 7 dias de sequência, e o segundo com mais 14. Máximo de 2.';
 
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);

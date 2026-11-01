@@ -26,12 +26,17 @@
 
       @if (gamificacao.dados(); as g) {
         <div class="metricas">
-          <div class="metrica">
-            <span class="caixa fogo"><span class="icone" aria-hidden="true">local_fire_department</span></span>
+          <div class="metrica" [class.congelada]="g.congelada">
+            <span class="caixa fogo"><span class="icone" aria-hidden="true">{{ g.congelada ? 'ac_unit' : 'local_fire_department' }}</span></span>
             <span class="texto">
               <span class="rotulo suave">Sequência</span>
               <span class="valor num">{{ g.streakAtual }} {{ g.streakAtual === 1 ? 'dia' : 'dias' }}</span>
             </span>
+            <button type="button" class="congelamentos num" #dica="matTooltip" (click)="dica.show()"
+              [attr.aria-label]="'Congelamentos: ' + (g.congelamentos ?? 0) + ' de 2. ' + regraCongelamento"
+              [matTooltip]="regraCongelamento">
+              <span class="icone" aria-hidden="true">ac_unit</span>{{ g.congelamentos ?? 0 }}/2
+            </button>
           </div>
           <div class="metrica">
             <span class="caixa raio"><span class="icone" aria-hidden="true">bolt</span></span>

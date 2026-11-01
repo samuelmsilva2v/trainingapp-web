@@ -11,6 +11,7 @@
 }
 .streak .icone { color: var(--c-texto-2); }
 .streak.viva .icone { color: var(--c-secundaria); }
+.streak.congelada, .streak.congelada .icone { color: var(--c-gelo); }
 .nivel .icone { color: var(--c-primaria); }
 
 .estado, .vazio { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }

@@ -4,8 +4,8 @@
 @let g = gamificacao.dados();
 @let sequencia = g?.streakAtual ?? 0;
 <section class="status" aria-label="Seu progresso">
-  <span class="chip-status streak" [class.viva]="sequencia > 0">
-    <span class="icone cheio" aria-hidden="true">local_fire_department</span>
+  <span class="chip-status streak" [class.viva]="sequencia > 0" [class.congelada]="g?.congelada">
+    <span class="icone cheio" aria-hidden="true">{{ g?.congelada ? 'ac_unit' : 'local_fire_department' }}</span>
     {{ sequencia === 0 ? 'Sem sequência' : sequencia + (sequencia === 1 ? ' dia de sequência' : ' dias de sequência') }}
   </span>
   <span class="chip-status nivel">
