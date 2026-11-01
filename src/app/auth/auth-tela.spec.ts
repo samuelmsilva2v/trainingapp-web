@@ -46,11 +46,11 @@ describe('AuthTela', () => {
 
   beforeEach(() => vi.clearAllMocks());
 
-  it('entrar: segue o design do Stitch (Tank Top Protocol, sem Apple nem convidado) e leva a esqueci a senha e ao cadastro', () => {
+  it('entrar: segue o design do Stitch (Gym Rat Protocol, sem Apple nem convidado) e leva a esqueci a senha e ao cadastro', () => {
     const { tela } = abrir('entrar');
     const texto = tela.textContent ?? '';
 
-    expect(tela.querySelector('.selo')!.textContent).toContain('Tank Top Protocol');
+    expect(tela.querySelector('.selo')!.textContent).toContain('Gym Rat Protocol');
     expect(tela.querySelector('.nome')!.textContent).toBe('TrainingApp');
     expect(texto).not.toContain('Heavy Iron');
     expect(texto).not.toContain('Apple');
@@ -167,7 +167,7 @@ describe('AuthTela', () => {
     expect(tela.querySelector('h1')!.textContent).toBe('Criar nova conta');
     expect(texto).toContain('Registre cada quilo, supere suas cargas e atinja novos recordes pessoais.');
     expect(texto).not.toContain('Iron Pulse');
-    expect(texto).not.toContain('Tank Top');
+    expect(texto).not.toContain('Gym Rat');
     expect(texto).not.toContain('Apple');
     expect(texto).not.toContain('Sincronização');
     expect(texto).not.toContain('Desejo receber'); // sem o checkbox de novidades
