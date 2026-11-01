@@ -33,8 +33,9 @@
 .congelada .fogo, .congelada .valor, .gelo { color: var(--c-gelo); }
 .congelamentos {
   padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
-  .rotulo { display: inline-flex; align-items: center; gap: 4px; .icone { font-size: 14px; } }
+  .valor { display: inline-flex; align-items: center; gap: 4px; .icone { font-size: 16px; } }
 }
+.metrica .rotulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .metrica.inteira { grid-column: 1 / -1; }
 .raio { color: var(--c-primaria); }
 .valor { font: 700 14px/20px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
