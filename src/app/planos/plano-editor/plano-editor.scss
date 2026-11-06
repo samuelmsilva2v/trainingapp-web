@@ -148,6 +148,9 @@ input.valor {
   &::placeholder { color: var(--c-texto-2); }
   &:focus-visible { outline: 2px solid var(--c-destaque); }
 }
+/* Carga alvo: ocupa o espaço entre os botões e encolhe a fonte com 4+ caracteres ("302,5", "999,99"), sem corte (web#65). */
+input.valor.carga { flex: 1 1 0; width: auto; }
+input.valor.carga.longa { font-size: 17px; }
 .faixa { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; input.valor { width: 100%; } small { font: 600 10px/12px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; } .valor { font-size: 20px; line-height: 24px; } }
 
 /* Repetições (mín/máx) em caixas embutidas e descanso em linha, como no Stitch. */

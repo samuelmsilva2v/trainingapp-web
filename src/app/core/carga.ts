@@ -2,7 +2,8 @@
 export const PASSOS_CARGA = [1, 2.5, 5] as const;
 export type PassoCarga = (typeof PASSOS_CARGA)[number];
 export const PASSO_PADRAO: PassoCarga = 2.5;
-export const CARGA_MAX = 9999.99;
+/** Teto plausível (web#65): o banco aceita até 9999,99, mas nada no app passa de 1.000 kg. */
+export const CARGA_MAX = 1000;
 
 const CHAVE_PASSO = 'trainingapp.passoCarga';
 

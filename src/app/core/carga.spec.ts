@@ -45,6 +45,6 @@ describe('carga', () => {
     expect(limparCarga(21.25)).toBe(21.25);
     expect(limparCarga(11.256)).toBe(11.26);
     expect(limparCarga(-3)).toBe(0);
-    expect(limparCarga(20000)).toBe(9999.99);
+    expect(limparCarga(20000)).toBe(1000);
   });
 });

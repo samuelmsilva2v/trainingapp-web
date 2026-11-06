@@ -17,11 +17,11 @@ const item = {
 } as ItemPlano;
 
 describe('definirCampo', () => {
-  it('guarda a carga digitada com até 2 casas, como no treino, e limita a 9999,99', () => {
+  it('guarda a carga digitada com até 2 casas, como no treino, e limita a 1.000 kg', () => {
     expect(definirCampo(item, 'cargaAlvo', 47.5).cargaAlvo).toBe(47.5);
     expect(definirCampo(item, 'cargaAlvo', 21.25).cargaAlvo).toBe(21.25);
     expect(definirCampo(item, 'cargaAlvo', 11.256).cargaAlvo).toBe(11.26);
-    expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(9999.99);
+    expect(definirCampo(item, 'cargaAlvo', 20000).cargaAlvo).toBe(1000);
   });
 
   it('etapas do drop-set contam a primeira: 2 a 4, gravadas como drops (só o interruptor volta a 0)', () => {
