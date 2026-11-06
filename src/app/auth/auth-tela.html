@@ -90,7 +90,7 @@
             <div class="legenda-linha">
               <label class="legenda" for="campo-senha">{{ modo === 'redefinir' ? 'Nova senha' : modo === 'entrar' ? 'Senha de acesso' : 'Senha' }}</label>
               @if (modo === 'entrar') {
-                <a class="esqueceu" routerLink="/esqueci-senha">Esqueceu a senha?</a>
+                <a class="esqueceu" routerLink="/esqueci-senha" [state]="{ email: email() }">Esqueceu a senha?</a>
               }
             </div>
             <div class="entrada">
@@ -176,7 +176,7 @@
       <p class="ja-tem-conta">Já possui uma conta? <a routerLink="/entrar">Fazer Login</a></p>
     } @else {
       <nav class="links">
-        <a routerLink="/entrar">Voltar ao login</a>
+        <a routerLink="/entrar" [state]="{ email: email() }">Voltar ao login</a>
       </nav>
     }
   </section>

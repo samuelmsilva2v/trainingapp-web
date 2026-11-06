@@ -254,6 +254,20 @@ describe('AuthTela', () => {
     expect(botao.compareDocumentPosition(tela.querySelector('form')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it('o e-mail digitado vai do login para "Esqueci a senha" e volta (web#78)', () => {
+    const entrar = abrir('entrar');
+    entrar.digitar('E-mail', 'ana@teste.com');
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    entrar.tela.querySelector<HTMLAnchorElement>('a.esqueceu')!.click();
+    expect(navegar).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ state: { email: 'ana@teste.com' } }));
+    TestBed.resetTestingModule();
+
+    history.replaceState({ email: 'ana@teste.com' }, '');
+    const esqueci = abrir('esqueci');
+    expect(esqueci.tela.querySelector<HTMLInputElement>('input[type=email]')!.value).toBe('ana@teste.com');
+    history.replaceState(null, '');
+  });
+
   it('esqueci a senha: a resposta é a mesma exista a conta ou não', () => {
     const { tela, digitar, enviar } = abrir('esqueci');
     digitar('E-mail', 'qualquer@teste.com');

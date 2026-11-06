@@ -59,6 +59,9 @@ export class AuthTela implements OnInit {
   });
 
   ngOnInit(): void {
+    // O e-mail digitado vai do login para "Esqueci a senha" e volta (web#78).
+    const emailLevado: unknown = history.state?.email;
+    if ((this.modo === 'entrar' || this.modo === 'esqueci') && typeof emailLevado === 'string') this.email.set(emailLevado);
     if (this.modo === 'confirmar') {
       this.confirmarEmail();
     } else if (this.modo === 'entrar' || this.modo === 'cadastrar') {
