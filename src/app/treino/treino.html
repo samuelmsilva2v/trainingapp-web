@@ -292,8 +292,9 @@
       <span class="rotulo suave">Carga (kg)</span>
       <div class="controle">
         <button type="button" [attr.aria-label]="'Menos ' + kg(passo()) + ' kg'" (click)="ajustarCarga(i, -1)"><span class="icone" aria-hidden="true">remove</span></button>
-        <input class="num" type="number" inputmode="decimal" min="0" step="0.01" aria-label="Carga em quilos"
-               [value]="serie.carga ?? ''" (change)="digitarCarga(i, $event)" />
+        <!-- Texto, não number: o campo numérico do WebView mostra ponto (102.5); aqui a vírgula, como no resto (web#64). -->
+        <input class="num" type="text" inputmode="decimal" aria-label="Carga em quilos"
+               [value]="serie.carga === null ? '' : textoCarga(serie.carga)" (change)="digitarCarga(i, $event)" />
         <button type="button" [attr.aria-label]="'Mais ' + kg(passo()) + ' kg'" (click)="ajustarCarga(i, 1)"><span class="icone" aria-hidden="true">add</span></button>
       </div>
     </div>

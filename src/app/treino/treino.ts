@@ -343,6 +343,11 @@ export class Treino implements OnInit, OnDestroy {
     }));
   }
 
+  /** Carga no campo editável: vírgula decimal e sem separador de milhar, que o `digitarCarga` não leria (102,5). */
+  protected textoCarga(carga: number): string {
+    return String(carga).replace('.', ',');
+  }
+
   protected digitarCarga(serie: number, evento: Event): void {
     const valor = parseFloat((evento.target as HTMLInputElement).value.replace(',', '.'));
     this.editar(serie, s => ({
