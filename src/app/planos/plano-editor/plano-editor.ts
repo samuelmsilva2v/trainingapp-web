@@ -14,7 +14,7 @@ import { lerPassoCarga, limparCarga, passoCarga } from '../../core/carga';
 import { MAX_DROPS, ehPesoCorporal, repsDoDrop } from '../../core/series';
 import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { NovoExercicio } from '../novo-exercicio/novo-exercicio';
-import { SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
+import { DadosSeletor, SeletorExercicio } from '../seletor-exercicio/seletor-exercicio';
 
 const SERIES = { min: 1, max: 20 };
 const REPS = { min: 1, max: 100 };
@@ -179,14 +179,15 @@ export class PlanoEditor implements OnInit {
 
   protected escolherExercicio(): void {
     this.dialogo
-      .open<SeletorExercicio, void, Exercicio>(SeletorExercicio, {
+      .open<SeletorExercicio, DadosSeletor, Exercicio[]>(SeletorExercicio, {
         panelClass: 'dialogo-cheio',
         maxWidth: '100vw',
         width: '100vw',
         height: '100dvh',
+        data: { multiplo: true, noDia: this.dia().exercicios.map(e => e.exercicioId) },
       })
       .afterClosed()
-      .subscribe(exercicio => exercicio && this.incluirExercicio(exercicio));
+      .subscribe(exercicios => exercicios?.forEach(e => this.incluirExercicio(e)));
   }
 
   /** Cria um exercício próprio (folha na base da tela) e já o coloca no dia aberto. */

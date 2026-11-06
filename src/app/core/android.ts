@@ -42,7 +42,10 @@ export class IntegracaoAndroid {
   voltar(podeVoltar: boolean): void {
     const aberto = this.dialogo.openDialogs.at(-1);
     if (aberto) {
-      aberto.close();
+      // Diálogo com regra própria de fechar (ex.: seletor com exercícios marcados pede confirmação).
+      const tela = aberto.componentInstance as { aoVoltar?: () => void } | null;
+      if (tela?.aoVoltar) tela.aoVoltar();
+      else aberto.close();
       return;
     }
     const url = this.router.url.split(/[?#]/)[0];

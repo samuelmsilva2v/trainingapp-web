@@ -10,7 +10,7 @@ vi.mock('@capacitor/app', () => ({ App: { addListener: vi.fn(), exitApp: vi.fn()
 describe('voltar do Android', () => {
   let integracao: IntegracaoAndroid;
   let router: Router;
-  const dialogos: { close: () => void }[] = [];
+  const dialogos: { close: () => void; componentInstance?: unknown }[] = [];
 
   beforeEach(() => {
     dialogos.length = 0;
@@ -32,6 +32,16 @@ describe('voltar do Android', () => {
     integracao.voltar(true);
     expect(fechar).toHaveBeenCalled();
     expect(App.exitApp).not.toHaveBeenCalled();
+  });
+
+  it('diálogo com regra própria (aoVoltar) decide como fechar', () => {
+    em('/planos/1');
+    const fechar = vi.fn();
+    const aoVoltar = vi.fn();
+    dialogos.push({ close: fechar, componentInstance: { aoVoltar } });
+    integracao.voltar(true);
+    expect(aoVoltar).toHaveBeenCalled();
+    expect(fechar).not.toHaveBeenCalled();
   });
 
   it('nas telas iniciais fecha o app; nas outras abas vai para Hoje', () => {

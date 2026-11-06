@@ -6,6 +6,7 @@ import { ExerciciosApi } from '../../core/api';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
 import { verFotos } from '../../compartilhado/ver-fotos';
+import { ConfirmarDados, ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 import { Carregando } from '../../compartilhado/carregando';
 import { Equipamento, Exercicio, GrupoMuscular } from '../../core/modelos';
 import { EQUIPAMENTOS, GRUPOS, rotuloEquipamento, rotuloGrupo } from '../../core/rotulos';
@@ -15,6 +16,10 @@ const LIMITE_EXIBIDO = 100;
 /** Filtro inicial opcional (ex.: trocar exercício no treino abre no grupo muscular do original). */
 export interface DadosSeletor {
   grupo?: GrupoMuscular;
+  /** Marca vários e devolve a lista no "Adicionar (N)", na ordem dos toques (editor de plano, web#70). */
+  multiplo?: boolean;
+  /** Exercícios que já estão no dia aberto: marcar um deles pede confirmação. */
+  noDia?: string[];
 }
 
 @Component({
@@ -25,7 +30,7 @@ export interface DadosSeletor {
 })
 export class SeletorExercicio {
   private readonly api = inject(ExerciciosApi);
-  private readonly ref = inject(MatDialogRef<SeletorExercicio, Exercicio>);
+  private readonly ref = inject(MatDialogRef<SeletorExercicio, Exercicio | Exercicio[]>);
   private readonly dialogo = inject(MatDialog);
   private readonly dados = inject<DadosSeletor | null>(MAT_DIALOG_DATA, { optional: true });
 
@@ -33,6 +38,19 @@ export class SeletorExercicio {
   protected readonly equipamentos = EQUIPAMENTOS;
   protected readonly rotuloGrupo = rotuloGrupo;
   protected readonly rotuloEquipamento = rotuloEquipamento;
+  protected readonly multiplo = !!this.dados?.multiplo;
+  /** Os marcados, na ordem dos toques; sobrevivem a busca e filtros. */
+  protected readonly marcados = signal<Exercicio[]>([]);
+  protected readonly marcadosIds = computed(() => new Set(this.marcados().map(e => e.id)));
+
+  constructor() {
+    if (!this.multiplo) return;
+    // Esc passa pelo fechar(), que confirma o descarte da seleção.
+    this.ref.disableClose = true;
+    this.ref.keydownEvents().subscribe(evento => {
+      if (evento.key === 'Escape') this.fechar();
+    });
+  }
 
   protected readonly busca = signal('');
   protected readonly grupo = signal<GrupoMuscular | null>(this.dados?.grupo ?? null);
@@ -92,10 +110,49 @@ export class SeletorExercicio {
   }
 
   protected escolher(exercicio: Exercicio): void {
-    this.ref.close(exercicio);
+    if (!this.multiplo) {
+      this.ref.close(exercicio);
+      return;
+    }
+    if (this.marcadosIds().has(exercicio.id)) {
+      this.marcados.update(lista => lista.filter(e => e.id !== exercicio.id));
+      return;
+    }
+    const marcar = () => this.marcados.update(lista => [...lista, exercicio]);
+    if (!this.dados?.noDia?.includes(exercicio.id)) {
+      marcar();
+      return;
+    }
+    this.confirmar(
+      { titulo: 'Exercício repetido', mensagem: `${exercicio.nome} já está neste dia. Marcar de novo?`, confirmar: 'Marcar', primario: true },
+      marcar,
+    );
   }
 
+  protected adicionar(): void {
+    this.ref.close(this.marcados());
+  }
+
+  /** Voltar do Android (core/android.ts): mesma regra do X. */
+  aoVoltar(): void {
+    this.fechar();
+  }
+
+  /** X e Esc: com algo marcado, pergunta antes de descartar. */
   protected fechar(): void {
-    this.ref.close();
+    const n = this.marcados().length;
+    if (n === 0) {
+      this.ref.close();
+      return;
+    }
+    const mensagem = n === 1 ? 'O exercício marcado não será adicionado.' : `Os ${n} exercícios marcados não serão adicionados.`;
+    this.confirmar({ titulo: 'Descartar seleção', mensagem, confirmar: 'Descartar' }, () => this.ref.close());
+  }
+
+  private confirmar(dados: ConfirmarDados, acao: () => void): void {
+    this.dialogo
+      .open(ConfirmarDialogo, { panelClass: 'dialogo-confirmar', data: dados })
+      .afterClosed()
+      .subscribe(ok => ok && acao());
   }
 }

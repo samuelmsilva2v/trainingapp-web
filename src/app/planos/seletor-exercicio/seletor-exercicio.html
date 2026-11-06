@@ -1,7 +1,7 @@
 <div class="tela">
   <header class="busca-topo">
     <div class="linha">
-      <h2 class="titulo-sm">Escolher exercício</h2>
+      <h2 class="titulo-sm">{{ multiplo ? 'Adicionar exercícios' : 'Escolher exercício' }}</h2>
       <button type="button" class="btn-icone" aria-label="Fechar" (click)="fechar()">
         <span class="icone" aria-hidden="true">close</span>
       </button>
@@ -48,7 +48,7 @@
       </div>
     } @else {
       @for (e of exibidos(); track e.id) {
-        <div class="item">
+        <div class="item" [class.marcado]="marcadosIds().has(e.id)">
           @if (e.imagens[0]; as foto) {
             <!-- A miniatura abre as fotos; o resto do item escolhe o exercício. -->
             <button type="button" class="miniatura" [attr.aria-label]="'Ver fotos de ' + e.nome" (click)="ampliarFoto(e)">
@@ -58,7 +58,8 @@
           } @else {
             <span class="miniatura"><span class="icone" aria-hidden="true">fitness_center</span></span>
           }
-          <button type="button" class="escolher" (click)="escolher(e)">
+          <button type="button" class="escolher" (click)="escolher(e)"
+                  [attr.aria-pressed]="multiplo ? marcadosIds().has(e.id) : null">
             <span class="texto">
               <span class="nome">{{ e.nome }}</span>
               <span class="tags">
@@ -67,7 +68,7 @@
                 @if (e.personalizado) { <span class="tag meu">Meu</span> }
               </span>
             </span>
-            <span class="mais"><span class="icone" aria-hidden="true">add</span></span>
+            <span class="mais"><span class="icone" aria-hidden="true">{{ marcadosIds().has(e.id) ? 'check' : 'add' }}</span></span>
           </button>
         </div>
       }
@@ -76,4 +77,10 @@
       }
     }
   </div>
+
+  @if (marcados().length > 0) {
+    <div class="rodape">
+      <button type="button" class="btn btn-primario" (click)="adicionar()">Adicionar ({{ marcados().length }})</button>
+    </div>
+  }
 </div>

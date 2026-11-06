@@ -107,3 +107,9 @@ button.miniatura { padding: 0; border: 0; }
 .aviso { text-align: center; padding: 24px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .aviso.erro { color: var(--c-erro); }
 .grande { font-size: 40px; color: var(--c-texto-2); }
+
+.item.marcado {
+  background: color-mix(in srgb, var(--c-primaria) 12%, var(--c-sup-2));
+  .mais { background: var(--c-primaria); color: var(--c-sobre-primaria); }
+}
+.rodape { flex-shrink: 0; padding: 12px 0 16px; .btn { width: 100%; } }
