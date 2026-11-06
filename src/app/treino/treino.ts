@@ -284,7 +284,7 @@ export class Treino implements OnInit, OnDestroy {
 
   // --- séries ---
 
-  /** Carga e reps mudam por aqui, para os drops do bloco seguirem a série (web#63). */
+  /** Carga e reps mudam por aqui, para descerem às séries seguintes (web#67) e aos drops (web#63). */
   private editar(serie: number, mudanca: (s: SerieLocal) => SerieLocal): void {
     this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: editarSerie(e.series, serie, mudanca(e.series[serie])) }));
   }

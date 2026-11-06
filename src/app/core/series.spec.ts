@@ -72,4 +72,14 @@ describe('xpDoTreino', () => {
     expect(valores(com60)).toEqual([[60, 8], [42.5, 10], [35, 12]]); // drop editado fica, e o seguinte segue ele
     expect(valores(editarSerie(com55, 1, { ...com55[1], carga: 20 }))).toEqual([[55, 8], [20, 10], [35, 12]]); // editar o drop não mexe nos outros
   });
+
+  it('carga e reps descem para as séries seguintes não concluídas, mesmo com valor (web#67)', () => {
+    const series = [serie(8, 10, 'NORMAL', true), serie(8, null), serie(8, 12), serie(8, null, 'NORMAL', true), serie(8, null)];
+    const com14 = editarSerie(series, 1, { ...series[1], carga: 14 });
+    expect(valores(com14)).toEqual([[10, 8], [14, 8], [14, 8], [null, 8], [14, 8]]); // anterior e concluída ficam
+    expect(valores(editarSerie(com14, 1, { ...com14[1], reps: 10 }))).toEqual([[10, 8], [14, 10], [14, 10], [null, 8], [14, 10]]);
+    // drop-set: a série seguinte herda e os drops dela seguem a própria série
+    const blocosDrop = [serie(6, null), serie(8, null, 'DROP'), serie(6, null), serie(8, null, 'DROP')];
+    expect(valores(editarSerie(blocosDrop, 0, { ...blocosDrop[0], carga: 50 }))).toEqual([[50, 6], [40, 8], [50, 6], [40, 8]]);
+  });
 });
