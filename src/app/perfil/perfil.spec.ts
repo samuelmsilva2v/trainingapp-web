@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthApi, GamificacaoApi, PerfilApi, PesoApi } from '../core/api';
 import { AuthStore } from '../core/auth';
 import { Gamificacao, Perfil, Peso } from '../core/modelos';
+import { REDUZIR_FOTO } from '../core/foto';
 import { PerfilTela } from './perfil';
 
 const gamificacao: Gamificacao = {
@@ -370,5 +372,101 @@ describe('PerfilTela: peso', () => {
 
     expect(atualizar).toHaveBeenCalledWith({ nome: 'Samuel', lembretePesoDias: 15 });
     expect(opcoes.find(b => b.getAttribute('aria-pressed') === 'true')!.textContent!.trim()).toBe('15 dias');
+  });
+});
+
+describe('PerfilTela: foto do perfil (web#60)', () => {
+  const reduzida = new Blob(['jpeg'], { type: 'image/jpeg' });
+  const reduzirFoto = vi.fn(async (_arquivo: Blob) => reduzida);
+
+  beforeEach(() => {
+    URL.createObjectURL = vi.fn(() => 'blob:foto');
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  /** respostas: o que cada diálogo aberto devolve, na ordem (folha da foto, depois a confirmação). */
+  function abrir(perfil: Partial<Perfil>, respostas: unknown[] = []) {
+    const base = { nome: 'Samuel Maciel da Silva', email: 'samuel@teste.com', temSenha: true, lembretePesoDias: null };
+    const api = {
+      obter: () => of({ ...base, ...perfil }),
+      atualizar: vi.fn(),
+      foto: vi.fn(() => of(new Blob(['png'], { type: 'image/png' }))),
+      enviarFoto: vi.fn(() => of({ ...base, fotoTipo: 'PROPRIA' })),
+      removerFoto: vi.fn(() => of({ ...base, fotoTipo: 'PADRAO' })),
+    };
+    const open = vi.fn((_tela: unknown, _config: unknown) => ({ afterClosed: () => of(respostas.shift()) }));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: PerfilApi, useValue: api },
+        { provide: PesoApi, useValue: { listar: () => of([]) } },
+        { provide: GamificacaoApi, useValue: { resumo: () => of(gamificacao) } },
+        { provide: AuthApi, useValue: { config: () => of({ googleClientId: '' }) } },
+        { provide: AuthStore, useValue: { excluirConta: vi.fn(), sair: () => of(undefined) } },
+        { provide: MatDialog, useValue: { open } },
+        { provide: REDUZIR_FOTO, useValue: reduzirFoto },
+      ],
+    });
+    const fixture = TestBed.createComponent(PerfilTela);
+    fixture.detectChanges();
+    const tela = fixture.nativeElement as HTMLElement;
+    const camera = () => tela.querySelector<HTMLButtonElement>('button.camera')!;
+    return { fixture, tela, api, open, camera };
+  }
+
+  it('sem foto mostra as iniciais; a do Google aparece e, se quebrar, voltam as iniciais', () => {
+    let { tela, fixture } = abrir({ fotoTipo: 'PADRAO' });
+    expect(tela.querySelector('.avatar .iniciais')!.textContent).toBe('SM');
+    expect(tela.querySelector('.avatar img')).toBeNull();
+    TestBed.resetTestingModule();
+
+    ({ tela, fixture } = abrir({ fotoTipo: 'GOOGLE', fotoGoogleUrl: 'https://lh3/foto' }));
+    const img = tela.querySelector<HTMLImageElement>('.avatar img')!;
+    expect(img.src).toBe('https://lh3/foto');
+    img.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(tela.querySelector('.avatar img')).toBeNull();
+    expect(tela.querySelector('.avatar .iniciais')!.textContent).toBe('SM');
+  });
+
+  it('a foto própria vem da API como blob', () => {
+    const { tela, api } = abrir({ fotoTipo: 'PROPRIA' });
+    expect(api.foto).toHaveBeenCalledTimes(1);
+    expect(tela.querySelector<HTMLImageElement>('.avatar img')!.src).toBe('blob:foto');
+  });
+
+  it('enviar: reduz a foto escolhida, envia e mostra sem buscar de novo', async () => {
+    const arquivo = new File(['x'], 'foto.heic', { type: 'image/jpeg' });
+    const { tela, fixture, api, open, camera } = abrir({ fotoTipo: 'PADRAO' }, [arquivo]);
+
+    camera().click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(open.mock.calls[0][1]).toEqual(expect.objectContaining({ data: { url: null, iniciais: 'SM', tipo: 'PADRAO' } }));
+    expect(reduzirFoto).toHaveBeenCalledWith(arquivo);
+    expect(api.enviarFoto).toHaveBeenCalledWith(reduzida);
+    expect(api.foto).not.toHaveBeenCalled();
+    expect(tela.querySelector<HTMLImageElement>('.avatar img')!.src).toBe('blob:foto');
+  });
+
+  it('remover a foto do Google pede confirmação avisando que ela não volta', () => {
+    const { tela, fixture, api, open, camera } = abrir({ fotoTipo: 'GOOGLE', fotoGoogleUrl: 'https://lh3/foto' }, ['remover', true]);
+
+    camera().click();
+    fixture.detectChanges();
+
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(open.mock.calls[1][1]).toEqual(expect.objectContaining({
+      data: expect.objectContaining({ titulo: 'Remover a foto do perfil?', mensagem: 'A foto da sua conta Google não volta depois.' }),
+    }));
+    expect(api.removerFoto).toHaveBeenCalled();
+    expect(tela.querySelector('.avatar .iniciais')!.textContent).toBe('SM');
+  });
+
+  it('cancelar a confirmação não remove', () => {
+    const { fixture, api, camera } = abrir({ fotoTipo: 'PROPRIA' }, ['remover', false]);
+    camera().click();
+    fixture.detectChanges();
+    expect(api.removerFoto).not.toHaveBeenCalled();
   });
 });

@@ -197,7 +197,13 @@ export interface Perfil {
   lembretePesoDias: number | null;
   /** Falso quando a API não tem para onde mandar os relatos: o item "Reportar bug ou sugestão" some. */
   feedbackAtivo?: boolean;
+  /** De onde vem a foto (web#60): PADRAO mostra as iniciais; PROPRIA vem de GET /perfil/foto. */
+  fotoTipo?: FotoTipo;
+  /** Foto da conta Google (só vale com o tipo GOOGLE); pode faltar ou quebrar, e aí ficam as iniciais. */
+  fotoGoogleUrl?: string | null;
 }
+
+export type FotoTipo = 'PADRAO' | 'GOOGLE' | 'PROPRIA';
 
 export type CategoriaFeedback = 'BUG' | 'MELHORIA' | 'FUNCIONALIDADE' | 'OUTRO';
 

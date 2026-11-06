@@ -122,6 +122,20 @@ export class PerfilApi {
   atualizar(perfil: PerfilRequest): Observable<Perfil> {
     return this.http.put<Perfil>(`${API_URL}/perfil`, perfil);
   }
+
+  /** A rota exige Bearer: a foto vem como blob e vira uma URL local. */
+  foto(): Observable<Blob> {
+    return this.http.get(`${API_URL}/perfil/foto`, { responseType: 'blob' });
+  }
+
+  /** A imagem crua no corpo (o Content-Type vem do próprio Blob). */
+  enviarFoto(foto: Blob): Observable<Perfil> {
+    return this.http.put<Perfil>(`${API_URL}/perfil/foto`, foto);
+  }
+
+  removerFoto(): Observable<Perfil> {
+    return this.http.delete<Perfil>(`${API_URL}/perfil/foto`);
+  }
 }
 
 @Injectable({ providedIn: 'root' })

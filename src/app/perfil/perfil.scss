@@ -24,6 +24,27 @@
 
 /* Card do usuário: sem foto, só nome, título e progresso. */
 .usuario::before { content: ''; position: absolute; top: -40px; right: -40px; width: 144px; height: 144px; border-radius: 50%; background: color-mix(in srgb, var(--c-primaria) 6%, transparent); filter: blur(24px); pointer-events: none; }
+/* Foto do perfil (web#60): sem foto, as iniciais em lime no círculo cinza; a câmera abre a folha "Foto do perfil". */
+.topo-usuario { position: relative; display: flex; align-items: center; gap: 16px; min-width: 0; }
+.avatar { position: relative; flex-shrink: 0; width: 64px; height: 64px; }
+.circulo {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--c-sup-3);
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+.iniciais { color: var(--c-destaque); font: 800 24px/1 var(--fonte-titulo); }
+.camera {
+  position: absolute; right: -6px; bottom: -6px;
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0;
+  border: 2px solid #0b0f02; border-radius: 50%;
+  background: #d4ff00; color: #0b0f02; cursor: pointer;
+  .icone { font-size: 18px; }
+  /* Alvo de toque de 48 px sem mudar o desenho. */
+  &::after { content: ''; position: absolute; inset: -8px; }
+  &:disabled .icone { animation: girar 1s linear infinite; }
+}
+@keyframes girar { to { transform: rotate(360deg); } }
 .identidade { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; p { margin: 0; } }
 .nome { margin: 0; font: 600 20px/28px var(--fonte-titulo); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 

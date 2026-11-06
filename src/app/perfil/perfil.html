@@ -19,9 +19,23 @@
 } @else {
   <div class="pagina">
     <section class="card usuario" aria-label="Seus dados">
-      <div class="identidade">
-        <h1 class="nome">{{ nomeSalvo() }}</h1>
-        <p class="suave">{{ titulo }}</p>
+      <div class="topo-usuario">
+        <div class="avatar">
+          <span class="circulo">
+            @if (fotoUrl() && !fotoQuebrada()) {
+              <img [src]="fotoUrl()" alt="Sua foto" referrerpolicy="no-referrer" (error)="fotoQuebrada.set(true)" />
+            } @else {
+              <span class="iniciais" aria-hidden="true">{{ iniciais() }}</span>
+            }
+          </span>
+          <button type="button" class="camera" aria-label="Trocar foto do perfil" [disabled]="enviandoFoto()" (click)="abrirFoto()">
+            <span class="icone" aria-hidden="true">{{ enviandoFoto() ? 'progress_activity' : 'photo_camera' }}</span>
+          </button>
+        </div>
+        <div class="identidade">
+          <h1 class="nome">{{ nomeSalvo() }}</h1>
+          <p class="suave">{{ titulo }}</p>
+        </div>
       </div>
 
       @if (gamificacao.dados(); as g) {

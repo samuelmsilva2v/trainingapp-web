@@ -34,4 +34,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Alarme exato para o aviso do fim do descanso e o lembrete de treino (web#35). Na Play Store exige declarar o uso. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- "Tirar foto" do perfil (web#60): sem isto, no Android 11+ o Capacitor nao enxerga o app de camera e abre a galeria. -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
 </manifest>

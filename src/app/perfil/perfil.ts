@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -19,6 +20,10 @@ import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
 import { senhaForte } from '../core/senha';
 import { PesoSecao } from './peso/peso-secao';
+import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
+import { iniciais } from '../core/iniciais';
+import { REDUZIR_FOTO } from '../core/foto';
+import { EscolhaFoto, FotoPerfil, FotoPerfilDados } from './foto-perfil';
 
 /** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
 const TITULO_PADRAO = 'Praticante de musculação';
@@ -29,8 +34,10 @@ const TITULO_PADRAO = 'Praticante de musculação';
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
-export class PerfilTela implements OnInit {
+export class PerfilTela implements OnInit, OnDestroy {
   private readonly api = inject(PerfilApi);
+  private readonly dialogo = inject(MatDialog);
+  private readonly reduzirFoto = inject(REDUZIR_FOTO);
   private readonly aviso = inject(MatSnackBar);
   private readonly auth = inject(AuthStore);
   private readonly authApi = inject(AuthApi);
@@ -51,6 +58,19 @@ export class PerfilTela implements OnInit {
   protected readonly email = computed(() => this.salvo()?.email ?? '');
   protected readonly temSenha = computed(() => this.salvo()?.temSenha ?? false);
   protected readonly feedbackAtivo = computed(() => this.salvo()?.feedbackAtivo ?? false);
+
+  // Foto do perfil (web#60): só aparece neste card.
+  protected readonly fotoTipo = computed(() => this.salvo()?.fotoTipo ?? 'PADRAO');
+  /** URL local (blob) da foto própria, buscada com o token. */
+  private readonly fotoPropria = signal<string | null>(null);
+  protected readonly fotoUrl = computed(() => {
+    const tipo = this.fotoTipo();
+    return tipo === 'PROPRIA' ? this.fotoPropria() : tipo === 'GOOGLE' ? this.salvo()?.fotoGoogleUrl || null : null;
+  });
+  /** A URL não carregou (Google fora do ar, link vencido): ficam as iniciais. */
+  protected readonly fotoQuebrada = signal(false);
+  protected readonly iniciais = computed(() => iniciais(this.nomeSalvo(), this.email()));
+  protected readonly enviandoFoto = signal(false);
   protected readonly trocandoSenha = signal(false);
   protected readonly senhaAtual = signal('');
   protected readonly novaSenha = signal('');
@@ -114,6 +134,100 @@ export class PerfilTela implements OnInit {
   private aplicar(perfil: Perfil): void {
     this.salvo.set(perfil);
     this.nome.set(perfil.nome);
+    if (perfil.fotoTipo === 'PROPRIA' && !this.fotoPropria()) this.carregarFotoPropria();
+    if (perfil.fotoTipo !== 'PROPRIA') this.trocarFotoPropria(null);
+  }
+
+  ngOnDestroy(): void {
+    this.trocarFotoPropria(null);
+  }
+
+  private carregarFotoPropria(): void {
+    this.api.foto().subscribe({
+      next: blob => this.trocarFotoPropria(blob),
+      // Sem a foto (apagada em outro aparelho, rede): ficam as iniciais.
+      error: () => this.trocarFotoPropria(null),
+    });
+  }
+
+  private trocarFotoPropria(blob: Blob | null): void {
+    const antiga = this.fotoPropria();
+    if (antiga) URL.revokeObjectURL(antiga);
+    this.fotoPropria.set(blob ? URL.createObjectURL(blob) : null);
+    this.fotoQuebrada.set(false);
+  }
+
+  /** Folha "Foto do perfil": a escolha volta para cá, que reduz e envia ou confirma a remoção. */
+  protected abrirFoto(): void {
+    if (this.enviandoFoto()) return;
+    this.dialogo
+      .open<FotoPerfil, FotoPerfilDados, EscolhaFoto>(FotoPerfil, {
+        panelClass: 'dialogo-folha',
+        position: { bottom: '0' },
+        width: '512px',
+        maxWidth: '100vw',
+        data: { url: this.fotoQuebrada() ? null : this.fotoUrl(), iniciais: this.iniciais(), tipo: this.fotoTipo() },
+      })
+      .afterClosed()
+      .subscribe(escolha => {
+        if (escolha === 'remover') this.confirmarRemocaoDaFoto();
+        else if (escolha) void this.enviarFoto(escolha);
+      });
+  }
+
+  private async enviarFoto(arquivo: File): Promise<void> {
+    this.enviandoFoto.set(true);
+    let foto: Blob;
+    try {
+      foto = await this.reduzirFoto(arquivo);
+    } catch (e) {
+      console.warn('Foto do perfil: falha ao ler a imagem', e);
+      this.enviandoFoto.set(false);
+      this.aviso.open('Não foi possível ler essa imagem. Tente outra.', 'OK', { duration: 5000 });
+      return;
+    }
+    this.api.enviarFoto(foto).subscribe({
+      next: perfil => {
+        // A foto enviada já está aqui: mostra sem buscar de novo.
+        this.trocarFotoPropria(foto);
+        this.aplicar(perfil);
+        this.enviandoFoto.set(false);
+        this.aviso.open('Foto atualizada.', undefined, { duration: 3000 });
+      },
+      error: e => {
+        this.enviandoFoto.set(false);
+        this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
+      },
+    });
+  }
+
+  private confirmarRemocaoDaFoto(): void {
+    const doGoogle = this.fotoTipo() === 'GOOGLE';
+    this.dialogo
+      .open(ConfirmarDialogo, {
+        panelClass: 'dialogo-confirmar',
+        data: {
+          titulo: 'Remover a foto do perfil?',
+          mensagem: doGoogle ? 'A foto da sua conta Google não volta depois.' : 'O perfil volta a mostrar suas iniciais.',
+          confirmar: 'Remover',
+        },
+      })
+      .afterClosed()
+      .subscribe(ok => {
+        if (!ok) return;
+        this.enviandoFoto.set(true);
+        this.api.removerFoto().subscribe({
+          next: perfil => {
+            this.aplicar(perfil);
+            this.enviandoFoto.set(false);
+            this.aviso.open('Foto removida.', undefined, { duration: 3000 });
+          },
+          error: e => {
+            this.enviandoFoto.set(false);
+            this.aviso.open(mensagemDeErro(e), 'OK', { duration: 6000 });
+          },
+        });
+      });
   }
 
   protected salvar(): void {
