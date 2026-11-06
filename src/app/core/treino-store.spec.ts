@@ -209,6 +209,18 @@ describe('TreinoStore', () => {
     expect(store.pendenteEnviado()).toBe(1); // a Hoje recarrega (web#61)
   });
 
+  it('abandonar sem série concluída apaga o treino; com uma concluída, ele fica (web#69)', async () => {
+    await store.encerrar('ABANDONADA');
+    expect(salvar.mock.calls.at(-1)![0].estado).toBe('ABANDONADA'); // a API só apaga treino encerrado
+    expect(excluir).toHaveBeenCalledWith('s1');
+
+    excluir.mockClear();
+    store.retomar(sessao);
+    store.atualizarSerie(0, 0, s => ({ ...s, concluida: true }));
+    await store.encerrar('ABANDONADA');
+    expect(excluir).not.toHaveBeenCalled();
+  });
+
   it('treino encerrado sem rede não se perde se a API estiver fora do ar quando a rede volta', async () => {
     salvar.mockImplementationOnce(semRede);
     await store.encerrar('CONCLUIDA');

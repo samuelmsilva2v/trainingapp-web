@@ -294,10 +294,21 @@ export class TreinoStore {
       this.erro.set(mensagemDeErro(erro));
       throw erro;
     }
+    await this.apagarSeVazio(final);
     apagarTreinoLocal();
     this.sessao.set(null);
     this.status.set('salvo');
     return resposta;
+  }
+
+  /**
+   * Abandonado sem nenhuma série concluída não fica no histórico nem vira o "Último treino" da Hoje (web#69). A API só
+   * apaga treino encerrado, por isso o PUT de abandono vai antes. shortcut: se o DELETE falhar (rede caiu entre os dois),
+   * o abandono vazio fica gravado; tratar se aparecer com frequência.
+   */
+  private async apagarSeVazio(sessao: SessaoLocal): Promise<void> {
+    if (sessao.estado !== 'ABANDONADA' || sessao.exercicios.some(e => seriesFeitas(e) > 0)) return;
+    await firstValueFrom(this.api.excluir(sessao.id)).catch(() => undefined);
   }
 
   /** Envia o que ficou no aparelho sem chegar à API: o treino encerrado sem rede, ou as últimas mudanças do em andamento. */
@@ -309,6 +320,7 @@ export class TreinoStore {
     }
     try {
       await firstValueFrom(this.api.salvar(encerrado));
+      await this.apagarSeVazio(encerrado);
     } catch (erro) {
       // Só a recusa da API (outro aparelho mexeu depois, regra violada) descarta; sem rede ou API fora do ar (502 num
       // deploy), o treino fica no aparelho e vai na próxima vez que a rede voltar ou o app abrir.
