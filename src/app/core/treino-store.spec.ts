@@ -1,10 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, of, throwError } from 'rxjs';
+import { Network } from '@capacitor/network';
 import { vi } from 'vitest';
 import { SessoesApi } from './api';
 import { SessaoLocal } from './modelos';
 import { TreinoStore } from './treino-store';
+
+/**
+ * O store ouve a rede pelo plugin do Capacitor, que carrega a implementação web por import() e registra o ouvinte
+ * depois. Espera a mesma carga antes de simular a volta da rede: sem isso, num CI lento o evento chegava antes do
+ * ouvinte e o teste falhava às vezes.
+ */
+async function redeVolta(): Promise<void> {
+  await Network.getStatus();
+  dispatchEvent(new Event('online'));
+}
 
 const sessao: SessaoLocal = {
   id: 's1',
@@ -159,7 +170,7 @@ describe('TreinoStore', () => {
     expect(guardado().enviado).toBe(false);
     expect(guardado().sessao.exercicios[0].series[0].reps).toBe(9);
 
-    dispatchEvent(new Event('online'));
+    await redeVolta();
     await vi.advanceTimersByTimeAsync(10);
 
     expect(salvar).toHaveBeenCalledTimes(2);
@@ -201,7 +212,7 @@ describe('TreinoStore', () => {
     expect(store.sessao()).toBeNull();
     expect(guardado().sessao.estado).toBe('CONCLUIDA');
 
-    dispatchEvent(new Event('online'));
+    await redeVolta();
     await vi.advanceTimersByTimeAsync(10);
 
     expect(salvar.mock.calls.at(-1)![0].estado).toBe('CONCLUIDA');
@@ -226,11 +237,11 @@ describe('TreinoStore', () => {
     await store.encerrar('CONCLUIDA');
 
     salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 502 })));
-    dispatchEvent(new Event('online'));
+    await redeVolta();
     await vi.advanceTimersByTimeAsync(10);
     expect(guardado().sessao.estado).toBe('CONCLUIDA'); // continua no aparelho
 
-    dispatchEvent(new Event('online'));
+    await redeVolta();
     await vi.advanceTimersByTimeAsync(10);
     expect(salvar.mock.calls.at(-1)![0].estado).toBe('CONCLUIDA');
     expect(localStorage.getItem('trainingapp.treino')).toBeNull();
@@ -241,7 +252,7 @@ describe('TreinoStore', () => {
     await store.encerrar('CONCLUIDA');
 
     salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 422 })));
-    dispatchEvent(new Event('online'));
+    await redeVolta();
     await vi.advanceTimersByTimeAsync(10);
     expect(localStorage.getItem('trainingapp.treino')).toBeNull();
   });

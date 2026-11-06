@@ -38,6 +38,11 @@ export class IntegracaoAndroid {
     });
   }
 
+  /** À parte para os testes espiarem: mock de módulo do Capacitor falhava às vezes no CI (ordem dos arquivos). */
+  fecharApp(): void {
+    void App.exitApp();
+  }
+
   /** Fecha o diálogo aberto; senão volta uma tela; só nas telas iniciais fecha o app. */
   voltar(podeVoltar: boolean): void {
     const aberto = this.dialogo.openDialogs.at(-1);
@@ -50,7 +55,7 @@ export class IntegracaoAndroid {
     }
     const url = this.router.url.split(/[?#]/)[0];
     if (SAIDAS.includes(url)) {
-      void App.exitApp();
+      this.fecharApp();
     } else if (ABAS.includes(url) || !podeVoltar) {
       void this.router.navigateByUrl('/hoje');
     } else {
