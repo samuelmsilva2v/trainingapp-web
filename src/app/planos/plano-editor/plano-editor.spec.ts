@@ -3,7 +3,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { ItemPlano } from '../../core/modelos';
 import { PlanoEditor, definirCampo } from './plano-editor';
 
@@ -105,6 +108,42 @@ describe('PlanoEditor: peso corporal', () => {
     editor.salvar();
     const req = TestBed.inject(HttpTestingController).expectOne(r => r.method === 'POST');
     expect(req.request.body.dias[0].exercicios[0]).toEqual(expect.objectContaining({ cargaAlvo: null, drops: 0 }));
+  });
+});
+
+describe('PlanoEditor: dia sem exercícios (web#79)', () => {
+  function abrir(confirma: boolean) {
+    const open = vi.fn(() => ({ afterClosed: () => of(confirma) }));
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), { provide: MatDialog, useValue: { open } }],
+    });
+    const fixture = TestBed.createComponent(PlanoEditor);
+    const editor = fixture.componentInstance as unknown as {
+      nome: { set(v: string): void };
+      dias: { set(v: unknown): void };
+      salvar(): void;
+    };
+    editor.nome.set('ABC');
+    editor.dias.set([
+      { nome: 'Treino A', exercicios: [{ ...item, exercicioNome: 'Supino', grupoMuscular: 'PEITO', equipamento: 'BARRA' }] },
+      { nome: 'Treino B', exercicios: [] },
+      { nome: 'Treino C', exercicios: [] },
+    ]);
+    return { editor, open, http: TestBed.inject(HttpTestingController) };
+  }
+
+  it('avisa quais dias estão vazios e só salva se confirmar', () => {
+    const recusa = abrir(false);
+    recusa.editor.salvar();
+    expect(recusa.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      data: expect.objectContaining({ mensagem: '"Treino B" e "Treino C" não têm exercícios. Salvar assim mesmo?' }),
+    }));
+    recusa.http.expectNone(r => r.method === 'POST');
+    TestBed.resetTestingModule();
+
+    const aceita = abrir(true);
+    aceita.editor.salvar();
+    aceita.http.expectOne(r => r.method === 'POST');
   });
 });
 

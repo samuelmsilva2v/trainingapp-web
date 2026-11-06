@@ -302,8 +302,26 @@ export class PlanoEditor implements OnInit {
 
   // --- salvar / sair ---
 
+  /** Dia sem exercícios só aparece como problema no dia do treino: avisa antes de salvar (web#79). */
   protected salvar(): void {
     if (!this.podeSalvar() || this.salvando()) return;
+    const vazios = this.dias().filter(d => d.exercicios.length === 0).map(d => `"${d.nome.trim()}"`);
+    if (vazios.length === 0) {
+      this.gravar();
+      return;
+    }
+    const lista = vazios.length === 1 ? vazios[0] : `${vazios.slice(0, -1).join(', ')} e ${vazios.at(-1)}`;
+    const mensagem = `${lista} ${vazios.length === 1 ? 'não tem' : 'não têm'} exercícios. Salvar assim mesmo?`;
+    this.dialogo
+      .open(ConfirmarDialogo, {
+        panelClass: 'dialogo-confirmar',
+        data: { titulo: vazios.length === 1 ? 'Dia sem exercícios' : 'Dias sem exercícios', mensagem, confirmar: 'Salvar assim', primario: true },
+      })
+      .afterClosed()
+      .subscribe(ok => ok && this.gravar());
+  }
+
+  private gravar(): void {
     const corpo: PlanoRequest = {
       nome: this.nome().trim(),
       objetivo: this.objetivo(),
