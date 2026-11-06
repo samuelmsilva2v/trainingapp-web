@@ -50,6 +50,32 @@ export class Treino implements OnInit, OnDestroy {
       this.aviso.open(mensagem, 'OK', { duration: 6000 });
       this.store.avisoConflito.set(null);
     });
+    // O Android mata o app em segundo plano durante o descanso: guarda onde a tela está para voltar a ela (web#62).
+    effect(() => {
+      const indice = this.indice();
+      const fim = this.fimDescanso();
+      const total = this.totalDescanso();
+      if (this.carregando()) return; // antes de restaurar, gravaria o exercício 1 por cima
+      this.store.gravarTela({ indice, descanso: fim === null ? null : { fim, total, texto: this.textoDescanso } });
+    });
+  }
+
+  /** Volta ao exercício e ao descanso de antes de o app ser fechado; descanso já vencido não volta. */
+  private restaurarTela(): void {
+    const tela = this.store.lerTela();
+    if (!tela) return;
+    if (tela.indice < (this.sessao()?.exercicios.length ?? 0)) this.indice.set(tela.indice);
+    if (tela.descanso && tela.descanso.fim > Date.now()) {
+      this.textoDescanso = tela.descanso.texto;
+      this.totalDescanso.set(tela.descanso.total);
+      this.definirFimDescanso(tela.descanso.fim); // reagenda a notificação (mesmo id: substitui, não duplica)
+    }
+  }
+
+  /** A sessão está disponível: mostra o treino onde ele estava. */
+  private abrir(): void {
+    this.restaurarTela();
+    this.carregando.set(false);
   }
 
   protected readonly rotuloGrupo = rotuloGrupo;
@@ -126,7 +152,7 @@ export class Treino implements OnInit, OnDestroy {
     // Aberto direto (recarregou ou reabriu o app): o resultado precisa do nível de antes para dizer se subiu.
     if (!this.gamificacao.dados()) this.gamificacao.atualizar();
     if (this.store.sessao()) {
-      this.carregando.set(false);
+      this.abrir();
       this.carregarAnteriores();
       return;
     }
@@ -135,7 +161,7 @@ export class Treino implements OnInit, OnDestroy {
       next: hoje => {
         if (hoje.sessaoEmAndamento) {
           this.store.retomar(hoje.sessaoEmAndamento);
-          this.carregando.set(false);
+          this.abrir();
           this.carregarAnteriores();
         } else {
           this.roteador.navigate(['/hoje']);
@@ -144,7 +170,7 @@ export class Treino implements OnInit, OnDestroy {
       error: e => {
         // Sem rede: segue com o treino guardado no aparelho, se houver.
         if (this.store.abrirDoAparelho()) {
-          this.carregando.set(false);
+          this.abrir();
           return;
         }
         this.aviso.open(mensagemDeErro(e), 'OK', { duration: 5000 });
@@ -200,6 +226,8 @@ export class Treino implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     manterTelaLigada(false);
     cancelarFimDoDescanso(); // o descanso é desta tela: saindo dela, ele acaba
+    // Só a navegação passa aqui; o app morto pelo sistema não, e aí o descanso gravado volta ao reabrir.
+    if (!this.carregando()) this.store.gravarTela({ indice: this.indice(), descanso: null });
     if (this.intervalo) clearInterval(this.intervalo);
   }
 

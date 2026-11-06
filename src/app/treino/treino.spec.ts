@@ -146,3 +146,42 @@ describe('Treino: peso corporal', () => {
     expect(el.querySelector('.chip.peso')?.textContent).toContain('Peso corporal');
   });
 });
+
+describe('Treino: reabrir no meio do treino (web#62)', () => {
+  function abrirCom(fimDescanso: number) {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SessoesApi, useValue: { anteriores: () => of([]), salvar: (s: SessaoLocal) => of(s) } },
+      ],
+    });
+    const s = sessao();
+    s.exercicios.push({ ...s.exercicios[0], id: 'e2', exercicioId: 'x2', nome: 'Remada' });
+    const store = TestBed.inject(TreinoStore);
+    store.retomar(s);
+    store.gravarTela({ indice: 1, descanso: { fim: fimDescanso, total: 90, texto: 'Supino, série 1' } });
+    const fixture = TestBed.createComponent(Treino);
+    fixture.detectChanges();
+    return { el: fixture.nativeElement as HTMLElement, store, fixture };
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('volta ao exercício e ao descanso em que estava', () => {
+    const { el } = abrirCom(Date.now() + 60_000);
+    expect(el.querySelector('.ex-nome h2')?.textContent).toContain('Remada');
+    expect(el.querySelector('[role="timer"][aria-label="Descanso"]')).not.toBeNull();
+  });
+
+  it('descanso que venceu com o app fechado não volta; sair da tela encerra o descanso gravado', () => {
+    const { el, store, fixture } = abrirCom(Date.now() - 1000);
+    expect(el.querySelector('.ex-nome h2')?.textContent).toContain('Remada');
+    expect(el.querySelector('[role="timer"]')).toBeNull();
+
+    store.gravarTela({ indice: 1, descanso: { fim: Date.now() + 60_000, total: 90, texto: 'x' } });
+    fixture.destroy();
+    expect(store.lerTela()).toEqual({ indice: 1, descanso: null });
+  });
+});

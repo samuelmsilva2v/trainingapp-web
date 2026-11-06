@@ -20,6 +20,14 @@ export function novoId(): string {
 interface TreinoLocal {
   sessao: SessaoLocal;
   enviado: boolean;
+  /** Só do aparelho, nunca vai à API: onde a tela do treino estava, para voltar a ela se o app for fechado (web#62). */
+  tela?: TelaTreino;
+}
+
+export interface TelaTreino {
+  indice: number;
+  /** Descanso em curso: fim (epoch ms), duração total em segundos e o texto da notificação. */
+  descanso: { fim: number; total: number; texto: string } | null;
 }
 
 function lerLocal(): TreinoLocal | null {
@@ -31,9 +39,12 @@ function lerLocal(): TreinoLocal | null {
   }
 }
 
+/** Grava o treino; a tela gravada antes continua, se for da mesma sessão. */
 function gravarLocal(local: TreinoLocal): void {
   try {
-    localStorage.setItem(CHAVE_LOCAL, JSON.stringify(local));
+    const antes = local.tela ? null : lerLocal();
+    const tela = local.tela ?? (antes?.sessao.id === local.sessao.id ? antes.tela : undefined);
+    localStorage.setItem(CHAVE_LOCAL, JSON.stringify({ ...local, tela }));
   } catch {
     // Sem armazenamento (navegação privada, cota cheia): o treino segue só na memória, como antes.
   }
@@ -130,6 +141,18 @@ export class TreinoStore {
     this.sessao.set(local.sessao);
     this.status.set(local.enviado ? 'salvo' : 'offline');
     return true;
+  }
+
+  /** Onde a tela do treino estava na sessão atual (gravado por `gravarTela`), ou null. */
+  lerTela(): TelaTreino | null {
+    const local = lerLocal();
+    return local && local.sessao.id === this.sessao()?.id ? local.tela ?? null : null;
+  }
+
+  /** Guarda no aparelho onde a tela do treino está; não muda a sessão nem dispara envio. */
+  gravarTela(tela: TelaTreino): void {
+    const local = lerLocal();
+    if (local && local.sessao.id === this.sessao()?.id) gravarLocal({ ...local, tela });
   }
 
   /** Cria a sessão a partir do próximo dia da rotação e a grava na API. */
