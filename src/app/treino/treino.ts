@@ -529,8 +529,9 @@ export class Treino implements OnInit, OnDestroy {
         await this.roteador.navigate(['/hoje']);
         return;
       }
-      if (estado === 'CONCLUIDA' && resposta && (await this.mostrarResultado(resposta, antes))) {
-        await this.roteador.navigate([destino]);
+      const depoisDoResultado = estado === 'CONCLUIDA' && resposta ? await this.mostrarResultado(resposta, antes) : null;
+      if (depoisDoResultado) {
+        await this.roteador.navigate([depoisDoResultado]);
         return;
       }
       this.gamificacao.atualizar();
@@ -546,16 +547,20 @@ export class Treino implements OnInit, OnDestroy {
   }
 
   /** Abre a tela de resultado; devolve false se não deu para montá-la (o treino já está salvo). */
-  private async mostrarResultado(sessao: SessaoLocal, antes: Gamificacao | null): Promise<boolean> {
+  /**
+   * Para onde ir depois do resultado: "Ver histórico" leva ao Histórico; o voltar do Android, à Hoje, de onde o
+   * treino começou (web#74). null: não deu para mostrar o resultado.
+   */
+  private async mostrarResultado(sessao: SessaoLocal, antes: Gamificacao | null): Promise<string | null> {
     try {
       const depois = await firstValueFrom(this.gamificacaoApi.resumo());
       this.gamificacao.dados.set(depois);
       // Sem o plano (rede, plano apagado), só não oferece levar as mudanças para ele.
       const plano = sessao.planoId ? await firstValueFrom(this.planosApi.obter(sessao.planoId)).catch(() => null) : null;
       const mudancas = plano ? mudancasDoPlano(sessao, plano) : null;
-      await firstValueFrom(
+      const escolha = await firstValueFrom(
         this.dialogo
-          .open(ResultadoTreino, {
+          .open<ResultadoTreino, unknown, 'historico'>(ResultadoTreino, {
             panelClass: 'dialogo-confirmar',
             maxWidth: '95vw',
             width: '480px',
@@ -564,9 +569,9 @@ export class Treino implements OnInit, OnDestroy {
           .afterClosed(),
         { defaultValue: undefined },
       );
-      return true;
+      return escolha === 'historico' ? '/historico' : '/hoje';
     } catch {
-      return false;
+      return null;
     }
   }
 
