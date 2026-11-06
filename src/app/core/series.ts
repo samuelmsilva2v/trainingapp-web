@@ -55,6 +55,31 @@ export function repsDoDrop(anterior: number | null): number | null {
   return anterior === null ? null : anterior + 2;
 }
 
+const SUGESTAO = { carga: cargaDoDrop, reps: repsDoDrop };
+
+/**
+ * Troca a série `indice` por `nova` e faz a mudança de carga ou reps de uma série normal seguir para os drops do bloco
+ * (web#63): o drop vazio ou ainda igual à sugestão do valor antigo recebe a sugestão do novo, em cadeia; drop editado fica.
+ */
+export function editarSerie(series: SerieLocal[], indice: number, nova: SerieLocal): SerieLocal[] {
+  const lista = series.map((s, i) => (i === indice ? nova : s));
+  if (ehDrop(nova)) return lista;
+  const bloco = blocos(lista).find(b => b.inicio === indice);
+  for (const campo of ['carga', 'reps'] as const) {
+    if (series[indice][campo] === nova[campo]) continue;
+    let antigo = series[indice][campo];
+    let novo = nova[campo];
+    for (const d of bloco?.drops ?? []) {
+      const atual = lista[d][campo];
+      const valor = atual === null || atual === SUGESTAO[campo](antigo) ? SUGESTAO[campo](novo) : atual;
+      lista[d] = { ...lista[d], [campo]: valor };
+      antigo = atual;
+      novo = valor;
+    }
+  }
+  return lista;
+}
+
 /** Ids (da linha do exercício) que levam o 🏆: o recorde vale uma vez por exercício, na primeira linha em que ele aparece. */
 export function linhasComRecorde(sessao: SessaoLocal): Set<string> {
   const recordes = sessao.recordes ?? [];

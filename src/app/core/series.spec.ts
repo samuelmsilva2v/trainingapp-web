@@ -1,4 +1,4 @@
-import { blocos, cargaDoDrop, espelharDrops, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from './series';
+import { blocos, cargaDoDrop, editarSerie, espelharDrops, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from './series';
 import { ExercicioLocal, SerieLocal, SessaoLocal } from './modelos';
 
 const exercicio = (series: SerieLocal[]): ExercicioLocal => ({
@@ -55,5 +55,21 @@ describe('xpDoTreino', () => {
     expect(xpDoTreino({ xpGanho: 121, xpStreak: 15, xpConquistas: 50, xpDesafios: 20 })).toBe(36);
     expect(xpDoTreino({ xpGanho: 36 })).toBe(36); // API antiga ou sem bônus
     expect(xpDoTreino({})).toBe(0);
+  });
+
+  const serie = (reps: number | null, carga: number | null, tipo: 'NORMAL' | 'DROP' = 'NORMAL', concluida = false): SerieLocal =>
+    ({ id: Math.random().toString(), reps, carga, concluida, tipo });
+  const valores = (series: SerieLocal[]) => series.map(x => [x.carga, x.reps]);
+
+  it('os drops vazios ou ainda na sugestão seguem a carga e as reps da série (web#63)', () => {
+    const vazios = [serie(8, null), serie(10, null, 'DROP'), serie(12, null, 'DROP')]; // sem carga alvo
+    const com50 = editarSerie(vazios, 0, { ...vazios[0], carga: 50 });
+    expect(valores(com50)).toEqual([[50, 8], [40, 10], [30, 12]]);
+    const com55 = editarSerie(com50, 0, { ...com50[0], carga: 55 });
+    expect(valores(com55)).toEqual([[55, 8], [45, 10], [35, 12]]); // o +/− da série arrasta os drops
+    const drop1Editado = com55.map((x, i) => (i === 1 ? { ...x, carga: 42.5 } : x));
+    const com60 = editarSerie(drop1Editado, 0, { ...drop1Editado[0], carga: 60 });
+    expect(valores(com60)).toEqual([[60, 8], [42.5, 10], [35, 12]]); // drop editado fica, e o seguinte segue ele
+    expect(valores(editarSerie(com55, 1, { ...com55[1], carga: 20 }))).toEqual([[55, 8], [20, 10], [35, 12]]); // editar o drop não mexe nos outros
   });
 });

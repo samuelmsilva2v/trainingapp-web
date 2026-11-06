@@ -16,7 +16,7 @@ import { GamificacaoStore } from '../core/gamificacao-store';
 import { TreinoStore } from '../core/treino-store';
 import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { verFotos } from '../compartilhado/ver-fotos';
-import { Bloco, MAX_DROPS, blocos, cargaDoDrop, ehDrop, ehPesoCorporal, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
+import { Bloco, MAX_DROPS, blocos, cargaDoDrop, editarSerie, ehDrop, ehPesoCorporal, linhasComRecorde, repsDoDrop, seriesFeitas, totalSeries, xpDoTreino } from '../core/series';
 import { ResultadoTreino } from './resultado-treino';
 import { DadosTroca, TrocaExercicio } from './troca-exercicio';
 import { ConfiguracoesTreino } from './configuracoes-treino';
@@ -284,9 +284,14 @@ export class Treino implements OnInit, OnDestroy {
 
   // --- séries ---
 
+  /** Carga e reps mudam por aqui, para os drops do bloco seguirem a série (web#63). */
+  private editar(serie: number, mudanca: (s: SerieLocal) => SerieLocal): void {
+    this.store.atualizarExercicio(this.indice(), e => ({ ...e, series: editarSerie(e.series, serie, mudanca(e.series[serie])) }));
+  }
+
   protected ajustarReps(serie: number, delta: 1 | -1): void {
     vibrar('leve');
-    this.store.atualizarSerie(this.indice(), serie, s => {
+    this.editar(serie, s => {
       const reps = Math.min(REPS_MAX, Math.max(0, (s.reps ?? 0) + delta));
       return { ...s, reps, concluida: s.concluida && reps >= 1 };
     });
@@ -294,7 +299,7 @@ export class Treino implements OnInit, OnDestroy {
 
   protected ajustarCarga(serie: number, delta: 1 | -1): void {
     vibrar('leve');
-    this.store.atualizarSerie(this.indice(), serie, s => ({
+    this.editar(serie, s => ({
       ...s,
       carga: passoCarga(s.carga ?? 0, delta, this.passo()),
     }));
@@ -303,7 +308,7 @@ export class Treino implements OnInit, OnDestroy {
   protected digitarReps(serie: number, evento: Event): void {
     const valor = parseInt((evento.target as HTMLInputElement).value, 10);
     const reps = Number.isNaN(valor) ? null : Math.min(REPS_MAX, Math.max(0, valor));
-    this.store.atualizarSerie(this.indice(), serie, s => ({
+    this.editar(serie, s => ({
       ...s,
       reps,
       concluida: s.concluida && (reps ?? 0) >= 1,
@@ -312,7 +317,7 @@ export class Treino implements OnInit, OnDestroy {
 
   protected digitarCarga(serie: number, evento: Event): void {
     const valor = parseFloat((evento.target as HTMLInputElement).value.replace(',', '.'));
-    this.store.atualizarSerie(this.indice(), serie, s => ({
+    this.editar(serie, s => ({
       ...s,
       carga: Number.isNaN(valor) ? null : limparCarga(valor),
     }));
