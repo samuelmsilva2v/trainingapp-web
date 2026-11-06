@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
@@ -70,6 +70,11 @@ export class HojeTela implements OnInit {
       const hoje = this.hoje();
       const dados = this.gamificacao.dados();
       if (hoje && dados) atualizarContextoDoLembrete(hoje.proximoDia?.nome ?? null, dados.treinouHoje);
+    });
+    // Treino feito sem rede chegou à API: a rotação andou e ele deixou de estar em andamento (web#61).
+    const enviadosAoAbrir = this.store.pendenteEnviado();
+    effect(() => {
+      if (this.store.pendenteEnviado() !== enviadosAoAbrir) untracked(() => this.carregar());
     });
   }
   private readonly roteador = inject(Router);

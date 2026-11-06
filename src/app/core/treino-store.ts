@@ -94,6 +94,8 @@ export class TreinoStore {
   private pendente = false;
   /** Treino encerrado sem rede, à espera de ser enviado. */
   private encerradoPendente: SessaoLocal | null = null;
+  /** Conta os treinos encerrados sem rede que chegaram à API: a Hoje recarrega a cada um (web#61). */
+  readonly pendenteEnviado = signal(0);
 
   constructor() {
     const local = lerLocal();
@@ -316,6 +318,7 @@ export class TreinoStore {
     this.encerradoPendente = null;
     apagarTreinoLocal();
     this.status.set('salvo');
+    this.pendenteEnviado.update(n => n + 1);
   }
 
   private adotarDoServidor(erro: HttpErrorResponse): void {

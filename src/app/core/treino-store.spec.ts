@@ -36,12 +36,14 @@ const sessao: SessaoLocal = {
 describe('TreinoStore', () => {
   let salvar: ReturnType<typeof vi.fn<(s: SessaoLocal) => Observable<SessaoLocal>>>;
   let store: TreinoStore;
+  let excluir: ReturnType<typeof vi.fn<(id: string) => Observable<void>>>;
 
   beforeEach(() => {
     vi.useFakeTimers();
     localStorage.clear();
     salvar = vi.fn((s: SessaoLocal) => of(s));
-    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar } }] });
+    excluir = vi.fn(() => of(undefined));
+    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar, excluir } }] });
     store = TestBed.inject(TreinoStore);
     store.retomar(sessao);
   });
@@ -204,6 +206,7 @@ describe('TreinoStore', () => {
 
     expect(salvar.mock.calls.at(-1)![0].estado).toBe('CONCLUIDA');
     expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+    expect(store.pendenteEnviado()).toBe(1); // a Hoje recarrega (web#61)
   });
 
   it('treino encerrado sem rede não se perde se a API estiver fora do ar quando a rede volta', async () => {
