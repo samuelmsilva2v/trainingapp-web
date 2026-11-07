@@ -3,8 +3,8 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Network } from '@capacitor/network';
 import { firstValueFrom } from 'rxjs';
 import { SessoesApi, mensagemDeErro } from './api';
-import { DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
-import { cargaDoDrop, ehPesoCorporal, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
+import { Anterior, DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
+import { blocos, cargaDoDrop, ehPesoCorporal, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
 
 export type StatusSincronia = 'salvo' | 'salvando' | 'offline' | 'erro';
 
@@ -157,8 +157,12 @@ export class TreinoStore {
     if (local && local.sessao.id === this.sessao()?.id) gravarLocal({ ...local, tela });
   }
 
-  /** Cria a sessão a partir do próximo dia da rotação e a grava na API. */
+  /** Cria a sessão a partir do próximo dia da rotação, com as reps e cargas do último treino de cada exercício, e a grava na API. */
   async iniciar(planoId: string, planoNome: string, dia: DiaHoje): Promise<void> {
+    const ids = [...new Set(dia.exercicios.map(e => e.exercicioId))];
+    // Sem o último treino, valem as metas do plano: não impede de começar.
+    const anteriores = ids.length === 0 ? [] : await firstValueFrom(this.api.anteriores(ids)).catch(() => [] as Anterior[]);
+    const anterior = new Map(anteriores.map(a => [a.exercicioId, a]));
     const agora = new Date().toISOString();
     const sessao: SessaoLocal = {
       id: novoId(),
@@ -183,7 +187,7 @@ export class TreinoStore {
         metaCarga: ehPesoCorporal(item) ? null : item.cargaAlvo,
         metaDescansoSegundos: item.descansoSegundos,
         metaDrops: ehPesoCorporal(item) ? 0 : item.drops ?? 0,
-        series: this.seriesDoPlano(item),
+        series: this.seriesDoPlano(item, anterior.get(item.exercicioId)),
       })),
     };
     await firstValueFrom(this.api.salvar(sessao));
@@ -196,19 +200,28 @@ export class TreinoStore {
     return { id: novoId(), reps, carga, concluida: false, tipo };
   }
 
-  /** As séries da meta, cada uma seguida dos drops planejados, com carga e reps sugeridas em cadeia (80% e 2 reps a mais que a anterior). */
-  private seriesDoPlano(item: ItemPlano): SerieLocal[] {
+  /**
+   * As séries da meta, cada uma seguida dos drops planejados. Cada série começa com as reps e a carga da mesma posição no
+   * último treino do exercício (um aquecimento na 1ª série volta na 1ª; as que sobram repetem a última) e cada drop com o
+   * drop correspondente; sem histórico, valem as reps mínimas e a carga alvo do plano, e os drops em cadeia (80% e 2 reps a mais).
+   */
+  private seriesDoPlano(item: ItemPlano, anterior?: Anterior): SerieLocal[] {
     // Peso corporal: só reps (um plano antigo pode ter carga alvo ou drop-set).
     const pesoCorporal = ehPesoCorporal(item);
-    const cargaAlvo = pesoCorporal ? null : item.cargaAlvo;
+    const passadas = anterior?.series ?? [];
+    const blocosPassados = blocos(passadas);
     const series: SerieLocal[] = [];
     for (let s = 0; s < item.series; s++) {
-      series.push(this.serieNova(item.repsMin, cargaAlvo));
-      let carga = cargaAlvo;
-      let reps: number | null = item.repsMin;
+      const passado = blocosPassados[Math.min(s, blocosPassados.length - 1)];
+      const normal = passado ? passadas[passado.inicio] : undefined;
+      let reps: number | null = normal?.reps ?? item.repsMin;
+      let carga = pesoCorporal ? null : normal ? normal.carga : item.cargaAlvo;
+      series.push(this.serieNova(reps, carga));
       for (let d = 0; d < (pesoCorporal ? 0 : item.drops ?? 0); d++) {
-        carga = cargaDoDrop(carga);
-        reps = repsDoDrop(reps);
+        const i = passado?.drops[d];
+        const drop = i === undefined ? undefined : passadas[i];
+        reps = drop?.reps ?? repsDoDrop(reps);
+        carga = drop ? drop.carga : cargaDoDrop(carga);
         series.push(this.serieNova(reps, carga, 'DROP'));
       }
     }

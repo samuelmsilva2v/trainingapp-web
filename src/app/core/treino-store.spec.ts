@@ -4,7 +4,7 @@ import { Observable, Subject, of, throwError } from 'rxjs';
 import { Network } from '@capacitor/network';
 import { vi } from 'vitest';
 import { SessoesApi } from './api';
-import { SessaoLocal } from './modelos';
+import { DiaHoje, SessaoLocal } from './modelos';
 import { TreinoStore } from './treino-store';
 
 /**
@@ -54,7 +54,7 @@ describe('TreinoStore', () => {
     localStorage.clear();
     salvar = vi.fn((s: SessaoLocal) => of(s));
     excluir = vi.fn(() => of(undefined));
-    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar, excluir } }] });
+    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar, excluir, anteriores: () => of([]) } }] });
     store = TestBed.inject(TreinoStore);
     store.retomar(sessao);
   });
@@ -76,6 +76,37 @@ describe('TreinoStore', () => {
       ['NORMAL', 100, 8], ['DROP', 80, 10], ['DROP', 65, 12],
     ]);
     expect(store.totalSeries()).toBe(2);
+  });
+
+  it('iniciar começa cada série com as reps e a carga da mesma posição no último treino', async () => {
+    const serie = (reps: number, carga: number, tipo: 'NORMAL' | 'DROP' = 'NORMAL') => ({ ordem: 0, reps, carga, tipo });
+    TestBed.inject(SessoesApi).anteriores = () => of([
+      // aquecimento na 1ª série e uma série a menos que o plano
+      { exercicioId: 'x1', sessaoId: 's0', iniciadaEm: '', series: [serie(12, 10), serie(8, 40), serie(9, 42.5)] },
+      { exercicioId: 'x2', sessaoId: 's0', iniciadaEm: '', series: [serie(10, 30), serie(12, 20, 'DROP'), serie(10, 30)] },
+    ]);
+    const item = { grupoMuscular: 'PEITO', equipamento: 'BARRA', repsMin: 8, repsMax: 10, cargaAlvo: 40, descansoSegundos: 90 };
+    await store.iniciar('p1', 'Plano', {
+      id: 'd1', nome: 'A', ordem: 0,
+      exercicios: [
+        { ...item, exercicioId: 'x1', exercicioNome: 'Supino', series: 4, drops: 0 },
+        { ...item, exercicioId: 'x2', exercicioNome: 'Crucifixo', series: 2, drops: 2, cargaAlvo: 30 },
+        { ...item, exercicioId: 'x3', exercicioNome: 'Remada', series: 2, drops: 0 },
+      ],
+    } as DiaHoje);
+    const [supino, crucifixo, remada] = store.sessao()!.exercicios.map(e => e.series.map(x => [x.reps, x.carga]));
+    expect(supino).toEqual([[12, 10], [8, 40], [9, 42.5], [9, 42.5]]); // as que sobram repetem a última
+    // drop do último treino quando houve; o que faltou segue em cadeia
+    expect(crucifixo).toEqual([[10, 30], [12, 20], [14, 15], [10, 30], [12, 25], [14, 20]]);
+    expect(remada).toEqual([[8, 40], [8, 40]]); // sem histórico: o plano
+    expect(store.sessao()!.exercicios[0].metaCarga).toBe(40); // a meta continua a do plano
+  });
+
+  it('iniciar segue com o plano quando o último treino não carrega', async () => {
+    TestBed.inject(SessoesApi).anteriores = () => throwError(() => new HttpErrorResponse({ status: 500 }));
+    await store.iniciar('p1', 'Plano', { id: 'd1', nome: 'A', ordem: 0, exercicios: [{ exercicioId: 'x1', exercicioNome: 'Supino',
+      grupoMuscular: 'PEITO', equipamento: 'BARRA', series: 1, repsMin: 8, repsMax: 10, cargaAlvo: 40, descansoSegundos: 90, drops: 0 }] } as DiaHoje);
+    expect(store.sessao()!.exercicios[0].series.map(x => [x.reps, x.carga])).toEqual([[8, 40]]);
   });
 
   it('concluir a série conclui os drops dela (o drop-set é uma série só)', () => {
@@ -264,7 +295,7 @@ describe('TreinoStore', () => {
 
     // App reaberto: um store novo lê o aparelho.
     TestBed.resetTestingModule();
-    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar } }] });
+    TestBed.configureTestingModule({ providers: [{ provide: SessoesApi, useValue: { salvar, anteriores: () => of([]) } }] });
     const reaberto = TestBed.inject(TreinoStore);
     await vi.advanceTimersByTimeAsync(10);
 
