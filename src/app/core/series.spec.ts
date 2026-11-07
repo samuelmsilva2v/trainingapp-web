@@ -70,7 +70,24 @@ describe('xpDoTreino', () => {
     const drop1Editado = com55.map((x, i) => (i === 1 ? { ...x, carga: 42.5 } : x));
     const com60 = editarSerie(drop1Editado, 0, { ...drop1Editado[0], carga: 60 });
     expect(valores(com60)).toEqual([[60, 8], [42.5, 10], [35, 12]]); // drop editado fica, e o seguinte segue ele
-    expect(valores(editarSerie(com55, 1, { ...com55[1], carga: 20 }))).toEqual([[55, 8], [20, 10], [35, 12]]); // editar o drop não mexe nos outros
+    // editar o drop não mexe na série; o drop seguinte, ainda na sugestão, segue ele
+    expect(valores(editarSerie(com55, 1, { ...com55[1], carga: 20 }))).toEqual([[55, 8], [20, 10], [15, 12]]);
+  });
+
+  it('o drop editado desce para o drop da mesma posição nas séries seguintes não concluídas', () => {
+    const bloco = (concluida = false) => [serie(10, 30, 'NORMAL', concluida), serie(12, 25, 'DROP'), serie(14, 20, 'DROP')];
+    const series = [...bloco(), ...bloco(), ...bloco(true), ...bloco()];
+    const drop1 = editarSerie(series, 1, { ...series[1], carga: 20 });
+    expect(valores(drop1)).toEqual([
+      [30, 10], [20, 12], [15, 14],
+      [30, 10], [20, 12], [15, 14],
+      [30, 10], [25, 12], [20, 14], // concluída fica
+      [30, 10], [20, 12], [15, 14],
+    ]);
+    const drop2 = editarSerie(drop1, 2, { ...drop1[2], carga: 10 });
+    expect(valores(drop2).filter((_, i) => i % 3 === 2)).toEqual([[10, 14], [10, 14], [20, 14], [10, 14]]);
+    // na série seguinte, editar o drop não volta para a de cima
+    expect(valores(editarSerie(drop2, 4, { ...drop2[4], reps: 15 })).slice(0, 6)).toEqual([[30, 10], [20, 12], [10, 14], [30, 10], [20, 15], [10, 17]]);
   });
 
   it('carga e reps descem para as séries seguintes não concluídas, mesmo com valor (web#67)', () => {

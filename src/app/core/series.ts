@@ -61,26 +61,33 @@ const SUGESTAO = { carga: cargaDoDrop, reps: repsDoDrop };
  * Troca a série `indice` por `nova`. A carga ou as reps que mudaram numa série normal descem para todas as séries
  * normais seguintes ainda não concluídas, mesmo as que já tinham valor (web#67). Em cada bloco alterado, os drops seguem
  * a série (web#63): o drop vazio ou ainda igual à sugestão do valor antigo recebe a sugestão do novo, em cadeia; drop editado fica.
+ * Um drop editado desce do mesmo jeito: vai para o drop da mesma posição nos blocos seguintes não concluídos, e os drops
+ * depois dele, em cada bloco, seguem em cadeia.
  */
 export function editarSerie(series: SerieLocal[], indice: number, nova: SerieLocal): SerieLocal[] {
   const lista = series.map((s, i) => (i === indice ? nova : s));
-  if (ehDrop(nova)) return lista;
+  const todos = blocos(lista);
+  const k = todos.findIndex(b => b.inicio === indice || b.drops.includes(indice));
+  if (k === -1) return lista;
+  const pos = todos[k].drops.indexOf(indice); // -1: série normal
   for (const campo of ['carga', 'reps'] as const) {
     if (series[indice][campo] === nova[campo]) continue;
-    for (const bloco of blocos(lista)) {
-      if (bloco.inicio < indice || (bloco.inicio > indice && lista[bloco.inicio].concluida)) continue;
-      lista[bloco.inicio] = { ...lista[bloco.inicio], [campo]: nova[campo] };
-      seguirDrops(lista, bloco, campo, series[bloco.inicio][campo]);
-    }
+    todos.forEach((bloco, j) => {
+      if (j < k || (j > k && lista[bloco.inicio].concluida)) return;
+      const alvo = pos === -1 ? bloco.inicio : bloco.drops[pos];
+      if (alvo === undefined) return;
+      lista[alvo] = { ...lista[alvo], [campo]: nova[campo] };
+      seguirDrops(lista, bloco.drops.slice(pos + 1), campo, series[alvo][campo], nova[campo]);
+    });
   }
   return lista;
 }
 
-/** Recalcula em cadeia os drops do bloco, a partir do valor antigo da série normal (já trocada em `lista`). */
-function seguirDrops(lista: SerieLocal[], bloco: Bloco, campo: 'carga' | 'reps', antigoDaSerie: number | null): void {
-  let antigo = antigoDaSerie;
-  let novo = lista[bloco.inicio][campo];
-  for (const d of bloco.drops) {
+/** Recalcula em cadeia os drops dados, a partir da etapa antes deles, que foi de `antigoAntes` para `novoAntes`. */
+function seguirDrops(lista: SerieLocal[], drops: number[], campo: 'carga' | 'reps', antigoAntes: number | null, novoAntes: number | null): void {
+  let antigo = antigoAntes;
+  let novo = novoAntes;
+  for (const d of drops) {
     const atual = lista[d][campo];
     const valor = atual === null || atual === SUGESTAO[campo](antigo) ? SUGESTAO[campo](novo) : atual;
     lista[d] = { ...lista[d], [campo]: valor };
