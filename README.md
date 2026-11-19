@@ -4,6 +4,16 @@ Front-end do **TrainingApp**, um app de treino para registrar séries, repetiç�
 
 Gerado com [Angular CLI](https://github.com/angular/angular-cli) 21.2.6.
 
+## Prints
+
+Tirados no viewport de um celular (412 × 891), com uma conta de demonstração.
+
+| Hoje | Editor do plano | Treino em andamento |
+| :---: | :---: | :---: |
+| <img src="docs/prints/02-hoje.png" width="220" alt="Tela Hoje com o próximo treino da rotação"> | <img src="docs/prints/04-editor.png" width="220" alt="Editor do plano"> | <img src="docs/prints/06-treino.png" width="220" alt="Execução do treino com descanso"> |
+| **Resultado** | **Histórico** | **Perfil** |
+| <img src="docs/prints/08-resultado.png" width="220" alt="XP, recordes e conquistas do treino"> | <img src="docs/prints/09-historico.png" width="220" alt="Histórico de treinos"> | <img src="docs/prints/10-perfil.png" width="220" alt="Perfil com nível, sequência e peso"> |
+
 ## Stack
 
 - Angular 21 (standalone, routing, SCSS) e Angular Material
