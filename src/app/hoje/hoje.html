@@ -8,7 +8,7 @@
     @if (g?.congelada) {
       <app-cubo-gelo class="icone" />
     } @else {
-      <span class="icone cheio" aria-hidden="true">local_fire_department</span>
+      <span class="icone cheio" [class.chama-viva]="sequencia > 0" aria-hidden="true">local_fire_department</span>
     }
     {{ sequencia === 0 ? 'Sem sequência' : sequencia + (sequencia === 1 ? ' dia de sequência' : ' dias de sequência') }}
   </span>

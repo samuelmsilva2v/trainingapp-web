@@ -1,14 +1,14 @@
 import { SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { NO_APP } from './cofre';
 
-export const TEMAS = ['escuro', 'claro', 'sistema'] as const;
+export const TEMAS = ['escuro', 'claro', 'sistema', 'ignite'] as const;
 export type Tema = (typeof TEMAS)[number];
 export const TEMA_PADRAO: Tema = 'escuro';
 
 /** O script do index.html lê a mesma chave antes da primeira pintura (sem piscar o tema escuro). */
 const CHAVE_TEMA = 'trainingapp.tema';
 /** --c-fundo de cada tema, para a barra do navegador (meta theme-color). */
-const FUNDO = { claro: '#f4f5f2', escuro: '#121416' };
+const FUNDO = { claro: '#f4f5f2', escuro: '#121416', ignite: '#0b0c10' };
 const SISTEMA_ESCURO = '(prefers-color-scheme: dark)';
 
 /** Guardado só no aparelho; valor estranho ou sem armazenamento volta ao padrão. */
@@ -36,7 +36,7 @@ export function salvarTema(tema: Tema): void {
 export function aplicarTema(tema: Tema = lerTema()): void {
   document.documentElement.dataset['tema'] = tema;
   const claro = tema === 'claro' || (tema === 'sistema' && !matchMedia(SISTEMA_ESCURO).matches);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? FUNDO.claro : FUNDO.escuro);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', claro ? FUNDO.claro : tema === 'ignite' ? FUNDO.ignite : FUNDO.escuro);
   // Light = ícones escuros, para fundo claro.
   if (NO_APP) void SystemBars.setStyle({ style: claro ? SystemBarsStyle.Light : SystemBarsStyle.Dark }).catch(() => undefined);
 }

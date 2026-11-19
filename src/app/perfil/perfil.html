@@ -45,7 +45,7 @@
               @if (g.congelada) {
                 <app-cubo-gelo class="icone" />
               } @else {
-                <span class="icone" aria-hidden="true">local_fire_department</span>
+                <span class="icone" [class.chama-viva]="g.streakAtual > 0" aria-hidden="true">local_fire_department</span>
               }
             </span>
             <span class="texto">

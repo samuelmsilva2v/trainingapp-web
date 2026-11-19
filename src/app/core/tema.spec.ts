@@ -55,4 +55,10 @@ describe('tema', () => {
     expect(localStorage.getItem('trainingapp.tema')).toBe('claro');
     expect(document.documentElement.dataset['tema']).toBe('claro');
   });
+
+  it('Ignite é escuro com o fundo próprio na barra', () => {
+    salvarTema('ignite');
+    expect(lerTema()).toBe('ignite');
+    expect(corDaBarra()).toBe('#0b0c10');
+  });
 });

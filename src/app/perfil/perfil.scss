@@ -38,7 +38,7 @@
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; padding: 0;
   border: 2px solid #0b0f02; border-radius: 50%;
-  background: #d4ff00; color: #0b0f02; cursor: pointer;
+  background: var(--c-primaria); color: #0b0f02; cursor: pointer;
   .icone { font-size: 18px; }
   /* Alvo de toque de 48 px sem mudar o desenho. */
   &::after { content: ''; position: absolute; inset: -8px; }
@@ -172,7 +172,7 @@ input {
 
 /* Notificações: cada interruptor num bloco, com as opções logo abaixo quando ligado. */
 .notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
-.frequencias, .temas { grid-template-columns: repeat(3, 1fr); }
+.frequencias { grid-template-columns: repeat(3, 1fr); }
 
 // Desafios da semana (api#38): mesma lista das conquistas; o cumprido fica aceso.
 .desafios-card { gap: 12px; }

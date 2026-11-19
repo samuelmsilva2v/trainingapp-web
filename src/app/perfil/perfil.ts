@@ -105,6 +105,7 @@ export class PerfilTela implements OnInit, OnDestroy {
     { valor: 'escuro', rotulo: 'Escuro', icone: 'dark_mode' },
     { valor: 'claro', rotulo: 'Claro', icone: 'light_mode' },
     { valor: 'sistema', rotulo: 'Sistema', icone: 'brightness_auto' },
+    { valor: 'ignite', rotulo: 'Ignite', icone: 'local_fire_department' },
   ];
   protected readonly tema = signal<Tema>(lerTema());
 

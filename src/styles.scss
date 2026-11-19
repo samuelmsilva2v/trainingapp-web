@@ -64,6 +64,10 @@ html {
   --c-primaria: light-dark(#d4ff00, #caf300);
   --c-primaria-esc: light-dark(#c2eb00, #b0d500);
   --c-sobre-primaria: light-dark(#0b0f02, #171e00);
+  /* Botão primário em degradê de lima (do mais fundo ao mais claro), no mesmo ângulo do Ignite. */
+  --c-primaria-fundo: linear-gradient(135deg, light-dark(#b8e000, #a8cc00) 0%, light-dark(#d4ff00, #caf300) 60%, light-dark(#ecff7a, #e6ff5c) 100%);
+  --c-primaria-fundo-hover: linear-gradient(135deg, light-dark(#a6cc00, #98b900) 0%, light-dark(#c2eb00, #b8de00) 60%, light-dark(#ddf060, #d4ee4a) 100%);
+  --c-primaria-brilho: 0 4px 20px -2px light-dark(rgb(140 170 0 / 0.35), rgb(202 243 0 / 0.35)), inset 0 1px 0 rgb(255 255 255 / 0.3);
   --c-destaque: light-dark(#4a5c00, #caf300);
   --c-serie-atual: light-dark(#faffe0, #1e2022);
   --c-secundaria: light-dark(#e05e00, #fe6b00);
@@ -85,6 +89,49 @@ html {
   --r-lg: 1rem;
   --alvo: 48px;
   --fonte-titulo: 'Outfit', sans-serif;
+}
+
+// Tema "Ignite Athletic" (Stitch), só escuro: Ember Orange como primária, Solar Gold como secundária
+// e Crimson Blaze no perigo. html[data-tema] vence o :root, então só troca as cores.
+html[data-tema='ignite'] {
+  color-scheme: dark;
+  @include mat.theme((
+    color: (
+      primary: mat.$orange-palette,
+      tertiary: mat.$red-palette,
+    ),
+  ));
+  @include mat.snack-bar-overrides((
+    container-color: #1e232a,
+    button-color: #ffae00,
+  ));
+  --c-fundo: #0b0c10;
+  --c-sup-0: #07080b;
+  --c-sup-1: #14171c;
+  --c-sup-2: #1a1e24;
+  --c-sup-3: #1e232a;
+  --c-sup-4: #282f38;
+  --c-texto: #f5f7fa;
+  --c-texto-2: #9ca8b8;
+  --c-borda: #384250;
+  --c-primaria: #ff4e00;
+  --c-primaria-esc: #e04400;
+  --c-sobre-primaria: #0e0f12;
+  /* Botão primário em degradê brasa → ouro com brilho, como no Stitch. */
+  --c-primaria-fundo: linear-gradient(135deg, #ff4e00 0%, #ff5e14 60%, #ffae00 100%);
+  --c-primaria-fundo-hover: linear-gradient(135deg, #e04400 0%, #f05410 60%, #f0a000 100%);
+  --c-primaria-brilho: 0 4px 20px -2px rgb(255 78 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  --c-destaque: #ff5e14;
+  --c-serie-atual: #1a1e24;
+  --c-secundaria: #ffae00;
+  --c-secundaria-texto: #ffae00;
+  --c-secundaria-hover: #ffbd33;
+  --c-sobre-secundaria: #291800;
+  --c-interruptor: #ffae00;
+  --c-perigo: #ff525f;
+  --c-perigo-fundo: #d81b3a;
+  --c-perigo-fundo-hover: #b5152f;
+  --c-sobre-perigo: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -163,7 +210,12 @@ input, select { font: inherit; color: inherit; }
 }
 // <a class="btn"> (routerLink) sem o sublinhado padrão de link.
 a.btn { text-decoration: none; }
-.btn-primario { background: var(--c-primaria); color: var(--c-sobre-primaria); &:hover:not(:disabled) { background: var(--c-primaria-esc); } }
+.btn-primario {
+  background: var(--c-primaria-fundo, var(--c-primaria));
+  box-shadow: var(--c-primaria-brilho, none);
+  color: var(--c-sobre-primaria);
+  &:hover:not(:disabled) { background: var(--c-primaria-fundo-hover, var(--c-primaria-esc)); }
+}
 .btn-secundario { background: var(--c-sup-3); color: var(--c-texto); &:hover:not(:disabled) { background: var(--c-sup-4); } }
 .btn-perigo { background: transparent; color: var(--c-perigo); }
 
@@ -268,3 +320,22 @@ a.btn { text-decoration: none; }
 .esqueleto-lista { display: flex; flex-direction: column; gap: 16px; }
 // Texto só para leitor de tela.
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+// Chama da sequência viva (Hoje e Perfil): tremula, com degradê de brasa a amarelo e brilho que pulsa.
+.chama-viva {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  background: linear-gradient(to top, #ff3d00, var(--c-secundaria) 50%, #ffd54f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: chama 1.6s ease-in-out infinite alternate;
+}
+@keyframes chama {
+  0% { transform: scale(1, 1) rotate(-2deg); filter: drop-shadow(0 0 1px color-mix(in srgb, var(--c-secundaria) 50%, transparent)); }
+  25% { transform: scale(0.95, 1.08) rotate(2deg); }
+  50% { transform: scale(1.04, 0.96) rotate(-1deg); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--c-secundaria) 80%, transparent)); }
+  75% { transform: scale(0.97, 1.06) rotate(3deg); }
+  100% { transform: scale(1, 1.02) rotate(-2deg); filter: drop-shadow(0 0 2px color-mix(in srgb, var(--c-secundaria) 60%, transparent)); }
+}
+@media (prefers-reduced-motion: reduce) { .chama-viva { animation: none; } }
