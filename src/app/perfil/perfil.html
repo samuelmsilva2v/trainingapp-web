@@ -114,14 +114,27 @@
         <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
         <div class="tema temas" role="group" aria-labelledby="rotulo-tema">
           @for (t of temas; track t.valor) {
-            <button type="button" class="opcao" [class.sel]="tema() === t.valor" [attr.aria-pressed]="tema() === t.valor"
-                    (click)="escolherTema(t.valor)">
-              <span class="icone" aria-hidden="true">{{ t.icone }}</span> {{ t.rotulo }}
+            @let travado = nivelQueFalta(t.valor);
+            <button type="button" class="opcao" [class.sel]="selecionado(t.valor)" [class.travado]="travado" [attr.aria-pressed]="selecionado(t.valor)"
+                    [attr.aria-label]="travado ? t.rotulo + ', libera no nível ' + travado : null"
+                    (click)="selecionado(t.valor) || escolherTema(t.valor)">
+              @if (!travado && t.mascara) {
+                <span class="icone-mascara {{ t.mascara }}" aria-hidden="true"></span>
+              } @else {
+                <span class="icone" aria-hidden="true">{{ travado ? 'lock' : t.icone }}</span>
+              }
+              {{ t.rotulo }}
+              @if (travado) { <span class="nivel-tema" aria-hidden="true">Nv {{ travado }}</span> }
             </button>
           }
         </div>
-        @if (tema() === 'sistema') {
-          <p class="suave dica">Segue o tema claro ou escuro do aparelho.</p>
+        @if (commando()) {
+          <div class="tema camuflagens" role="group" aria-label="Camuflagem do Commando">
+            @for (c of camuflagens; track c.valor) {
+              <button type="button" class="opcao" [class.sel]="tema() === c.valor" [attr.aria-pressed]="tema() === c.valor"
+                      (click)="escolherTema(c.valor)">{{ c.rotulo }}</button>
+            }
+          </div>
         }
       </div>
 

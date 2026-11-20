@@ -1,22 +1,11 @@
-import { vi } from 'vitest';
 import { iniciarTema, lerTema, salvarTema } from './tema';
 
 describe('tema', () => {
-  let sistemaEscuro: boolean;
-  let avisarTroca: () => void;
-
   beforeEach(() => {
     localStorage.clear();
     delete document.documentElement.dataset['tema'];
     document.head.innerHTML = '<meta name="theme-color" content="#121416">';
-    sistemaEscuro = true;
-    vi.stubGlobal('matchMedia', () => ({
-      get matches() { return sistemaEscuro; },
-      addEventListener: (_: string, ouvinte: () => void) => (avisarTroca = ouvinte),
-    }));
   });
-
-  afterEach(() => vi.unstubAllGlobals());
 
   const corDaBarra = () => document.querySelector('meta[name="theme-color"]')?.getAttribute('content');
 
@@ -37,15 +26,10 @@ describe('tema', () => {
     expect(lerTema()).toBe('escuro');
   });
 
-  it('"Sistema" segue o aparelho, inclusive quando ele troca de tema com o app aberto', () => {
+  it('quem tinha "Sistema" guardado (opção removida) volta ao escuro', () => {
     localStorage.setItem('trainingapp.tema', 'sistema');
-    sistemaEscuro = false;
     iniciarTema();
-    expect(document.documentElement.dataset['tema']).toBe('sistema');
-    expect(corDaBarra()).toBe('#f4f5f2');
-
-    sistemaEscuro = true;
-    avisarTroca();
+    expect(document.documentElement.dataset['tema']).toBe('escuro');
     expect(corDaBarra()).toBe('#121416');
   });
 
@@ -60,5 +44,24 @@ describe('tema', () => {
     salvarTema('ignite');
     expect(lerTema()).toBe('ignite');
     expect(corDaBarra()).toBe('#0b0c10');
+  });
+
+  it('Chrome é escuro com o fundo próprio na barra', () => {
+    salvarTema('chrome');
+    expect(lerTema()).toBe('chrome');
+    expect(corDaBarra()).toBe('#151617');
+  });
+
+  it('Cyberpunk é escuro com o fundo próprio na barra', () => {
+    salvarTema('cyberpunk');
+    expect(lerTema()).toBe('cyberpunk');
+    expect(corDaBarra()).toBe('#0b1026');
+  });
+
+  it('cada camuflagem do Commando é um tema guardado, com o fundo próprio na barra', () => {
+    salvarTema('commando-deserto');
+    expect(lerTema()).toBe('commando-deserto');
+    expect(document.documentElement.dataset['tema']).toBe('commando-deserto');
+    expect(corDaBarra()).toBe('#3b3427');
   });
 });

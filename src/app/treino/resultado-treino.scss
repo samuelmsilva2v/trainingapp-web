@@ -8,7 +8,7 @@ section { display: flex; flex-direction: column; gap: 8px; }
 .subiu { margin: 0; padding: 8px 12px; border-radius: var(--r-sm); background: var(--c-primaria); color: var(--c-sobre-primaria); font-weight: 700; text-align: center; }
 .nivel-topo { display: flex; justify-content: space-between; font-weight: 700; }
 .barra { height: 12px; border-radius: 6px; background: var(--c-sup-4); overflow: hidden; }
-.preenchida { height: 100%; background: var(--c-primaria); transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.preenchida { height: 100%; background: var(--c-barra-xp, var(--c-primaria)); transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .sequencia { display: flex; align-items: center; gap: 4px; margin: 0; }
 .recordes { text-transform: uppercase; }
 .trofeu { margin-left: 4px; }

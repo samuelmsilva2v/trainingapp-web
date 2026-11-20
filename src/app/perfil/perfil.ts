@@ -14,7 +14,7 @@ import { formatarKg } from '../core/formatos';
 import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
-import { Tema, lerTema, salvarTema } from '../core/tema';
+import { NIVEL_DO_TEMA, Tema, lerTema, salvarTema } from '../core/tema';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -101,13 +101,32 @@ export class PerfilTela implements OnInit, OnDestroy {
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
   protected readonly frequenciasPeso = [7, 15, 30];
-  protected readonly temas: readonly { valor: Tema; rotulo: string; icone: string }[] = [
+  /** `mascara`: ícone em PNG usado como máscara (classe em styles.scss) no lugar do ícone da fonte. */
+  protected readonly temas: readonly { valor: Tema; rotulo: string; icone: string; mascara?: string }[] = [
     { valor: 'escuro', rotulo: 'Escuro', icone: 'dark_mode' },
     { valor: 'claro', rotulo: 'Claro', icone: 'light_mode' },
-    { valor: 'sistema', rotulo: 'Sistema', icone: 'brightness_auto' },
     { valor: 'ignite', rotulo: 'Ignite', icone: 'local_fire_department' },
+    { valor: 'chrome', rotulo: 'Chrome', icone: 'hexagon' },
+    { valor: 'cyberpunk', rotulo: 'Cyberpunk', icone: 'memory', mascara: 'blaster' },
+    // Um botão só para as duas camuflagens; ativo em qualquer uma delas (ver `selecionado`).
+    { valor: 'commando-mata', rotulo: 'Commando', icone: 'military_tech' },
+  ];
+  /** Camuflagens do Commando, na linha que aparece embaixo quando ele está ativo. */
+  protected readonly camuflagens: readonly { valor: Tema; rotulo: string }[] = [
+    { valor: 'commando-mata', rotulo: 'Jungle' },
+    { valor: 'commando-deserto', rotulo: 'Desert' },
   ];
   protected readonly tema = signal<Tema>(lerTema());
+  protected readonly commando = computed(() => this.tema().startsWith('commando'));
+  /** O botão do Commando fica marcado em qualquer camuflagem. */
+  protected selecionado(valor: Tema): boolean {
+    return this.tema() === valor || (valor.startsWith('commando') && this.commando());
+  }
+  /** Nível que falta para escolher o tema, ou null se já pode. Sem a gamificação carregada, trava. */
+  protected nivelQueFalta(tema: Tema): number | null {
+    const minimo = NIVEL_DO_TEMA[tema];
+    return minimo && (this.gamificacao.dados()?.nivel ?? 0) < minimo ? minimo : null;
+  }
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
@@ -249,6 +268,11 @@ export class PerfilTela implements OnInit, OnDestroy {
 
   /** Salva na hora, com o nome já salvo: o que está sendo digitado no campo de nome continua lá. */
   protected escolherTema(tema: Tema): void {
+    const nivel = this.nivelQueFalta(tema);
+    if (nivel) {
+      this.aviso.open(`Chegue ao nível ${nivel} para liberar este tema.`, 'OK', { duration: 4000 });
+      return;
+    }
     salvarTema(tema);
     this.tema.set(tema);
   }

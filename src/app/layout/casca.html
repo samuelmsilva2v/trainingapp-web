@@ -1,5 +1,5 @@
 <header class="topo">
-  <span class="marca titulo-sm">TrainingApp</span>
+  <span class="marca titulo-sm" data-texto="TrainingApp">TrainingApp</span>
   @let g = gamificacao.dados();
   <a class="xp" routerLink="/perfil" [attr.aria-label]="'Nível ' + (g?.nivel ?? 1) + ', ' + formatar(g?.xpTotal ?? 0) + ' XP'">
     <span class="icone cheio" aria-hidden="true">bolt</span>

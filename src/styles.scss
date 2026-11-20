@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'sass:string';
 
 // Fontes locais (public/fonts), só o subconjunto latin: o app funciona sem internet.
 // Material Symbols traz apenas os ícones usados; ao usar um ícone novo, regerar o arquivo
@@ -30,7 +31,6 @@
 html {
   color-scheme: dark;
   &[data-tema='claro'] { color-scheme: light; }
-  &[data-tema='sistema'] { color-scheme: light dark; }
   @include mat.theme((
     color: (
       primary: mat.$chartreuse-palette,
@@ -91,6 +91,44 @@ html {
   --fonte-titulo: 'Outfit', sans-serif;
 }
 
+// Texturas do Ignite (geradas: grão de carvão e dois ladrilhos de brasas com brilho).
+$carvao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .85 0 0 0 0 .72 0 0 0 0 .62 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+$brasas-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23g)' opacity='.6'%3E%3Ccircle cx='78.5' cy='89.7' r='0.63' fill='%23ff7a1a'/%3E%3Ccircle cx='70.9' cy='81.0' r='0.59' fill='%23ffae00'/%3E%3Ccircle cx='94.3' cy='65.7' r='0.81' fill='%23ffae00'/%3E%3Ccircle cx='105.2' cy='12.3' r='1.05' fill='%23ff7a1a'/%3E%3Ccircle cx='107.5' cy='25.3' r='1.12' fill='%23ff7a1a'/%3E%3Ccircle cx='28.2' cy='8.0' r='1.53' fill='%23ffae00'/%3E%3Ccircle cx='19.3' cy='71.1' r='1.55' fill='%23ff7a1a'/%3E%3Ccircle cx='67.1' cy='88.1' r='1.24' fill='%23ff7a1a'/%3E%3Ccircle cx='27.3' cy='157.7' r='0.99' fill='%23ff7a1a'/%3E%3Ccircle cx='87.5' cy='52.9' r='0.67' fill='%23ffae00'/%3E%3C/g%3E%3C/svg%3E");
+$brasas-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23g)' opacity='.6'%3E%3Ccircle cx='63.2' cy='35.3' r='1.38' fill='%23ffae00'/%3E%3Ccircle cx='5.5' cy='18.2' r='1.42' fill='%23ff7a1a'/%3E%3Ccircle cx='56.9' cy='113.1' r='1.00' fill='%23ff7a1a'/%3E%3Ccircle cx='69.2' cy='114.3' r='1.26' fill='%23ff7a1a'/%3E%3Ccircle cx='23.3' cy='51.2' r='0.60' fill='%23ffae00'/%3E%3Ccircle cx='95.4' cy='95.8' r='1.15' fill='%23ff7a1a'/%3E%3Ccircle cx='84.1' cy='68.8' r='0.62' fill='%23ff7a1a'/%3E%3Ccircle cx='116.7' cy='106.4' r='1.32' fill='%23ff7a1a'/%3E%3C/g%3E%3C/svg%3E");
+
+
+// Plaqueta militar (dog tag) de aço inox para as badges de XP: metal escovado, cantos arredondados,
+// borda em relevo, furo com profundidade e texto prensado no metal. O Commando usa a plaqueta completa; o Chrome
+// só se inspira nela: sem o furo e com os cantos quase retos do tema.
+// $raio padrão: cantos bem arredondados com o meio das laterais reto, como uma dog tag (50% viraria cápsula).
+@mixin plaqueta-militar($furo: true, $raio: string.unquote("9px / 32%")) {
+  position: relative;
+  border-radius: $raio;
+  background:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, #eceef1 0%, #b9bdc3 45%, #d9dce0 70%, #a6aab0 100%);
+  color: #3b3e43;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.65), 0 -1px 0 rgb(0 0 0 / 0.2);
+  letter-spacing: 0.05em;
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.55), inset 0 0 0 3px rgb(0 0 0 / 0.12), 0 1px 3px rgb(0 0 0 / 0.5);
+  .icone { color: inherit; }
+  @if $furo {
+    padding-left: 24px;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      margin-top: -3.5px;
+      border-radius: 50%;
+      background: var(--c-fundo);
+      box-shadow: inset 0 1px 1.5px rgb(0 0 0 / 0.7), 0 0 0 1.5px rgb(255 255 255 / 0.5);
+    }
+  }
+}
+
 // Tema "Ignite Athletic" (Stitch), só escuro: Ember Orange como primária, Solar Gold como secundária
 // e Crimson Blaze no perigo. html[data-tema] vence o :root, então só troca as cores.
 html[data-tema='ignite'] {
@@ -132,6 +170,485 @@ html[data-tema='ignite'] {
   --c-perigo-fundo: #d81b3a;
   --c-perigo-fundo-hover: #b5152f;
   --c-sobre-perigo: #ffffff;
+  /* Barra de XP em calor: brasa → ouro → brasa, correndo devagar (animação abaixo). */
+  --c-barra-xp: linear-gradient(90deg, #b8320a, #ff4e00, #ffae00, #ff4e00, #b8320a);
+
+  .barra > :is(span, .preenchida) {
+    // !important: o `background:` do componente (mais específico) zera o tamanho, e o degradê pararia.
+    background-size: 200% 100% !important;
+    animation: calor 2.4s linear infinite;
+  }
+  // Badges de XP com uma linha fina laranja e brilho leve para dentro (os cards ficam sem contorno: o Ignite é o tema mais simples).
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) {
+    box-shadow: inset 0 0 0 1px rgb(255 94 20 / 0.8), inset 0 0 5px rgb(255 94 20 / 0.25);
+  }
+  // Grão de carvão no fundo dos demais cards (o do treino já tem o grão e as brasas, logo abaixo).
+  :is(.cartao:not(.treino), .cartao-ex, .card, .esqueleto-cartao) {
+    background-image: $carvao;
+  }
+  // Card do treino de hoje: carvão com brasas subindo. Dois ladrilhos de brasas sobem em velocidades
+  // diferentes e acendem e apagam fora de fase. O z-index -1 com isolation deixa o efeito sob o conteúdo.
+  .cartao.treino {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: $carvao, linear-gradient(160deg, #1d2128, #16191e);
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+    &::before { background: $brasas-a; animation: brasas-a 9s linear infinite, brasas-pisca 3.6s ease-in-out infinite; }
+    &::after { background: $brasas-b; animation: brasas-b 6s linear infinite, brasas-pisca 3.6s ease-in-out -1.8s infinite; }
+  }
+}
+// Sobem exatamente um ladrilho por volta, para emendar sem salto.
+@keyframes brasas-a { to { background-position: 0 -160px; } }
+@keyframes brasas-b { to { background-position: 0 -120px; } }
+@keyframes brasas-pisca { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes calor {
+  to { background-position: -200% 0; }
+}
+// Efeitos do check da série (core/efeito-check.ts), soltos no <body> por cima de tudo.
+.efeito-check { position: fixed; z-index: 1000; pointer-events: none; }
+// Ignite: onda de calor.
+.efeito-check.onda-calor {
+  border: 1.5px solid rgb(255 122 26 / 0.8); box-shadow: 0 0 8px rgb(255 78 0 / 0.5), inset 0 0 6px rgb(255 78 0 / 0.25);
+}
+// Escuro e Claro: pulso na cor principal, com os cantos do check.
+.efeito-check.pulso {
+  border-radius: var(--r-md);
+  border: 2px solid var(--c-primaria); box-shadow: 0 0 10px color-mix(in srgb, var(--c-primaria) 60%, transparent);
+}
+// Chrome: janela do tamanho do botão onde o reflexo corre.
+.efeito-check.reflexo {
+  overflow: hidden;
+  span { position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.85) 50%, transparent 70%); }
+}
+// Cyberpunk: faixas da falha, somadas à cor do check (screen) como o desalinhamento de cores da marca.
+.efeito-check.falha { mix-blend-mode: screen; opacity: 0.9; }
+.efeito-check.falha.rosa { background: #ff2e63; }
+.efeito-check.falha.ciano { background: #08d9d6; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema='ignite'] :is(.barra > span, .barra > .preenchida),
+  html[data-tema='ignite'] .cartao.treino::before,
+  html[data-tema='ignite'] .cartao.treino::after { animation: none; }
+}
+
+// Tema "Chrome" (desbloqueia no nível 5, core/tema.ts), só escuro: grafite neutro com prata cromada.
+// O efeito é metal escovado nos cartões e um reflexo que passa de tempos em tempos no botão primário.
+html[data-tema='chrome'] {
+  color-scheme: dark;
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+  ));
+  @include mat.snack-bar-overrides((
+    container-color: #2a2c2f,
+    button-color: #d4d7db,
+  ));
+  --c-fundo: #151617;
+  --c-sup-0: #0f1011;
+  --c-sup-1: #1a1b1d;
+  --c-sup-2: #202224;
+  --c-sup-3: #2a2c2f;
+  --c-sup-4: #34373a;
+  --c-texto: #ececee;
+  --c-texto-2: #a3a6ab;
+  --c-borda: #3d4044;
+  --c-primaria: #c9cdd2;
+  --c-primaria-esc: #aeb3b9;
+  --c-sobre-primaria: #141518;
+  /* Cromado na diagonal (mesmo ângulo dos outros temas): do prata escuro ao reflexo claro. */
+  --c-primaria-fundo: linear-gradient(135deg, #8f949b 0%, #c3c7cc 45%, #f4f5f7 70%, #c9ccd1 100%);
+  --c-primaria-fundo-hover: linear-gradient(135deg, #80858c 0%, #b4b8be 45%, #e6e8eb 70%, #b9bcc1 100%);
+  --c-primaria-brilho: 0 4px 16px -4px rgb(210 214 220 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.8);
+  --c-destaque: #d4d7db;
+  --c-serie-atual: #26282b;
+  --c-secundaria: #dfe2e6;
+  --c-secundaria-texto: #e4e7ea;
+  --c-secundaria-hover: #f2f3f5;
+  --c-sobre-secundaria: #141518;
+  --c-interruptor: #c9cdd2;
+  /* Chama da sequência em azul e branco (no padrão é brasa e amarelo). */
+  --c-chama-base: #1f6fd6;
+  --c-chama-topo: #ffffff;
+  --c-perigo: #ff5a5a;
+  --c-perigo-fundo: #b3261e;
+  --c-perigo-fundo-hover: #93201a;
+  --c-sobre-perigo: #ffffff;
+
+  // Chapa xadrez (piso de ônibus), como na foto de referência: relevos em lente mais claros que a chapa, em
+  // fileiras deslocadas meio passo e alternando a direção, com sombra embaixo e um grão fino de sujeira no metal.
+  // Rebites pequenos de cabeça abaulada e polida nos quatro cantos, como uma chapa rebitada na parede.
+  // Seletor global para não mexer em cada tela; vence o background do componente pela especificidade.
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    background-image: 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%234e5258'/%3E%3Cstop offset='.7' stop-color='%232a2d31'/%3E%3Cstop offset='.92' stop-color='%238a8f95'/%3E%3Cstop offset='1' stop-color='%233a3d42'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='.36' cy='.3' r='.42'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='6.5' cy='6.8' r='5' fill='%23000' fill-opacity='.6'/%3E%3Ccircle cx='6' cy='6' r='5' fill='url(%23c)'/%3E%3Cellipse cx='5' cy='4.2' rx='3' ry='2' fill='url(%23b)'/%3E%3Cpath d='M3 8.6Q6 10.4 9 8.6' stroke='%23fff' stroke-opacity='.25' stroke-width='.7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%234e5258'/%3E%3Cstop offset='.7' stop-color='%232a2d31'/%3E%3Cstop offset='.92' stop-color='%238a8f95'/%3E%3Cstop offset='1' stop-color='%233a3d42'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='.36' cy='.3' r='.42'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='6.5' cy='6.8' r='5' fill='%23000' fill-opacity='.6'/%3E%3Ccircle cx='6' cy='6' r='5' fill='url(%23c)'/%3E%3Cellipse cx='5' cy='4.2' rx='3' ry='2' fill='url(%23b)'/%3E%3Cpath d='M3 8.6Q6 10.4 9 8.6' stroke='%23fff' stroke-opacity='.25' stroke-width='.7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%234e5258'/%3E%3Cstop offset='.7' stop-color='%232a2d31'/%3E%3Cstop offset='.92' stop-color='%238a8f95'/%3E%3Cstop offset='1' stop-color='%233a3d42'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='.36' cy='.3' r='.42'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='6.5' cy='6.8' r='5' fill='%23000' fill-opacity='.6'/%3E%3Ccircle cx='6' cy='6' r='5' fill='url(%23c)'/%3E%3Cellipse cx='5' cy='4.2' rx='3' ry='2' fill='url(%23b)'/%3E%3Cpath d='M3 8.6Q6 10.4 9 8.6' stroke='%23fff' stroke-opacity='.25' stroke-width='.7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%234e5258'/%3E%3Cstop offset='.7' stop-color='%232a2d31'/%3E%3Cstop offset='.92' stop-color='%238a8f95'/%3E%3Cstop offset='1' stop-color='%233a3d42'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='.36' cy='.3' r='.42'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='6.5' cy='6.8' r='5' fill='%23000' fill-opacity='.6'/%3E%3Ccircle cx='6' cy='6' r='5' fill='url(%23c)'/%3E%3Cellipse cx='5' cy='4.2' rx='3' ry='2' fill='url(%23b)'/%3E%3Cpath d='M3 8.6Q6 10.4 9 8.6' stroke='%23fff' stroke-opacity='.25' stroke-width='.7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cdefs%3E%3Cg id='g'%3E%3Cpath d='M-5 0Q0-2.6 5 0Q0 2.6-5 0Z' fill='%23000' fill-opacity='.55' transform='translate(.7 .9)'/%3E%3Cpath d='M-5 0Q0-2.6 5 0Q0 2.6-5 0Z' fill='%23fff' fill-opacity='.15'/%3E%3Cpath d='M-4-.3Q0-2.1 4-.3Q0-1-4-.3Z' fill='%23fff' fill-opacity='.18'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23g' transform='translate(5 5) rotate(45)'/%3E%3Cuse href='%23g' transform='translate(15 5) rotate(-45)'/%3E%3Cuse href='%23g' transform='translate(0 15) rotate(-45)'/%3E%3Cuse href='%23g' transform='translate(10 15) rotate(45)'/%3E%3Cuse href='%23g' transform='translate(20 15) rotate(-45)'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), linear-gradient(160deg, #1f2123, #131416);
+    // Os quatro primeiros são os rebites nos cantos; depois a chapa, o grão e o fundo.
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
+    background-size: 7px 7px, 7px 7px, 7px 7px, 7px 7px, auto, auto, auto;
+    background-position: left 5px top 5px, right 5px top 5px, left 5px bottom 5px, right 5px bottom 5px, 0 0, 0 0, 0 0;
+  }
+  // Sem divisórias entre os exercícios do treino de hoje: qualquer linha corta os relevos da chapa.
+  .cartao .exercicios li { border-bottom: 0; } // .cartao a mais para vencer o estilo do componente
+  // Metal usinado: cantos quase retos em cards, botões, checks, chips, badges e barra de XP.
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) { border-radius: 4px; }
+  :is(.btn, .check, .chip:not(.xp), .chip-status:not(.nivel)) { border-radius: 4px; }
+  .barra { border-radius: 2px; > :is(span, .preenchida) { border-radius: 0; } }
+  /* Barra de XP com o mesmo cromado do botão (o reflexo vem da regra abaixo). */
+  --c-barra-xp: var(--c-primaria-fundo);
+
+  // Check da série marcado no mesmo cromado em degradê do botão (o carimbo do efeito-check passa por cima dele).
+  .check.ok { background: var(--c-primaria-fundo); border-color: #c3c7cc; }
+
+  // Badges de XP inspiradas na plaqueta militar: inox escovado, borda em relevo e texto prensado, sem o furo e
+  // com os cantos quase retos do Chrome; o reflexo metálico continua passando.
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { @include plaqueta-militar($furo: false, $raio: 4px); }
+
+  // Reflexo que passa de tempos em tempos: botão primário, barra de XP e badges de XP.
+  :is(.btn-primario, .barra > span, .barra > .preenchida, .topo > a.xp, .chip-status.nivel, .chip.xp) {
+    position: relative;
+    overflow: hidden;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.7) 50%, transparent 70%);
+      transform: translateX(-120%);
+      animation: reflexo-chrome 4s ease-in-out infinite;
+    }
+  }
+  .btn-primario:disabled::after { animation: none; }
+}
+@keyframes reflexo-chrome {
+  0%, 65% { transform: translateX(-120%); }
+  90%, 100% { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema='chrome'] :is(.btn-primario, .barra > span, .barra > .preenchida, .topo > a.xp, .chip-status.nivel, .chip.xp)::after { animation: none; }
+}
+
+// Molduras de HUD do Cyberpunk (geradas: card com chanfro de 12 e cantos de 20; badge com cantos de 10).
+$hud-moldura: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M13.5 1.5H73.5V61.5L61.5 73.5H1.5V13.5Z' fill='none' stroke='%23ff2e63' stroke-width='1.6'/%3E%3Cpath d='M18.5 6.5H78.5V66.5L66.5 78.5H6.5V18.5Z' fill='none' stroke='%23ff2e63' stroke-width='1.6' opacity='.7'/%3E%3Cpath d='M16 4H76V64L64 76H4V16Z' fill='%23161b33' stroke='%2308d9d6' stroke-width='2'/%3E%3Cpath d='M58 0.8H70M10 79.2H22' stroke='%23f9ed69' stroke-width='1.4'/%3E%3Cg fill='%2308d9d6'%3E%3Crect x='0' y='26' width='5' height='2'/%3E%3Crect x='75' y='50' width='5' height='2'/%3E%3Crect x='1.5' y='30' width='3' height='1.5'/%3E%3C/g%3E%3Cg fill='%23ff2e63'%3E%3Crect x='76' y='46' width='4' height='1.5'/%3E%3C/g%3E%3C/svg%3E");
+$hud-badge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M8 3H38V30L31 37H2V10Z' fill='none' stroke='%23ff2e63' stroke-width='1.2' transform='translate(-1.5 -1.5)'/%3E%3Cpath d='M8 3H38V30L31 37H2V10Z' fill='%23161b33' stroke='%2308d9d6' stroke-width='1.6'/%3E%3C/svg%3E");
+
+// Tema "Cyberpunk" (desbloqueia no nível 15, core/tema.ts), só escuro. Paleta da referência aprovada:
+// azul-noite #0b1026, superfície #252a41, vermelho-rosa #ff2e63, ciano #08d9d6 e amarelo #f9ed69.
+// Cards em moldura de HUD (border-image: cantos chanfrados fixos, bordas esticam), chanfros nos botões,
+// chips, barra e checks, marca do topo com falha de renderização e linhas de varredura.
+html[data-tema='cyberpunk'] {
+  color-scheme: dark;
+  @include mat.theme((
+    color: (
+      primary: mat.$rose-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+  ));
+  @include mat.snack-bar-overrides((
+    container-color: #252a41,
+    button-color: #08d9d6,
+  ));
+  --c-fundo: #0b1026;
+  --c-sup-0: #070a18;
+  --c-sup-1: #11152e;
+  --c-sup-2: #161b33;
+  --c-sup-3: #1c2140;
+  --c-sup-4: #252a41;
+  --c-texto: #eef1ff;
+  --c-texto-2: #9aa3c7;
+  --c-borda: #3a4166;
+  --c-primaria: #ff2e63;
+  --c-primaria-esc: #e0204f;
+  --c-sobre-primaria: #1a0710;
+  /* Botão chapado em vermelho-rosa; o brilho vem do drop-shadow (o chanfro corta o box-shadow). */
+  --c-primaria-fundo: #ff2e63;
+  --c-primaria-fundo-hover: #e0204f;
+  --c-primaria-brilho: none;
+  --c-destaque: #08d9d6;
+  --c-serie-atual: #1a1f3a;
+  --c-secundaria: #f9ed69;
+  --c-secundaria-texto: #f9ed69;
+  --c-secundaria-hover: #fff38f;
+  --c-sobre-secundaria: #2a2600;
+  --c-interruptor: #08d9d6;
+  /* Chama da sequência do vermelho-rosa ao amarelo. */
+  --c-chama-base: #ff2e63;
+  --c-chama-topo: #f9ed69;
+  --c-perigo: #ff2e63;
+  --c-perigo-fundo: #d1204f;
+  --c-perigo-fundo-hover: #a8193f;
+  --c-sobre-perigo: #ffffff;
+  --c-barra-xp: linear-gradient(90deg, #08d9d6, #f9ed69);
+
+  // Cards: moldura de HUD desenhada pelo border-image (o fundo também vem dela, por isso background none).
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    background: none;
+    box-shadow: none;
+    border: 0 solid transparent;
+    border-image: $hud-moldura 20 fill / 20px stretch;
+  }
+  // Badges de XP: moldura menor, texto e ícone em amarelo.
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) {
+    background: none;
+    box-shadow: none;
+    border: 0 solid transparent;
+    border-image: $hud-badge 10 fill / 10px stretch;
+    color: #f9ed69;
+    .icone { color: inherit; }
+  }
+  // Chanfro nos dois cantos (cima-esquerda e baixo-direita), como nas molduras.
+  .btn-primario {
+    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+    filter: drop-shadow(0 0 10px rgb(255 46 99 / 0.5));
+    // O chanfro cortaria o contorno de foco de fora: vai para dentro do botão.
+    &:focus-visible { outline: 2px solid #f9ed69; outline-offset: -5px; }
+  }
+  :is(.chip, .chip-status:not(.nivel), .check) {
+    border-radius: 0;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+  .chip-status:not(.nivel) { background: #252a41; }
+  .barra {
+    border-radius: 0;
+    clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+    > :is(span, .preenchida) { border-radius: 0; box-shadow: 0 0 8px #08d9d6; }
+  }
+  .check.ok {
+    background: #08d9d6;
+    border-color: #08d9d6;
+    color: #03201f;
+  }
+  .btn-perigo { text-shadow: 0 0 8px rgb(255 46 99 / 0.6); }
+  // Marca no topo com falha de renderização: entra em fatias embaralhadas e, de tempos em tempos, "quebra":
+  // cópias rosa e ciano (data-texto no casca.html) aparecem em faixas deslocadas, e o texto treme.
+  .topo .marca {
+    position: relative;
+    display: inline-block;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgb(8 217 214 / 0.6);
+    animation: glitch-entrada 0.9s steps(1, end) 1, glitch-tremor 5s steps(1, end) 0.9s infinite;
+    &::before, &::after {
+      content: attr(data-texto) / ''; // texto alternativo vazio: o leitor de tela não repete a marca
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      text-shadow: none;
+      clip-path: inset(100% 0 0 0);
+    }
+    &::before { color: #ff2e63; animation: glitch-fatia-a 5s steps(1, end) 0.9s infinite; }
+    &::after { color: #08d9d6; animation: glitch-fatia-b 5s steps(1, end) 0.9s infinite; }
+  }
+  // Card do treino de hoje com a mesma falha da marca, no card inteiro: entra em fatias e, a cada 5 s,
+  // dá um tranco curto com fantasmas rosa e ciano deslocados (drop-shadow segue o formato da moldura).
+  .cartao.treino {
+    animation: glitch-entrada 0.9s steps(1, end) 1, glitch-card 5s steps(1, end) 0.9s infinite;
+  }
+  // Linhas de varredura por cima de tudo, bem leves e sem pegar toque.
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
+  }
+}
+// Entrada: o texto aparece aos pedaços, como se estivesse renderizando com erro.
+@keyframes glitch-entrada {
+  0% { opacity: 0; clip-path: inset(0 0 100% 0); }
+  12% { opacity: 1; clip-path: inset(0 0 70% 0); transform: translateX(-6px); }
+  24% { clip-path: inset(40% 0 30% 0); transform: translateX(5px) skewX(12deg); }
+  36% { opacity: 0.3; clip-path: inset(10% 0 50% 0); transform: none; }
+  48% { opacity: 1; clip-path: inset(60% 0 0 0); transform: translateX(-3px); }
+  60% { clip-path: inset(0 0 20% 0); transform: translateX(3px) skewX(-8deg); }
+  72% { opacity: 0.6; clip-path: inset(30% 0 10% 0); transform: none; }
+  84%, 100% { opacity: 1; clip-path: inset(0); transform: none; }
+}
+// Tremor do texto principal durante as falhas (no começo e no meio de cada ciclo de 5 s).
+@keyframes glitch-tremor {
+  0% { transform: translateX(2px) skewX(-6deg); }
+  2% { transform: translateX(-2px); }
+  4% { transform: translateX(1px) skewX(4deg); }
+  6%, 50% { transform: none; }
+  51% { transform: translateX(-3px) skewX(8deg); }
+  53%, 100% { transform: none; }
+}
+// Faixas da cópia vermelha e da ciana, deslocadas para lados opostos; somem fora das falhas.
+@keyframes glitch-fatia-a {
+  0% { clip-path: inset(15% 0 65% 0); transform: translateX(-4px); }
+  2% { clip-path: inset(55% 0 20% 0); transform: translateX(3px); }
+  4% { clip-path: inset(35% 0 45% 0); transform: translateX(-2px); }
+  6%, 50% { clip-path: inset(100% 0 0 0); transform: none; }
+  51% { clip-path: inset(70% 0 8% 0); transform: translateX(-5px); }
+  53%, 100% { clip-path: inset(100% 0 0 0); transform: none; }
+}
+@keyframes glitch-fatia-b {
+  0% { clip-path: inset(60% 0 15% 0); transform: translateX(4px); }
+  2% { clip-path: inset(10% 0 70% 0); transform: translateX(-3px); }
+  4% { clip-path: inset(45% 0 30% 0); transform: translateX(3px); }
+  6%, 50% { clip-path: inset(100% 0 0 0); transform: none; }
+  51% { clip-path: inset(20% 0 55% 0); transform: translateX(5px); }
+  53%, 100% { clip-path: inset(100% 0 0 0); transform: none; }
+}
+// Falha do card do treino: o tremor da marca mais os fantasmas coloridos, nos mesmos instantes.
+@keyframes glitch-card {
+  0% { transform: translateX(2px) skewX(-2deg); filter: drop-shadow(-3px 0 #ff2e63) drop-shadow(3px 0 #08d9d6); }
+  2% { transform: translateX(-2px); filter: drop-shadow(3px 0 #ff2e63) drop-shadow(-3px 0 #08d9d6); }
+  4% { transform: translateX(1px) skewX(1deg); filter: drop-shadow(-2px 0 #ff2e63) drop-shadow(2px 0 #08d9d6); }
+  6%, 50% { transform: none; filter: none; }
+  51% { transform: translateX(-3px) skewX(2deg); filter: drop-shadow(-4px 0 #ff2e63) drop-shadow(4px 0 #08d9d6); }
+  53%, 100% { transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema='cyberpunk'] :is(.topo .marca, .cartao.treino),
+  html[data-tema='cyberpunk'] .topo .marca::before,
+  html[data-tema='cyberpunk'] .topo .marca::after { animation: none; }
+}
+
+// Camuflagens do Commando (geradas por script, ladrilhos que emendam sem costura): Deserto digital (pixels)
+// e Mata fechada woodland com galhos, nos tons de cada uma.
+$camo-deserto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='208' height='208'%3E%3Cpath fill='%23564b3a' d='M16 0h40v8h-40zM64 0h8v8h-8zM80 0h8v8h-8zM104 0h8v8h-8zM120 0h8v8h-8zM8 8h24v8h-24zM96 8h8v8h-8zM112 8h8v8h-8zM136 8h8v8h-8zM200 8h8v8h-8zM0 16h32v8h-32zM40 16h24v8h-24zM104 16h8v8h-8zM120 16h24v8h-24zM8 24h40v8h-40zM56 24h8v8h-8zM88 24h8v8h-8zM104 24h48v8h-48zM8 32h16v8h-16zM40 32h16v8h-16zM88 32h72v8h-72zM8 40h16v8h-16zM32 40h8v8h-8zM48 40h16v8h-16zM72 40h8v8h-8zM88 40h72v8h-72zM0 48h16v8h-16zM48 48h8v8h-8zM64 48h8v8h-8zM80 48h32v8h-32zM136 48h8v8h-8zM184 48h24v8h-24zM0 56h24v8h-24zM72 56h40v8h-40zM136 56h8v8h-8zM184 56h24v8h-24zM88 64h32v8h-32zM184 64h8v8h-8zM200 64h8v8h-8zM0 72h8v8h-8zM88 72h32v8h-32zM200 72h8v8h-8zM0 80h8v8h-8zM24 80h8v8h-8zM40 80h8v8h-8zM88 80h32v8h-32zM144 80h8v8h-8zM8 88h8v8h-8zM40 88h8v8h-8zM128 88h8v8h-8zM144 88h16v8h-16zM16 96h32v8h-32zM144 96h8v8h-8zM160 96h8v8h-8zM24 104h24v8h-24zM136 104h8v8h-8zM152 104h16v8h-16zM176 104h8v8h-8zM40 112h16v8h-16zM160 112h32v8h-32zM16 120h32v8h-32zM152 120h48v8h-48zM48 128h16v8h-16zM104 128h32v8h-32zM152 128h56v8h-56zM0 136h40v8h-40zM48 136h8v8h-8zM96 136h40v8h-40zM144 136h8v8h-8zM160 136h16v8h-16zM184 136h8v8h-8zM8 144h24v8h-24zM104 144h24v8h-24zM144 144h16v8h-16zM184 144h8v8h-8zM200 144h8v8h-8zM8 152h40v8h-40zM56 152h48v8h-48zM112 152h8v8h-8zM40 160h8v8h-8zM56 160h40v8h-40zM104 160h16v8h-16zM200 160h8v8h-8zM40 168h72v8h-72zM120 168h8v8h-8zM40 176h24v8h-24zM88 176h48v8h-48zM40 184h96v8h-96zM176 184h8v8h-8zM32 192h32v8h-32zM88 192h24v8h-24zM120 192h8v8h-8zM176 192h8v8h-8zM32 200h8v8h-8zM56 200h40v8h-40z'/%3E%3Cpath fill='%23605340' d='M0 0h8v8h-8zM32 0h8v8h-8zM80 0h40v8h-40zM136 0h8v8h-8zM152 0h56v8h-56zM40 8h8v8h-8zM88 8h24v8h-24zM152 8h24v8h-24zM24 16h8v8h-8zM64 16h8v8h-8zM80 16h40v8h-40zM144 16h32v8h-32zM192 16h8v8h-8zM16 24h16v8h-16zM40 24h40v8h-40zM96 24h16v8h-16zM152 24h24v8h-24zM8 32h8v8h-8zM24 32h8v8h-8zM40 32h16v8h-16zM104 32h8v8h-8zM120 32h8v8h-8zM144 32h40v8h-40zM200 32h8v8h-8zM0 40h16v8h-16zM128 40h48v8h-48zM200 40h8v8h-8zM0 48h16v8h-16zM112 48h8v8h-8zM128 48h48v8h-48zM0 56h16v8h-16zM72 56h48v8h-48zM136 56h32v8h-32zM200 56h8v8h-8zM8 64h8v8h-8zM72 64h8v8h-8zM88 64h8v8h-8zM112 64h8v8h-8zM144 64h24v8h-24zM56 72h24v8h-24zM96 72h8v8h-8zM112 72h8v8h-8zM152 72h8v8h-8zM168 72h8v8h-8zM72 80h16v8h-16zM96 80h8v8h-8zM112 80h8v8h-8zM168 80h8v8h-8zM72 88h32v8h-32zM64 96h40v8h-40zM64 104h32v8h-32zM152 104h8v8h-8zM16 112h24v8h-24zM80 112h24v8h-24zM136 112h8v8h-8zM16 120h32v8h-32zM152 120h8v8h-8zM168 120h8v8h-8zM192 120h8v8h-8zM24 128h40v8h-40zM136 128h24v8h-24zM32 136h24v8h-24zM120 136h48v8h-48zM32 144h32v8h-32zM112 144h64v8h-64zM16 152h8v8h-8zM32 152h8v8h-8zM104 152h72v8h-72zM72 160h128v8h-128zM0 168h8v8h-8zM64 168h48v8h-48zM120 168h8v8h-8zM144 168h56v8h-56zM16 176h8v8h-8zM56 176h72v8h-72zM136 176h64v8h-64zM32 184h16v8h-16zM56 184h16v8h-16zM88 184h24v8h-24zM152 184h32v8h-32zM24 192h8v8h-8zM40 192h24v8h-24zM104 192h24v8h-24zM136 192h8v8h-8zM152 192h40v8h-40zM24 200h24v8h-24zM88 200h32v8h-32zM152 200h40v8h-40z'/%3E%3Cpath fill='%233a3226' d='M16 8h8v8h-8zM16 16h16v8h-16zM104 16h8v8h-8zM16 24h8v8h-8zM104 24h8v8h-8zM120 24h8v8h-8zM144 24h8v8h-8zM48 32h8v8h-8zM104 32h8v8h-8zM120 32h32v8h-32zM88 40h8v8h-8zM128 40h24v8h-24zM8 48h8v8h-8zM88 48h24v8h-24zM136 48h8v8h-8zM0 56h16v8h-16zM96 56h8v8h-8zM200 56h8v8h-8zM88 64h32v8h-32zM104 72h16v8h-16zM96 80h8v8h-8zM112 80h8v8h-8zM40 104h8v8h-8zM176 112h8v8h-8zM160 120h32v8h-32zM104 128h8v8h-8zM160 128h16v8h-16zM184 128h8v8h-8zM32 136h8v8h-8zM104 136h24v8h-24zM160 136h8v8h-8zM24 144h8v8h-8zM112 144h8v8h-8zM32 152h8v8h-8zM64 152h8v8h-8zM88 168h8v8h-8zM40 176h8v8h-8zM104 176h24v8h-24zM40 184h8v8h-8zM56 184h8v8h-8zM104 184h8v8h-8zM40 192h16v8h-16zM104 192h8v8h-8z'/%3E%3C/svg%3E");
+$camo-deserto-tam: 208px;
+$camo-mata: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cpath fill='%231d2c1e' d='M202.9 65.5C200.7 67.3 189.0 66.5 187.1 68.9C185.2 71.3 193.3 78.7 191.5 79.7C189.7 80.6 181.2 74.7 176.2 74.5C171.3 74.4 163.9 79.7 161.9 78.8C159.9 77.9 163.7 71.5 164.0 69.3C164.4 67.1 166.1 67.5 163.9 65.5C161.8 63.6 151.1 59.8 151.0 57.8C150.9 55.8 159.0 54.3 163.2 53.5C167.4 52.7 172.1 52.9 176.2 53.1C180.4 53.2 184.3 53.6 188.3 54.4C192.3 55.3 197.9 56.3 200.3 58.1C202.7 60.0 205.1 63.7 202.9 65.5ZM38.8 103.9C37.8 105.9 13.6 107.2 7.6 108.9C1.6 110.7 5.5 111.4 2.8 114.4C0.1 117.4 -3.4 125.5 -8.6 126.8C-13.8 128.0 -23.4 124.4 -28.2 122.0C-33.0 119.7 -32.5 115.8 -37.3 112.8C-42.1 109.7 -55.7 107.2 -56.9 103.9C-58.1 100.6 -50.8 94.3 -44.3 92.9C-37.8 91.5 -23.9 97.4 -17.9 95.3C-12.0 93.2 -13.4 81.7 -8.6 80.2C-3.8 78.6 7.0 83.3 10.7 86.1C14.5 88.9 9.3 94.0 14.0 97.0C18.7 99.9 39.9 101.9 38.8 103.9ZM258.8 103.9C257.8 105.9 233.6 107.2 227.6 108.9C221.6 110.7 225.5 111.4 222.8 114.4C220.1 117.4 216.6 125.5 211.4 126.8C206.2 128.0 196.6 124.4 191.8 122.0C187.0 119.7 187.5 115.8 182.7 112.8C177.9 109.7 164.3 107.2 163.1 103.9C161.9 100.6 169.2 94.3 175.7 92.9C182.2 91.5 196.1 97.4 202.1 95.3C208.0 93.2 206.6 81.7 211.4 80.2C216.2 78.6 227.0 83.3 230.7 86.1C234.5 88.9 229.3 94.0 234.0 97.0C238.7 99.9 259.9 101.9 258.8 103.9ZM0.5 -29.3C-0.4 -25.5 7.6 -21.0 5.0 -18.9C2.5 -16.7 -9.2 -18.7 -14.9 -16.3C-20.5 -13.9 -23.3 -5.4 -29.0 -4.5C-34.6 -3.7 -45.7 -8.0 -48.5 -11.2C-51.3 -14.5 -41.6 -21.1 -45.7 -24.2C-49.9 -27.2 -72.6 -27.4 -73.3 -29.3C-74.0 -31.3 -55.6 -34.2 -50.0 -35.8C-44.3 -37.4 -42.9 -36.9 -39.4 -39.0C-35.9 -41.1 -33.9 -47.2 -29.0 -48.5C-24.0 -49.9 -16.2 -48.4 -9.6 -47.2C-3.0 -46.1 9.1 -44.5 10.8 -41.6C12.4 -38.6 1.5 -33.1 0.5 -29.3ZM0.5 190.7C-0.4 194.5 7.6 199.0 5.0 201.1C2.5 203.3 -9.2 201.3 -14.9 203.7C-20.5 206.1 -23.3 214.6 -29.0 215.5C-34.6 216.3 -45.7 212.0 -48.5 208.8C-51.3 205.5 -41.6 198.9 -45.7 195.8C-49.9 192.8 -72.6 192.6 -73.3 190.7C-74.0 188.7 -55.6 185.8 -50.0 184.2C-44.3 182.6 -42.9 183.1 -39.4 181.0C-35.9 178.9 -33.9 172.8 -29.0 171.5C-24.0 170.1 -16.2 171.6 -9.6 172.8C-3.0 173.9 9.1 175.5 10.8 178.4C12.4 181.4 1.5 186.9 0.5 190.7ZM220.5 -29.3C219.6 -25.5 227.6 -21.0 225.0 -18.9C222.5 -16.7 210.8 -18.7 205.1 -16.3C199.5 -13.9 196.7 -5.4 191.0 -4.5C185.4 -3.7 174.3 -8.0 171.5 -11.2C168.7 -14.5 178.4 -21.1 174.3 -24.2C170.1 -27.2 147.4 -27.4 146.7 -29.3C146.0 -31.3 164.4 -34.2 170.0 -35.8C175.7 -37.4 177.1 -36.9 180.6 -39.0C184.1 -41.1 186.1 -47.2 191.0 -48.5C196.0 -49.9 203.8 -48.4 210.4 -47.2C217.0 -46.1 229.1 -44.5 230.8 -41.6C232.4 -38.6 221.5 -33.1 220.5 -29.3ZM220.5 190.7C219.6 194.5 227.6 199.0 225.0 201.1C222.5 203.3 210.8 201.3 205.1 203.7C199.5 206.1 196.7 214.6 191.0 215.5C185.4 216.3 174.3 212.0 171.5 208.8C168.7 205.5 178.4 198.9 174.3 195.8C170.1 192.8 147.4 192.6 146.7 190.7C146.0 188.7 164.4 185.8 170.0 184.2C175.7 182.6 177.1 183.1 180.6 181.0C184.1 178.9 186.1 172.8 191.0 171.5C196.0 170.1 203.8 171.6 210.4 172.8C217.0 173.9 229.1 175.5 230.8 178.4C232.4 181.4 221.5 186.9 220.5 190.7ZM159.1 124.1C156.0 127.3 155.9 127.9 154.6 130.6C153.3 133.4 154.8 137.3 151.3 140.6C147.8 143.9 140.9 149.0 133.5 150.4C126.1 151.7 109.6 152.3 106.8 148.8C104.1 145.2 121.7 133.3 117.2 129.2C112.8 125.1 82.0 126.4 80.2 124.1C78.4 121.9 102.0 119.9 106.4 115.8C110.8 111.7 102.1 102.7 106.6 99.3C111.1 96.0 125.1 95.2 133.5 95.7C141.9 96.2 150.3 99.8 157.0 102.5C163.6 105.2 172.9 108.3 173.3 111.9C173.6 115.5 162.2 121.0 159.1 124.1ZM84.0 142.7C82.3 145.9 84.8 148.1 83.2 150.7C81.5 153.3 78.4 156.8 74.1 158.3C69.7 159.8 62.5 160.2 57.1 160.0C51.8 159.7 45.9 158.3 42.1 156.6C38.3 154.9 35.7 152.0 34.4 149.7C33.2 147.3 33.6 144.7 34.6 142.7C35.5 140.6 39.4 140.2 40.1 137.4C40.9 134.7 36.4 129.4 39.3 126.2C42.1 122.9 50.2 119.0 57.1 118.1C64.0 117.2 74.6 118.7 80.7 120.9C86.8 123.1 93.2 127.8 93.8 131.4C94.3 135.0 85.8 139.5 84.0 142.7ZM13.2 44.6C11.3 47.4 5.2 49.2 1.9 51.2C-1.4 53.3 -3.0 54.7 -6.6 56.7C-10.2 58.8 -16.3 64.3 -19.8 63.4C-23.2 62.6 -22.1 53.2 -27.5 51.7C-32.9 50.2 -48.8 55.8 -52.2 54.6C-55.7 53.4 -49.9 47.4 -48.2 44.6C-46.5 41.7 -43.8 40.6 -42.2 37.7C-40.6 34.7 -42.4 28.0 -38.7 27.1C-34.9 26.2 -24.2 30.7 -19.8 32.4C-15.3 34.1 -17.5 37.1 -12.0 37.4C-6.5 37.7 9.1 33.2 13.3 34.4C17.5 35.6 15.2 41.8 13.2 44.6ZM233.2 44.6C231.3 47.4 225.2 49.2 221.9 51.2C218.6 53.3 217.0 54.7 213.4 56.7C209.8 58.8 203.7 64.3 200.2 63.4C196.8 62.6 197.9 53.2 192.5 51.7C187.1 50.2 171.2 55.8 167.8 54.6C164.3 53.4 170.1 47.4 171.8 44.6C173.5 41.7 176.2 40.6 177.8 37.7C179.4 34.7 177.6 28.0 181.3 27.1C185.1 26.2 195.8 30.7 200.2 32.4C204.7 34.1 202.5 37.1 208.0 37.4C213.5 37.7 229.1 33.2 233.3 34.4C237.5 35.6 235.2 41.8 233.2 44.6ZM177.4 68.2C177.2 70.9 170.0 73.5 166.7 76.0C163.4 78.6 162.0 83.0 157.8 83.5C153.5 84.0 145.6 80.1 141.2 79.1C136.7 78.1 133.8 78.5 131.1 77.5C128.3 76.5 127.1 74.8 124.6 73.3C122.1 71.7 118.4 70.6 116.1 68.2C113.8 65.8 108.5 60.6 110.7 58.8C112.8 56.9 124.1 58.5 129.2 57.1C134.3 55.7 136.7 50.7 141.2 50.3C145.7 49.8 151.6 52.8 156.1 54.4C160.6 56.0 164.5 57.6 168.1 59.9C171.7 62.2 177.7 65.5 177.4 68.2ZM141.7 11.8C141.7 14.6 148.4 19.2 145.7 20.3C142.9 21.3 129.8 17.1 125.2 18.3C120.7 19.4 122.4 25.7 118.3 27.3C114.2 29.0 102.6 30.1 100.6 28.1C98.7 26.2 108.3 18.2 106.4 15.5C104.4 12.8 92.3 14.1 88.9 11.8C85.5 9.6 83.9 4.5 85.9 1.9C88.0 -0.7 95.9 -2.3 101.3 -3.9C106.7 -5.4 113.6 -8.2 118.3 -7.2C122.9 -6.3 124.7 -0.1 129.3 1.7C133.8 3.5 143.4 1.8 145.5 3.5C147.6 5.1 141.7 9.0 141.7 11.8ZM141.7 231.8C141.7 234.6 148.4 239.2 145.7 240.3C142.9 241.3 129.8 237.1 125.2 238.3C120.7 239.4 122.4 245.7 118.3 247.3C114.2 249.0 102.6 250.1 100.6 248.1C98.7 246.2 108.3 238.2 106.4 235.5C104.4 232.8 92.3 234.1 88.9 231.8C85.5 229.6 83.9 224.5 85.9 221.9C88.0 219.3 95.9 217.7 101.3 216.1C106.7 214.6 113.6 211.8 118.3 212.8C122.9 213.7 124.7 219.9 129.3 221.7C133.8 223.5 143.4 221.8 145.5 223.5C147.6 225.1 141.7 229.0 141.7 231.8Z'/%3E%3Cpath fill='%23261c18' d='M169.8 113.9C171.6 115.6 173.8 119.2 172.1 120.7C170.5 122.3 163.8 122.0 160.1 123.3C156.4 124.5 153.7 127.9 149.9 128.3C146.0 128.7 139.6 127.4 136.9 125.8C134.2 124.3 134.0 120.8 133.8 118.8C133.6 116.8 137.0 115.9 135.9 113.9C134.7 111.9 125.7 107.8 126.9 106.8C128.1 105.7 139.2 108.5 143.0 107.5C146.9 106.6 147.3 101.1 149.9 100.8C152.4 100.5 156.5 104.4 158.4 105.9C160.4 107.5 159.5 109.0 161.4 110.3C163.3 111.6 168.0 112.1 169.8 113.9ZM64.9 172.6C64.8 174.9 58.6 177.0 56.1 179.3C53.5 181.7 53.3 185.3 49.7 186.8C46.1 188.4 39.7 188.6 34.3 188.8C28.9 189.1 22.8 189.2 17.4 188.2C12.1 187.1 4.3 185.1 2.2 182.5C0.2 179.9 2.1 175.0 5.0 172.6C7.8 170.2 17.8 171.1 19.3 168.0C20.8 164.9 11.4 156.5 13.9 153.8C16.4 151.1 29.6 149.8 34.3 151.8C39.0 153.7 38.4 163.1 42.1 165.4C45.8 167.7 52.9 164.5 56.7 165.7C60.5 166.9 65.0 170.3 64.9 172.6ZM284.9 172.6C284.8 174.9 278.6 177.0 276.1 179.3C273.5 181.7 273.3 185.3 269.7 186.8C266.1 188.4 259.7 188.6 254.3 188.8C248.9 189.1 242.8 189.2 237.4 188.2C232.1 187.1 224.3 185.1 222.2 182.5C220.2 179.9 222.1 175.0 225.0 172.6C227.8 170.2 237.8 171.1 239.3 168.0C240.8 164.9 231.4 156.5 233.9 153.8C236.4 151.1 249.6 149.8 254.3 151.8C259.0 153.7 258.4 163.1 262.1 165.4C265.8 167.7 272.9 164.5 276.7 165.7C280.5 166.9 285.0 170.3 284.9 172.6ZM32.6 -13.6C32.1 -12.0 27.2 -10.1 24.4 -9.1C21.7 -8.1 18.7 -9.0 16.2 -7.7C13.8 -6.4 12.4 -1.7 9.9 -1.4C7.4 -1.0 6.5 -5.2 1.2 -5.6C-4.0 -6.0 -19.2 -2.5 -21.8 -3.8C-24.5 -5.2 -16.6 -11.0 -14.5 -13.6C-12.5 -16.2 -10.6 -16.8 -9.5 -19.6C-8.4 -22.3 -11.1 -29.9 -7.9 -30.0C-4.7 -30.1 5.4 -21.8 9.9 -20.4C14.3 -19.0 15.9 -22.1 18.8 -21.8C21.7 -21.6 24.8 -20.3 27.1 -18.9C29.4 -17.5 33.0 -15.2 32.6 -13.6ZM32.6 206.4C32.1 208.0 27.2 209.9 24.4 210.9C21.7 211.9 18.7 211.0 16.2 212.3C13.8 213.6 12.4 218.3 9.9 218.6C7.4 219.0 6.5 214.8 1.2 214.4C-4.0 214.0 -19.2 217.5 -21.8 216.2C-24.5 214.8 -16.6 209.0 -14.5 206.4C-12.5 203.8 -10.6 203.2 -9.5 200.4C-8.4 197.7 -11.1 190.1 -7.9 190.0C-4.7 189.9 5.4 198.2 9.9 199.6C14.3 201.0 15.9 197.9 18.8 198.2C21.7 198.4 24.8 199.7 27.1 201.1C29.4 202.5 33.0 204.8 32.6 206.4ZM252.6 -13.6C252.1 -12.0 247.2 -10.1 244.4 -9.1C241.7 -8.1 238.7 -9.0 236.2 -7.7C233.8 -6.4 232.4 -1.7 229.9 -1.4C227.4 -1.0 226.5 -5.2 221.2 -5.6C216.0 -6.0 200.8 -2.5 198.2 -3.8C195.5 -5.2 203.4 -11.0 205.5 -13.6C207.5 -16.2 209.4 -16.8 210.5 -19.6C211.6 -22.3 208.9 -29.9 212.1 -30.0C215.3 -30.1 225.4 -21.8 229.9 -20.4C234.3 -19.0 235.9 -22.1 238.8 -21.8C241.7 -21.6 244.8 -20.3 247.1 -18.9C249.4 -17.5 253.0 -15.2 252.6 -13.6ZM252.6 206.4C252.1 208.0 247.2 209.9 244.4 210.9C241.7 211.9 238.7 211.0 236.2 212.3C233.8 213.6 232.4 218.3 229.9 218.6C227.4 219.0 226.5 214.8 221.2 214.4C216.0 214.0 200.8 217.5 198.2 216.2C195.5 214.8 203.4 209.0 205.5 206.4C207.5 203.8 209.4 203.2 210.5 200.4C211.6 197.7 208.9 190.1 212.1 190.0C215.3 189.9 225.4 198.2 229.9 199.6C234.3 201.0 235.9 197.9 238.8 198.2C241.7 198.4 244.8 199.7 247.1 201.1C249.4 202.5 253.0 204.8 252.6 206.4ZM109.9 13.6C107.9 15.9 111.5 16.2 111.8 18.8C112.1 21.4 114.5 27.7 111.7 29.1C108.9 30.5 99.6 27.8 94.9 27.0C90.2 26.2 85.4 25.8 83.5 24.1C81.6 22.5 84.2 18.9 83.5 17.1C82.8 15.3 82.3 15.6 79.5 13.6C76.7 11.6 65.7 6.3 66.8 4.9C67.9 3.6 81.4 5.6 86.1 5.4C90.8 5.2 92.4 3.3 94.9 3.8C97.4 4.2 96.0 7.9 100.9 8.1C105.8 8.2 122.6 3.7 124.1 4.6C125.6 5.5 112.0 11.2 109.9 13.6ZM109.9 233.6C107.9 235.9 111.5 236.2 111.8 238.8C112.1 241.4 114.5 247.7 111.7 249.1C108.9 250.5 99.6 247.8 94.9 247.0C90.2 246.2 85.4 245.8 83.5 244.1C81.6 242.5 84.2 238.9 83.5 237.1C82.8 235.3 82.3 235.6 79.5 233.6C76.7 231.6 65.7 226.3 66.8 224.9C67.9 223.6 81.4 225.6 86.1 225.4C90.8 225.2 92.4 223.3 94.9 223.8C97.4 224.2 96.0 227.9 100.9 228.1C105.8 228.2 122.6 223.7 124.1 224.6C125.6 225.5 112.0 231.2 109.9 233.6ZM120.9 52.5C122.6 55.1 122.0 60.1 118.5 61.9C115.0 63.8 104.9 63.7 99.8 63.6C94.7 63.4 92.1 60.8 87.8 61.1C83.5 61.4 76.2 66.1 73.8 65.4C71.4 64.7 75.8 59.0 73.5 56.9C71.1 54.7 61.3 54.5 59.5 52.5C57.7 50.4 59.0 45.7 62.6 44.7C66.3 43.7 77.1 48.0 81.3 46.5C85.5 44.9 84.7 36.4 87.8 35.5C91.0 34.6 96.8 39.2 100.2 41.0C103.6 42.8 104.5 44.3 108.0 46.3C111.4 48.2 119.1 49.9 120.9 52.5ZM41.0 121.4C37.9 124.1 26.2 123.8 23.4 126.5C20.7 129.3 27.4 136.8 24.6 137.8C21.8 138.9 12.9 132.7 6.8 132.9C0.8 133.0 -8.2 139.5 -11.9 138.8C-15.7 138.0 -16.1 131.3 -15.9 128.4C-15.7 125.5 -8.7 124.4 -10.7 121.4C-12.7 118.5 -28.8 112.6 -27.9 110.7C-27.0 108.8 -11.0 111.5 -5.2 110.3C0.6 109.1 1.6 104.4 6.8 103.3C12.1 102.2 20.3 102.3 26.2 103.5C32.1 104.7 39.7 107.6 42.1 110.5C44.6 113.5 44.1 118.7 41.0 121.4ZM261.0 121.4C257.9 124.1 246.2 123.8 243.4 126.5C240.7 129.3 247.4 136.8 244.6 137.8C241.8 138.9 232.9 132.7 226.8 132.9C220.8 133.0 211.8 139.5 208.1 138.8C204.3 138.0 203.9 131.3 204.1 128.4C204.3 125.5 211.3 124.4 209.3 121.4C207.3 118.5 191.2 112.6 192.1 110.7C193.0 108.8 209.0 111.5 214.8 110.3C220.6 109.1 221.6 104.4 226.8 103.3C232.1 102.2 240.3 102.3 246.2 103.5C252.1 104.7 259.7 107.6 262.1 110.5C264.6 113.5 264.1 118.7 261.0 121.4Z'/%3E%3Cpath d='M80.9 -10.8L91.9 -5.3L104.9 -2.0L114.1 4.8L120.3 12.9L120.8 21.9M80.9 209.2L91.9 214.7L104.9 218.0L114.1 224.8L120.3 232.9L120.8 241.9M57.4 3.3L67.6 -2.9L74.9 -10.6L82.4 -18.2L94.5 -22.7L108.5 -22.8M57.4 223.3L67.6 217.1L74.9 209.4L82.4 201.8L94.5 197.3L108.5 197.2M277.4 3.3L287.6 -2.9L294.9 -10.6L302.4 -18.2L314.5 -22.7L328.5 -22.8M277.4 223.3L287.6 217.1L294.9 209.4L302.4 201.8L314.5 197.3L328.5 197.2M92.7 0.1L105.9 -3.0L119.8 -2.4L132.4 -6.3L144.9 -10.3L158.9 -10.5M92.7 220.1L105.9 217.0L119.8 217.6L132.4 213.7L144.9 209.7L158.9 209.5M83.7 104.8L97.2 107.2L109.8 111.2L123.7 110.6L137.7 111.0L151.7 110.7M16.8 67.2L30.1 70.0L44.1 71.0L57.9 72.1L70.5 68.1L78.4 60.6M16.8 287.2L30.1 290.0L44.1 291.0L57.9 292.1L70.5 288.1L78.4 280.6M236.8 67.2L250.1 70.0L264.1 71.0L277.9 72.1L290.5 68.1L298.4 60.6M236.8 287.2L250.1 290.0L264.1 291.0L277.9 292.1L290.5 288.1L298.4 280.6M139.1 -52.7L152.8 -54.5L166.7 -55.3L180.4 -57.2L191.2 -62.9L205.0 -64.5M139.1 167.3L152.8 165.5L166.7 164.7L180.4 162.8L191.2 157.1L205.0 155.5' fill='none' stroke='%230c140d' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+$camo-mata-tam: 220px;
+
+// Tema "Commando" (desbloqueia no nível 20, core/tema.ts), com duas camuflagens que a pessoa troca no Perfil:
+// Deserto (marrom-areia médio) e Mata fechada (verde escuro e vermelho tático).
+// Base comum: camuflagem e cantos chanfrados nos cards, rótulos em estêncil, XP numa dog tag de inox,
+// barra de XP em segmentos (pente de munição) e o carimbo "SÉRIE OK" no check (core/efeito-check.ts).
+html[data-tema^='commando'] {
+  color-scheme: dark;
+  /* Contorno dos cards, no formato chanfrado. */
+  --c-contorno: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M10.5 .5H29.5L39.5 10.5V29.5L29.5 39.5H10.5L.5 29.5V10.5Z' fill='none' stroke='%23fff' stroke-opacity='.16'/%3E%3C/svg%3E");
+  @include mat.snack-bar-overrides((
+    container-color: #232a1b,
+    button-color: #d2c29a,
+  ));
+  --c-primaria-brilho: inset 0 -3px 0 rgb(0 0 0 / 0.25);
+  --c-perigo: #d9534f;
+  --c-perigo-fundo: #a8322d;
+  --c-perigo-fundo-hover: #8a2824;
+  --c-sobre-perigo: #ffffff;
+
+  // Cards no formato da plaqueta de XP: os quatro cantos chanfrados.
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    border-radius: 0;
+    box-shadow: none;
+    clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+    // Contorno leve que acompanha o chanfro (o box-shadow seria cortado nas diagonais pelo clip-path).
+    border: 0 solid transparent;
+    border-image: var(--c-contorno) 12 / 12px stretch;
+  }
+  // Camuflagem em todos os cards, em tons próximos do fundo para o texto continuar legível.
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    background-image: var(--c-camo);
+    background-size: var(--c-camo-tam) var(--c-camo-tam);
+  }
+  // Estêncil de caixa de munição nos rótulos (que já são em caixa alta): só mais espaço entre as letras.
+  :is(.rotulo, .plano-nome) { letter-spacing: 0.18em; }
+  .btn { border-radius: 8px; }
+  :is(.chip, .chip-status:not(.nivel)) { border-radius: 6px; }
+  // XP numa dog tag de aço inox, igual nas camuflagens (mixin plaqueta-militar).
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { @include plaqueta-militar; }
+  // Pente de munição: a máscara corta a barra (trilho e preenchimento) em segmentos.
+  .barra {
+    border-radius: 2px;
+    -webkit-mask: repeating-linear-gradient(90deg, #000 0 14px, transparent 14px 17px);
+    mask: repeating-linear-gradient(90deg, #000 0 14px, transparent 14px 17px);
+    > :is(span, .preenchida) { border-radius: 0; }
+  }
+  .check { border-radius: 8px; }
+  .check.ok { background: var(--c-check); border-color: var(--c-check); color: var(--c-sobre-check); }
+}
+// Deserto: marrom-areia médio, mais claro que a Mata fechada, com o areia vivo nos destaques.
+html[data-tema='commando-deserto'] {
+  @include mat.theme((color: (primary: mat.$orange-palette, tertiary: mat.$yellow-palette)));
+  @include mat.snack-bar-overrides((container-color: #554b3a, button-color: #e9d6a6));
+  --c-fundo: #3b3427;
+  --c-sup-0: #332d22;
+  --c-sup-1: #453d2f;
+  --c-sup-2: #4b4233;
+  --c-sup-3: #554b3a;
+  --c-sup-4: #625744;
+  --c-texto: #f4ecda;
+  --c-texto-2: #cbbd9f;
+  --c-borda: #7a6c53;
+  --c-linha: rgb(255 240 210 / 0.14);
+  --c-primaria: #d9bf86;
+  --c-primaria-esc: #c7ac72;
+  --c-sobre-primaria: #2a2112;
+  --c-primaria-fundo: #d9bf86;
+  --c-primaria-fundo-hover: #c7ac72;
+  --c-destaque: #e2c98f;
+  --c-serie-atual: #514737;
+  --c-secundaria: #e9d6a6;
+  --c-secundaria-texto: #e9d6a6;
+  --c-secundaria-hover: #f3e3ba;
+  --c-sobre-secundaria: #2a2112;
+  --c-interruptor: #d9bf86;
+  --c-chama-base: #a8743a;
+  --c-chama-topo: #f6e4b8;
+  --c-barra-xp: #e9d6a6;
+  --c-camo: #{$camo-deserto};
+  --c-camo-tam: #{$camo-deserto-tam};
+  --c-check: #d9bf86;
+  --c-sobre-check: #2a2112;
+  --c-carimbo: #f0dfb4;
+}
+html[data-tema='commando-mata'] {
+  @include mat.theme((color: (primary: mat.$green-palette, tertiary: mat.$red-palette)));
+  @include mat.snack-bar-overrides((container-color: #1b281c, button-color: #e0544a));
+  --c-fundo: #0a0f0b;
+  --c-sup-0: #070b08;
+  --c-sup-1: #111812;
+  --c-sup-2: #152016;
+  --c-sup-3: #1b281c;
+  --c-sup-4: #24302a;
+  --c-texto: #e3eadf;
+  --c-texto-2: #8e9c8c;
+  --c-borda: #33453a;
+  --c-linha: rgb(130 160 120 / 0.14);
+  --c-primaria: #5f7a4d;
+  --c-primaria-esc: #536b43;
+  --c-sobre-primaria: #f1f5ec;
+  --c-primaria-fundo: #5f7a4d;
+  --c-primaria-fundo-hover: #536b43;
+  --c-destaque: #7f9b6c;
+  --c-serie-atual: #182419;
+  /* Vermelho tático só no XP, no carimbo e na chama. */
+  --c-secundaria: #c8352b;
+  --c-secundaria-texto: #e0544a;
+  --c-secundaria-hover: #e0544a;
+  --c-sobre-secundaria: #ffffff;
+  --c-interruptor: #7f9b6c;
+  --c-chama-base: #8e1f18;
+  --c-chama-topo: #f0a090;
+  --c-barra-xp: #c8352b;
+  --c-camo: #{$camo-mata};
+  --c-camo-tam: #{$camo-mata-tam};
+  --c-check: #5f7a4d;
+  --c-sobre-check: #f1f5ec;
+  --c-carimbo: #e0544a;
+}
+// Carimbo "SÉRIE OK" do check no Commando (core/efeito-check.ts).
+.efeito-check.carimbo-ok {
+  font: 800 15px/1 'Outfit', sans-serif;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  color: var(--c-carimbo);
+  border: 2.5px solid var(--c-carimbo);
+  border-radius: 4px;
+  padding: 5px 9px;
 }
 
 * { box-sizing: border-box; }
@@ -170,6 +687,19 @@ input, select { font: inherit; color: inherit; }
   font-variation-settings: 'FILL' 0, 'wght' 400;
   user-select: none;
   &.cheio { font-variation-settings: 'FILL' 1, 'wght' 400; }
+}
+
+// Ícones de tema em PNG (enviados pelo Samuel), usados como máscara: o desenho dá o formato e a cor vem do texto,
+// como nos ícones da fonte. Blaster = Cyberpunk.
+.icone-mascara {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: var(--mascara) center / contain no-repeat;
+  mask: var(--mascara) center / contain no-repeat;
+  &.blaster { --mascara: url('data:image/png;base64,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'); }
 }
 
 /* Foto do exercício (3:2); sem foto, ou se ela falhar ao carregar, aparece o ícone por baixo. */
@@ -325,7 +855,7 @@ a.btn { text-decoration: none; }
 .chama-viva {
   display: inline-block;
   transform-origin: 50% 90%;
-  background: linear-gradient(to top, #ff3d00, var(--c-secundaria) 50%, #ffd54f);
+  background: linear-gradient(to top, var(--c-chama-base, #ff3d00), var(--c-secundaria) 50%, var(--c-chama-topo, #ffd54f));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent !important;

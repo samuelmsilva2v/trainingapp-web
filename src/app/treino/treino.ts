@@ -1,10 +1,11 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, Injector, OnDestroy, OnInit, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { agendarFimDoDescanso, avisoDescansoLigado, cancelarFimDoDescanso, manterTelaLigada, vibrar } from '../core/android';
+import { efeitoDoCheck } from '../core/efeito-check';
 import { alarmeExato, devePedirAlarmeExato, pedirAlarmeExato } from '../core/alarme-exato';
 import { atualizarContextoDoLembrete, reagendarLembretes } from '../core/lembrete';
 import { GamificacaoApi, PlanosApi, SessoesApi, mensagemDeErro } from '../core/api';
@@ -41,6 +42,8 @@ export class Treino implements OnInit, OnDestroy {
   private readonly roteador = inject(Router);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   constructor() {
     // 409: outro aparelho escreveu depois e o store ficou com a versão da API.
@@ -366,7 +369,18 @@ export class Treino implements OnInit, OnDestroy {
       return;
     }
     this.store.atualizarSerie(this.indice(), serie, s => ({ ...s, concluida: !s.concluida }));
-    if (!atual.concluida) vibrar('leve');
+    if (!atual.concluida) {
+      vibrar('leve');
+      // A série concluída sai do bloco da "série atual" e vira uma linha fechada: o efeito toca no check dela
+      // já no lugar novo, depois de a tela ser redesenhada (o botão tocado não existe mais).
+      afterNextRender(
+        () => {
+          const check = this.host.nativeElement.querySelector<HTMLElement>(`.check[data-serie="${serie}"]`);
+          if (check) efeitoDoCheck(check);
+        },
+        { injector: this.injector },
+      );
+    }
     this.serieAberta.set(null); // a próxima série pendente passa a ser a atual
     if (!atual.concluida && ex.metaDescansoSegundos) {
       const numero = this.blocos().findIndex(b => b.inicio === serie) + 1;

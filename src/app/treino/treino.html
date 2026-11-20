@@ -126,7 +126,7 @@
                   <ng-container *ngTemplateOutlet="steppers; context: { $implicit: serie, i: i }" />
                   <button type="button" class="check" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
                           [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (k + 1)"
-                          (click)="alternarConcluida(i)">
+                          [attr.data-serie]="i" (click)="alternarConcluida(i)">
                     <span class="icone" aria-hidden="true">{{ serie.concluida ? 'check' : 'radio_button_unchecked' }}</span>
                   </button>
                 </div>
@@ -165,7 +165,7 @@
                 @if (!pesoCorporal(ex)) { <span class="valor num" role="cell">{{ serie.carga === null ? '—' : kg(serie.carga) }}</span> }
                 <button type="button" class="check mini" [class.ok]="serie.concluida" [attr.aria-pressed]="serie.concluida"
                         [attr.aria-label]="(serie.concluida ? 'Desfazer série ' : 'Concluir série ') + (k + 1)"
-                        (click)="alternarConcluida(i); $event.stopPropagation()">
+                        [attr.data-serie]="i" (click)="alternarConcluida(i); $event.stopPropagation()">
                   <span class="icone" aria-hidden="true">{{ serie.concluida ? 'check' : 'radio_button_unchecked' }}</span>
                 </button>
                 @for (d of b.drops; track d) {
