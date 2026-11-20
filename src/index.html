@@ -18,5 +18,7 @@
       <svg viewBox="0 0 24 24" width="96" height="96" aria-hidden="true"><path style="fill:var(--c-destaque,#caf300)" d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg>
     </div>
   </app-root>
+  <!-- Ar quente do Ignite (styles.scss): o raio da badge de XP ondula como o ar acima do asfalto quente. Fica fora do app-root para o Angular não apagar. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ar-quente" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.03 0.18" numOctaves="2" seed="4" result="r"><animate attributeName="baseFrequency" values="0.03 0.18;0.035 0.22;0.03 0.18" dur="1.6s" repeatCount="indefinite"/></feTurbulence><feOffset in="r" result="m"><animate attributeName="dy" values="0;-30" dur="1.6s" repeatCount="indefinite"/></feOffset><feDisplacementMap in="SourceGraphic" in2="m" scale="2.5"/></filter></svg>
 </body>
 </html>

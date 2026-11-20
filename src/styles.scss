@@ -181,6 +181,8 @@ html[data-tema='ignite'] {
   // Badges de XP com uma linha fina laranja e brilho leve para dentro (os cards ficam sem contorno: o Ignite é o tema mais simples).
   :is(.topo > a.xp, .chip-status.nivel, .chip.xp) {
     box-shadow: inset 0 0 0 1px rgb(255 94 20 / 0.8), inset 0 0 5px rgb(255 94 20 / 0.25);
+    // Raio pulsando como lava, de leve, e ondulando como ar quente (filtro #ar-quente no index.html), sem mudar de tamanho.
+    .icone { filter: url(#ar-quente); animation: lava-raio 2.2s ease-in-out infinite; }
   }
   // Grão de carvão no fundo dos demais cards (o do treino já tem o grão e as brasas, logo abaixo).
   :is(.cartao:not(.treino), .cartao-ex, .card, .esqueleto-cartao) {
@@ -231,7 +233,13 @@ html[data-tema='ignite'] {
 .efeito-check.falha { mix-blend-mode: screen; opacity: 0.9; }
 .efeito-check.falha.rosa { background: #ff2e63; }
 .efeito-check.falha.ciano { background: #08d9d6; }
+@keyframes lava-raio {
+  0%, 100% { color: #e2480a; text-shadow: 0 0 2px rgb(184 50 10 / 0.4); }
+  50% { color: #ff9a1a; text-shadow: 0 0 4px rgb(255 120 0 / 0.6); }
+}
 @media (prefers-reduced-motion: reduce) {
+  html[data-tema='ignite'] :is(.topo > a.xp, .chip-status.nivel, .chip.xp) .icone { filter: none; }
+  html[data-tema='ignite'] :is(.topo > a.xp, .chip-status.nivel, .chip.xp) .icone,
   html[data-tema='ignite'] :is(.barra > span, .barra > .preenchida),
   html[data-tema='ignite'] .cartao.treino::before,
   html[data-tema='ignite'] .cartao.treino::after { animation: none; }
