@@ -128,9 +128,9 @@
             </button>
           }
         </div>
-        @if (commando()) {
-          <div class="tema camuflagens" role="group" aria-label="Camuflagem do Commando">
-            @for (c of camuflagens; track c.valor) {
+        @if (variantes(); as vs) {
+          <div class="tema variantes" role="group" aria-label="Variante do tema" [style.grid-template-columns]="'repeat(' + vs.length + ', 1fr)'">
+            @for (c of vs; track c.valor) {
               <button type="button" class="opcao" [class.sel]="tema() === c.valor" [attr.aria-pressed]="tema() === c.valor"
                       (click)="escolherTema(c.valor)">{{ c.rotulo }}</button>
             }

@@ -52,6 +52,12 @@ describe('tema', () => {
     expect(corDaBarra()).toBe('#151617');
   });
 
+  it('Electric é escuro com o fundo próprio na barra', () => {
+    salvarTema('electric');
+    expect(lerTema()).toBe('electric');
+    expect(corDaBarra()).toBe('#0e0c1a');
+  });
+
   it('Cyberpunk é escuro com o fundo próprio na barra', () => {
     salvarTema('cyberpunk');
     expect(lerTema()).toBe('cyberpunk');
@@ -63,5 +69,13 @@ describe('tema', () => {
     expect(lerTema()).toBe('commando-deserto');
     expect(document.documentElement.dataset['tema']).toBe('commando-deserto');
     expect(corDaBarra()).toBe('#3b3427');
+  });
+
+  it('as variantes do Japan são temas guardados; o Sumi-e tem fundo claro na barra', () => {
+    salvarTema('japao-hokusai');
+    expect(lerTema()).toBe('japao-hokusai');
+    expect(corDaBarra()).toBe('#0c1828');
+    salvarTema('japao-sumie');
+    expect(corDaBarra()).toBe('#efe8da');
   });
 });

@@ -33,6 +33,10 @@ describe('efeitoDoCheck', () => {
       ['chrome', 'reflexo', 1],
       ['cyberpunk', 'falha', 2],
       ['commando-mata', 'carimbo-ok', 1],
+      ['commando-deserto', 'carimbo-ok', 1],
+      ['japao-sakura', 'petala', 16],
+      ['japao-hokusai', 'onda-hokusai', 1],
+      ['japao-sumie', 'hanko', 1],
     ];
     for (const [tema, classe, quantas] of casos) {
       document.body.innerHTML = '';
@@ -42,6 +46,14 @@ describe('efeitoDoCheck', () => {
       expect(camadas(classe), tema).toBe(quantas);
       expect(b.animate, tema).toHaveBeenCalled();
     }
+  });
+
+  it('Electric só acende o próprio check, sem camadas no <body>', () => {
+    document.documentElement.dataset['tema'] = 'electric';
+    const b = check();
+    efeitoDoCheck(b);
+    expect(document.querySelectorAll('.efeito-check').length).toBe(0);
+    expect(b.animate).toHaveBeenCalled();
   });
 
   it('não faz nada com "reduzir movimento"', () => {

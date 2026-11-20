@@ -176,8 +176,9 @@ input {
 /* Notificações: cada interruptor num bloco, com as opções logo abaixo quando ligado. */
 .notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
 .frequencias { grid-template-columns: repeat(3, 1fr); }
-// Camuflagens do Commando (Jungle e Desert): logo abaixo dos temas.
-.camuflagens { grid-template-columns: repeat(2, 1fr); margin-top: 8px; }
+// Variantes do grupo ativo (Commando: Jungle e Desert; Japan: Sakura, Hokusai e Sumi-e), logo abaixo dos temas;
+// as colunas vêm do número de variantes (perfil.html).
+.variantes { margin-top: 8px; }
 
 // Desafios da semana (api#38): mesma lista das conquistas; o cumprido fica aceso.
 .desafios-card { gap: 12px; }

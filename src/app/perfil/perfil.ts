@@ -28,6 +28,11 @@ import { EscolhaFoto, FotoPerfil, FotoPerfilDados } from './foto-perfil';
 /** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
 const TITULO_PADRAO = 'Praticante de musculação';
 
+/** 'commando-mata' → 'commando'; tema sem variante fica como está. */
+function grupoDoTema(tema: Tema): string {
+  return tema.split('-')[0];
+}
+
 @Component({
   selector: 'app-perfil',
   imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip, CuboGelo],
@@ -105,22 +110,31 @@ export class PerfilTela implements OnInit, OnDestroy {
   protected readonly temas: readonly { valor: Tema; rotulo: string; icone: string; mascara?: string }[] = [
     { valor: 'escuro', rotulo: 'Escuro', icone: 'dark_mode' },
     { valor: 'claro', rotulo: 'Claro', icone: 'light_mode' },
-    { valor: 'ignite', rotulo: 'Ignite', icone: 'local_fire_department' },
     { valor: 'chrome', rotulo: 'Chrome', icone: 'hexagon' },
-    { valor: 'cyberpunk', rotulo: 'Cyberpunk', icone: 'memory', mascara: 'blaster' },
-    // Um botão só para as duas camuflagens; ativo em qualquer uma delas (ver `selecionado`).
+    { valor: 'electric', rotulo: 'Electric', icone: 'bolt' },
+    { valor: 'ignite', rotulo: 'Ignite', icone: 'local_fire_department' },
+    // Um botão só por grupo (Commando, Japan); ativo em qualquer variante dele (ver `selecionado`).
     { valor: 'commando-mata', rotulo: 'Commando', icone: 'military_tech' },
+    { valor: 'cyberpunk', rotulo: 'Cyberpunk', icone: 'memory', mascara: 'blaster' },
+    { valor: 'japao-sakura', rotulo: 'Japan', icone: 'temple_buddhist' },
   ];
-  /** Camuflagens do Commando, na linha que aparece embaixo quando ele está ativo. */
-  protected readonly camuflagens: readonly { valor: Tema; rotulo: string }[] = [
-    { valor: 'commando-mata', rotulo: 'Jungle' },
-    { valor: 'commando-deserto', rotulo: 'Desert' },
-  ];
+  /** Variantes de cada grupo, na linha que aparece embaixo quando ele está ativo. O prefixo do valor é o grupo. */
+  private readonly variantesDoGrupo: Record<string, readonly { valor: Tema; rotulo: string }[]> = {
+    commando: [
+      { valor: 'commando-mata', rotulo: 'Jungle' },
+      { valor: 'commando-deserto', rotulo: 'Desert' },
+    ],
+    japao: [
+      { valor: 'japao-sakura', rotulo: 'Sakura' },
+      { valor: 'japao-hokusai', rotulo: 'Hokusai' },
+      { valor: 'japao-sumie', rotulo: 'Sumi-e' },
+    ],
+  };
   protected readonly tema = signal<Tema>(lerTema());
-  protected readonly commando = computed(() => this.tema().startsWith('commando'));
-  /** O botão do Commando fica marcado em qualquer camuflagem. */
+  protected readonly variantes = computed(() => this.variantesDoGrupo[grupoDoTema(this.tema())] ?? null);
+  /** O botão do grupo fica marcado em qualquer variante dele. */
   protected selecionado(valor: Tema): boolean {
-    return this.tema() === valor || (valor.startsWith('commando') && this.commando());
+    return this.tema() === valor || (valor.includes('-') && grupoDoTema(valor) === grupoDoTema(this.tema()));
   }
   /** Nível que falta para escolher o tema, ou null se já pode. Sem a gamificação carregada, trava. */
   protected nivelQueFalta(tema: Tema): number | null {

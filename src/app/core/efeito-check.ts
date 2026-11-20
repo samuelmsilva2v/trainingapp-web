@@ -3,25 +3,31 @@
  * - Escuro e Claro: pulso, um anel da cor principal que se expande a partir do check.
  * - Ignite: onda de calor, duas ondas laranja e o botão brilhando.
  * - Chrome: carimbo, o check desce como uma prensa e um reflexo prateado passa por ele.
+ * - Electric: flash, o check acende claro e solta um brilho lilás.
  * - Cyberpunk: falha, tranco com faixas rosa e ciano deslocadas antes de assentar.
- * - Commando (as três camuflagens): carimbo "SÉRIE OK" sobre o check.
+ * - Commando (as duas camuflagens): carimbo "SÉRIE OK" sobre o check.
+ * - Japan: Sakura solta pétalas, Hokusai a onda do Ignite em azul e Sumi-e bate o carimbo 済.
  * Recebe o check já no lugar final (o Treino chama depois de redesenhar a tela). Anéis, reflexo e faixas
  * ficam no <body> com `position: fixed`, para não serem cortados pelo card nem pelo chanfro do check.
  */
 export function efeitoDoCheck(check: HTMLElement): void {
   if (matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
   if (!check.animate) return;
-  // As três camuflagens do Commando ("commando-selva" etc.) dividem o mesmo efeito.
-  const tema = (document.documentElement.dataset['tema'] ?? '').split('-')[0];
-  (EFEITOS[tema] ?? pulso)(check);
+  // Efeito da variante (Japan) ou do grupo inteiro (as camuflagens do Commando dividem o mesmo).
+  const tema = document.documentElement.dataset['tema'] ?? '';
+  (EFEITOS[tema] ?? EFEITOS[tema.split('-')[0]] ?? pulso)(check);
 }
 
 /** Efeito de cada tema; os que não estão aqui (Escuro e Claro) usam o pulso. */
 const EFEITOS: Record<string, (check: HTMLElement) => void> = {
   ignite: ondaDeCalor,
   chrome: carimbo,
+  electric: flashEletrico,
   cyberpunk: falha,
   commando: carimboOk,
+  'japao-sakura': petalas,
+  'japao-hokusai': ondaHokusai,
+  'japao-sumie': hanko,
 };
 
 /** Camada solta no <body>, do tamanho e no lugar do check, que some ao fim da animação. */
@@ -53,17 +59,37 @@ function pulso(check: HTMLElement): void {
   aneis(check, 'pulso', 2.2, 650, 140);
 }
 
-function ondaDeCalor(check: HTMLElement): void {
-  // Uma onda só, suave.
-  aneis(check, 'onda-calor', 2.2, 800, 0, 1);
+/** Uma onda só, suave, e o check brilhando na cor dada (Ignite em laranja, Hokusai em azul). */
+function onda(check: HTMLElement, classe: string, brilho: string): void {
+  aneis(check, classe, 2.2, 800, 0, 1);
   check.animate(
     [
-      { boxShadow: '0 0 0 0 rgb(255 174 0 / 0)' },
-      { boxShadow: '0 0 12px 3px rgb(255 120 0 / 0.35)' },
-      { boxShadow: '0 0 0 0 rgb(255 174 0 / 0)' },
+      { boxShadow: `0 0 0 0 rgb(${brilho} / 0)` },
+      { boxShadow: `0 0 12px 3px rgb(${brilho} / 0.35)` },
+      { boxShadow: `0 0 0 0 rgb(${brilho} / 0)` },
     ],
     { duration: 800 },
   );
+}
+
+/** Electric: só o flash, o check acende claro e solta o brilho lilás, sem camadas extras. */
+function flashEletrico(check: HTMLElement): void {
+  check.animate(
+    [
+      { boxShadow: '0 0 0 0 rgb(185 168 255 / 0)', filter: 'brightness(1)' },
+      { boxShadow: '0 0 22px 6px rgb(185 168 255 / 0.85)', filter: 'brightness(1.8)', offset: 0.15 },
+      { boxShadow: '0 0 0 0 rgb(185 168 255 / 0)', filter: 'brightness(1)' },
+    ],
+    { duration: 550, easing: 'ease-out' },
+  );
+}
+
+// Declarações de função (não const): o EFEITOS lá em cima as usa antes desta linha.
+function ondaDeCalor(check: HTMLElement): void {
+  onda(check, 'onda-calor', '255 120 0');
+}
+function ondaHokusai(check: HTMLElement): void {
+  onda(check, 'onda-hokusai', '143 184 220');
 }
 
 function carimbo(check: HTMLElement): void {
@@ -131,4 +157,42 @@ function falha(check: HTMLElement): void {
       { clipPath: 'inset(100% 0 0 0)', transform: 'translate(-50%, -50%)' },
     ], { duration: 360, easing: 'steps(4, end)' });
   }
+}
+
+const entre = (a: number, b: number) => a + Math.random() * (b - a);
+
+/** Partícula solta no <body>, centrada no check, com o estilo extra dado. */
+function particula(check: HTMLElement, classe: string, css = ''): HTMLElement {
+  const { left, top, width, height } = check.getBoundingClientRect();
+  const el = document.createElement('span');
+  el.className = `efeito-check ${classe}`;
+  el.style.cssText = `left:${left + width / 2}px;top:${top + height / 2}px;${css}`;
+  document.body.appendChild(el);
+  return el;
+}
+
+/** Sakura: rajada de pétalas que giram e caem. */
+function petalas(check: HTMLElement): void {
+  for (let i = 0; i < 16; i++) {
+    const angulo = entre(0, Math.PI * 2);
+    const dist = entre(30, 90);
+    animarESumir(particula(check, 'petala'), [
+      { transform: 'translate(-50%, -50%) rotate(0)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(angulo) * dist}px), calc(-50% + ${Math.sin(angulo) * dist + 30}px)) rotate(${entre(180, 540)}deg)`, opacity: 0 },
+    ], { duration: entre(900, 1400), easing: 'cubic-bezier(.2,.7,.4,1)' });
+  }
+}
+
+
+/** Sumi-e: o carimbo vermelho 済 ("feito") cai girado sobre o check, assenta e some. */
+function hanko(check: HTMLElement): void {
+  const selo = particula(check, 'hanko');
+  selo.textContent = '済';
+  const girado = 'translate(-50%, -50%) rotate(-8deg)';
+  animarESumir(selo, [
+    { transform: `${girado} scale(1.8)`, opacity: 0 },
+    { transform: `${girado} scale(0.95)`, opacity: 1, offset: 0.2 },
+    { transform: `${girado} scale(1)`, opacity: 1, offset: 0.75 },
+    { transform: `${girado} scale(1)`, opacity: 0 },
+  ], { duration: 1300, easing: 'cubic-bezier(.2,.9,.3,1.2)' });
 }

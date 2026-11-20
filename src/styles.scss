@@ -129,7 +129,7 @@ $brasas-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' wid
   }
 }
 
-// Tema "Ignite Athletic" (Stitch), só escuro: Ember Orange como primária, Solar Gold como secundária
+// Tema "Ignite Athletic" (Stitch; desbloqueia no nível 15, core/tema.ts), só escuro: Ember Orange como primária, Solar Gold como secundária
 // e Crimson Blaze no perigo. html[data-tema] vence o :root, então só troca as cores.
 html[data-tema='ignite'] {
   color-scheme: dark;
@@ -342,7 +342,7 @@ html[data-tema='chrome'] {
 $hud-moldura: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M13.5 1.5H73.5V61.5L61.5 73.5H1.5V13.5Z' fill='none' stroke='%23ff2e63' stroke-width='1.6'/%3E%3Cpath d='M18.5 6.5H78.5V66.5L66.5 78.5H6.5V18.5Z' fill='none' stroke='%23ff2e63' stroke-width='1.6' opacity='.7'/%3E%3Cpath d='M16 4H76V64L64 76H4V16Z' fill='%23161b33' stroke='%2308d9d6' stroke-width='2'/%3E%3Cpath d='M58 0.8H70M10 79.2H22' stroke='%23f9ed69' stroke-width='1.4'/%3E%3Cg fill='%2308d9d6'%3E%3Crect x='0' y='26' width='5' height='2'/%3E%3Crect x='75' y='50' width='5' height='2'/%3E%3Crect x='1.5' y='30' width='3' height='1.5'/%3E%3C/g%3E%3Cg fill='%23ff2e63'%3E%3Crect x='76' y='46' width='4' height='1.5'/%3E%3C/g%3E%3C/svg%3E");
 $hud-badge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M8 3H38V30L31 37H2V10Z' fill='none' stroke='%23ff2e63' stroke-width='1.2' transform='translate(-1.5 -1.5)'/%3E%3Cpath d='M8 3H38V30L31 37H2V10Z' fill='%23161b33' stroke='%2308d9d6' stroke-width='1.6'/%3E%3C/svg%3E");
 
-// Tema "Cyberpunk" (desbloqueia no nível 15, core/tema.ts), só escuro. Paleta da referência aprovada:
+// Tema "Cyberpunk" (desbloqueia no nível 25, core/tema.ts), só escuro. Paleta da referência aprovada:
 // azul-noite #0b1026, superfície #252a41, vermelho-rosa #ff2e63, ciano #08d9d6 e amarelo #f9ed69.
 // Cards em moldura de HUD (border-image: cantos chanfrados fixos, bordas esticam), chanfros nos botões,
 // chips, barra e checks, marca do topo com falha de renderização e linhas de varredura.
@@ -649,6 +649,338 @@ html[data-tema='commando-mata'] {
   border: 2.5px solid var(--c-carimbo);
   border-radius: 4px;
   padding: 5px 9px;
+}
+
+// Tema "Electric" (desbloqueia no nível 10, core/tema.ts), só escuro e simples como o Ignite: roxo-azulado (paleta
+// Íris) sobre quase preto. Corrente correndo na barra de XP, três raios ramificados atravessando o card do treino em
+// momentos diferentes, faíscas saltando do raio da badge de XP e um flash no check (core/efeito-check.ts).
+// Raios gerados por script (deslocamento do ponto médio com galhos), iguais aos da prévia aprovada.
+$electric-raio-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 170' preserveAspectRatio='none'%3E%3Cfilter id='h' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolyline points='75.0,-4.0 76.8,-1.1 77.3,2.3 77.7,5.8 76.0,8.9 76.9,12.5 80.3,14.0 83.2,15.5 85.9,17.3 87.3,20.4 87.0,23.7 85.2,26.3 83.6,29.2 84.0,32.2 83.2,35.2 84.6,38.1 83.7,41.2 84.3,44.2 86.5,46.3 88.2,48.6 89.1,51.4 91.4,53.6 92.8,56.3 94.0,59.5 92.5,62.5 94.4,65.5 97.9,66.3 98.9,69.5 98.2,72.9 95.7,75.4 95.5,78.9 97.1,81.8 98.5,84.8 99.0,88.4 97.9,92.0 100.2,94.7 103.1,97.0 106.5,97.6 109.8,98.9 110.9,102.3 113.5,104.8 114.8,107.8 116.9,110.2 119.3,112.6 119.6,116.0 121.7,118.9 122.2,122.5 125.6,123.4 128.9,124.6 132.7,126.0 134.8,129.5 137.6,132.5 137.5,136.7 137.5,140.4 136.9,144.0 135.5,147.5 135.3,151.3 132.9,153.7 131.2,156.8 128.2,158.9 127.7,162.6 125.7,165.6 122.9,167.7 121.6,170.9 120.0,174.0' stroke='%238f7dff' stroke-width='7' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='95.5,78.9 98.0,80.6 101.0,80.9 103.9,81.9 106.9,81.0 109.6,82.7 112.7,82.6 114.4,85.2 117.0,86.8 119.9,87.6 122.9,87.3 125.5,88.8 128.4,89.7 130.4,91.9 132.5,94.0 135.6,94.3 137.9,96.5' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='91.4,53.6 92.3,56.4 93.0,59.2 95.7,60.5 97.5,63.0 100.0,64.9 103.1,65.0 104.8,67.5 106.3,70.0 108.7,71.6 111.6,71.8 114.0,73.3 116.6,74.5 118.6,76.5 120.5,78.5 123.2,79.7 124.9,82.1' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='122.2,122.5 121.8,124.6 120.6,126.3 120.9,128.4 119.9,130.4 120.0,132.5 118.9,134.4 120.1,136.3 120.0,138.5 118.8,140.2 117.8,142.0 115.8,142.9 114.5,144.5 112.8,145.8 111.8,147.7 111.7,149.9 110.7,151.8' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='75.0,-4.0 76.8,-1.1 77.3,2.3 77.7,5.8 76.0,8.9 76.9,12.5 80.3,14.0 83.2,15.5 85.9,17.3 87.3,20.4 87.0,23.7 85.2,26.3 83.6,29.2 84.0,32.2 83.2,35.2 84.6,38.1 83.7,41.2 84.3,44.2 86.5,46.3 88.2,48.6 89.1,51.4 91.4,53.6 92.8,56.3 94.0,59.5 92.5,62.5 94.4,65.5 97.9,66.3 98.9,69.5 98.2,72.9 95.7,75.4 95.5,78.9 97.1,81.8 98.5,84.8 99.0,88.4 97.9,92.0 100.2,94.7 103.1,97.0 106.5,97.6 109.8,98.9 110.9,102.3 113.5,104.8 114.8,107.8 116.9,110.2 119.3,112.6 119.6,116.0 121.7,118.9 122.2,122.5 125.6,123.4 128.9,124.6 132.7,126.0 134.8,129.5 137.6,132.5 137.5,136.7 137.5,140.4 136.9,144.0 135.5,147.5 135.3,151.3 132.9,153.7 131.2,156.8 128.2,158.9 127.7,162.6 125.7,165.6 122.9,167.7 121.6,170.9 120.0,174.0' stroke='%23b9a8ff' stroke-width='3.5' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='95.5,78.9 98.0,80.6 101.0,80.9 103.9,81.9 106.9,81.0 109.6,82.7 112.7,82.6 114.4,85.2 117.0,86.8 119.9,87.6 122.9,87.3 125.5,88.8 128.4,89.7 130.4,91.9 132.5,94.0 135.6,94.3 137.9,96.5' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='91.4,53.6 92.3,56.4 93.0,59.2 95.7,60.5 97.5,63.0 100.0,64.9 103.1,65.0 104.8,67.5 106.3,70.0 108.7,71.6 111.6,71.8 114.0,73.3 116.6,74.5 118.6,76.5 120.5,78.5 123.2,79.7 124.9,82.1' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='122.2,122.5 121.8,124.6 120.6,126.3 120.9,128.4 119.9,130.4 120.0,132.5 118.9,134.4 120.1,136.3 120.0,138.5 118.8,140.2 117.8,142.0 115.8,142.9 114.5,144.5 112.8,145.8 111.8,147.7 111.7,149.9 110.7,151.8' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='75.0,-4.0 76.8,-1.1 77.3,2.3 77.7,5.8 76.0,8.9 76.9,12.5 80.3,14.0 83.2,15.5 85.9,17.3 87.3,20.4 87.0,23.7 85.2,26.3 83.6,29.2 84.0,32.2 83.2,35.2 84.6,38.1 83.7,41.2 84.3,44.2 86.5,46.3 88.2,48.6 89.1,51.4 91.4,53.6 92.8,56.3 94.0,59.5 92.5,62.5 94.4,65.5 97.9,66.3 98.9,69.5 98.2,72.9 95.7,75.4 95.5,78.9 97.1,81.8 98.5,84.8 99.0,88.4 97.9,92.0 100.2,94.7 103.1,97.0 106.5,97.6 109.8,98.9 110.9,102.3 113.5,104.8 114.8,107.8 116.9,110.2 119.3,112.6 119.6,116.0 121.7,118.9 122.2,122.5 125.6,123.4 128.9,124.6 132.7,126.0 134.8,129.5 137.6,132.5 137.5,136.7 137.5,140.4 136.9,144.0 135.5,147.5 135.3,151.3 132.9,153.7 131.2,156.8 128.2,158.9 127.7,162.6 125.7,165.6 122.9,167.7 121.6,170.9 120.0,174.0' stroke='%23ffffff' stroke-width='1.8' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='95.5,78.9 98.0,80.6 101.0,80.9 103.9,81.9 106.9,81.0 109.6,82.7 112.7,82.6 114.4,85.2 117.0,86.8 119.9,87.6 122.9,87.3 125.5,88.8 128.4,89.7 130.4,91.9 132.5,94.0 135.6,94.3 137.9,96.5' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='91.4,53.6 92.3,56.4 93.0,59.2 95.7,60.5 97.5,63.0 100.0,64.9 103.1,65.0 104.8,67.5 106.3,70.0 108.7,71.6 111.6,71.8 114.0,73.3 116.6,74.5 118.6,76.5 120.5,78.5 123.2,79.7 124.9,82.1' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='122.2,122.5 121.8,124.6 120.6,126.3 120.9,128.4 119.9,130.4 120.0,132.5 118.9,134.4 120.1,136.3 120.0,138.5 118.8,140.2 117.8,142.0 115.8,142.9 114.5,144.5 112.8,145.8 111.8,147.7 111.7,149.9 110.7,151.8' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E");
+$electric-raio-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 170' preserveAspectRatio='none'%3E%3Cfilter id='h' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolyline points='210.0,-4.0 213.6,-2.6 215.2,0.8 216.5,4.3 215.7,7.9 216.6,11.1 216.1,14.4 217.7,17.7 216.2,21.0 216.0,24.4 216.4,27.8 216.0,31.1 215.3,34.4 218.6,36.3 221.4,38.7 221.5,42.5 221.9,46.2 219.9,49.7 220.4,53.7 221.3,57.4 222.3,61.1 220.5,64.3 218.2,67.3 216.9,71.0 213.6,73.2 209.7,74.0 207.1,77.0 204.5,79.8 202.7,83.1 199.2,84.2 195.6,85.2 191.9,83.8 188.1,85.2 188.5,88.9 190.0,92.3 193.3,94.0 196.4,96.0 193.3,98.2 192.7,101.9 191.0,105.2 191.7,108.9 190.6,111.7 189.1,114.4 188.6,117.4 188.1,120.4 188.1,123.6 189.5,126.5 187.7,129.2 187.8,132.5 187.6,136.2 190.0,138.9 190.1,142.3 190.5,145.7 188.1,148.9 188.8,152.8 185.4,154.3 182.6,156.6 179.1,157.3 176.7,159.8 175.9,163.1 174.7,166.2 174.4,169.9 171.6,172.2 167.9,171.6 165.0,174.0' stroke='%238f7dff' stroke-width='7' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='188.5,88.9 184.9,89.6 181.2,90.1 177.6,91.4 175.4,94.7 171.8,95.3 168.5,96.6 165.9,99.3 162.4,100.6 160.5,103.8 159.3,107.4 156.6,110.1 152.9,111.3 151.2,114.5 148.3,116.8 145.4,119.0 142.7,121.3' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='222.3,61.1 224.6,63.5 227.7,64.5 230.6,65.8 233.7,66.7 236.7,67.9 239.5,69.4 241.3,72.2 244.1,74.0 246.1,76.6 247.0,79.8 249.5,82.0 251.5,84.5 252.7,87.6 253.6,90.7 253.0,94.0 254.1,97.2' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='190.0,92.3 192.0,94.6 193.8,97.0 195.0,99.8 196.4,102.4 197.9,105.3 200.7,107.1 201.8,110.1 201.4,113.3 202.9,116.1 204.0,119.0 204.1,122.1 203.1,125.1 203.3,128.2 203.0,131.2 204.9,133.8 204.9,136.9' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='210.0,-4.0 213.6,-2.6 215.2,0.8 216.5,4.3 215.7,7.9 216.6,11.1 216.1,14.4 217.7,17.7 216.2,21.0 216.0,24.4 216.4,27.8 216.0,31.1 215.3,34.4 218.6,36.3 221.4,38.7 221.5,42.5 221.9,46.2 219.9,49.7 220.4,53.7 221.3,57.4 222.3,61.1 220.5,64.3 218.2,67.3 216.9,71.0 213.6,73.2 209.7,74.0 207.1,77.0 204.5,79.8 202.7,83.1 199.2,84.2 195.6,85.2 191.9,83.8 188.1,85.2 188.5,88.9 190.0,92.3 193.3,94.0 196.4,96.0 193.3,98.2 192.7,101.9 191.0,105.2 191.7,108.9 190.6,111.7 189.1,114.4 188.6,117.4 188.1,120.4 188.1,123.6 189.5,126.5 187.7,129.2 187.8,132.5 187.6,136.2 190.0,138.9 190.1,142.3 190.5,145.7 188.1,148.9 188.8,152.8 185.4,154.3 182.6,156.6 179.1,157.3 176.7,159.8 175.9,163.1 174.7,166.2 174.4,169.9 171.6,172.2 167.9,171.6 165.0,174.0' stroke='%23b9a8ff' stroke-width='3.5' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='188.5,88.9 184.9,89.6 181.2,90.1 177.6,91.4 175.4,94.7 171.8,95.3 168.5,96.6 165.9,99.3 162.4,100.6 160.5,103.8 159.3,107.4 156.6,110.1 152.9,111.3 151.2,114.5 148.3,116.8 145.4,119.0 142.7,121.3' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='222.3,61.1 224.6,63.5 227.7,64.5 230.6,65.8 233.7,66.7 236.7,67.9 239.5,69.4 241.3,72.2 244.1,74.0 246.1,76.6 247.0,79.8 249.5,82.0 251.5,84.5 252.7,87.6 253.6,90.7 253.0,94.0 254.1,97.2' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='190.0,92.3 192.0,94.6 193.8,97.0 195.0,99.8 196.4,102.4 197.9,105.3 200.7,107.1 201.8,110.1 201.4,113.3 202.9,116.1 204.0,119.0 204.1,122.1 203.1,125.1 203.3,128.2 203.0,131.2 204.9,133.8 204.9,136.9' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='210.0,-4.0 213.6,-2.6 215.2,0.8 216.5,4.3 215.7,7.9 216.6,11.1 216.1,14.4 217.7,17.7 216.2,21.0 216.0,24.4 216.4,27.8 216.0,31.1 215.3,34.4 218.6,36.3 221.4,38.7 221.5,42.5 221.9,46.2 219.9,49.7 220.4,53.7 221.3,57.4 222.3,61.1 220.5,64.3 218.2,67.3 216.9,71.0 213.6,73.2 209.7,74.0 207.1,77.0 204.5,79.8 202.7,83.1 199.2,84.2 195.6,85.2 191.9,83.8 188.1,85.2 188.5,88.9 190.0,92.3 193.3,94.0 196.4,96.0 193.3,98.2 192.7,101.9 191.0,105.2 191.7,108.9 190.6,111.7 189.1,114.4 188.6,117.4 188.1,120.4 188.1,123.6 189.5,126.5 187.7,129.2 187.8,132.5 187.6,136.2 190.0,138.9 190.1,142.3 190.5,145.7 188.1,148.9 188.8,152.8 185.4,154.3 182.6,156.6 179.1,157.3 176.7,159.8 175.9,163.1 174.7,166.2 174.4,169.9 171.6,172.2 167.9,171.6 165.0,174.0' stroke='%23ffffff' stroke-width='1.8' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='188.5,88.9 184.9,89.6 181.2,90.1 177.6,91.4 175.4,94.7 171.8,95.3 168.5,96.6 165.9,99.3 162.4,100.6 160.5,103.8 159.3,107.4 156.6,110.1 152.9,111.3 151.2,114.5 148.3,116.8 145.4,119.0 142.7,121.3' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='222.3,61.1 224.6,63.5 227.7,64.5 230.6,65.8 233.7,66.7 236.7,67.9 239.5,69.4 241.3,72.2 244.1,74.0 246.1,76.6 247.0,79.8 249.5,82.0 251.5,84.5 252.7,87.6 253.6,90.7 253.0,94.0 254.1,97.2' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='190.0,92.3 192.0,94.6 193.8,97.0 195.0,99.8 196.4,102.4 197.9,105.3 200.7,107.1 201.8,110.1 201.4,113.3 202.9,116.1 204.0,119.0 204.1,122.1 203.1,125.1 203.3,128.2 203.0,131.2 204.9,133.8 204.9,136.9' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E");
+$electric-raio-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 170' preserveAspectRatio='none'%3E%3Cfilter id='h' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolyline points='135.0,-4.0 138.1,-1.0 141.9,0.8 146.0,-0.3 150.3,-0.0 152.5,3.4 155.1,6.6 159.3,7.3 162.4,10.2 162.3,14.2 163.6,18.0 162.0,21.9 163.6,25.9 166.3,29.0 169.5,31.7 170.6,35.7 170.6,39.9 174.3,40.2 177.7,41.6 180.3,44.2 183.1,46.6 186.7,47.4 190.4,47.9 193.9,49.8 195.5,53.4 199.1,54.4 202.4,56.1 206.1,57.2 209.8,56.0 211.9,59.1 215.2,61.0 218.1,63.1 221.2,65.1 219.4,68.7 217.7,72.4 218.6,76.3 220.2,80.0 221.9,83.5 222.8,87.2 224.1,91.0 222.6,94.8 221.5,98.8 218.4,101.5 215.8,104.5 212.7,107.0 211.9,111.1 213.8,114.9 212.3,118.6 212.4,122.7 213.3,126.9 216.6,129.8 216.6,133.9 216.4,138.0 218.1,142.0 221.6,144.6 225.8,145.3 229.8,146.4 232.4,149.4 232.4,153.4 233.3,157.2 236.4,159.7 236.9,163.5 236.3,167.3 238.9,170.3 240.0,174.0' stroke='%238f7dff' stroke-width='7' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='170.6,39.9 172.4,42.1 174.2,44.4 176.3,46.3 178.0,48.6 181.0,48.7 183.8,49.7 186.0,51.7 188.2,53.7 191.0,54.0 193.8,54.1 196.6,53.9 199.4,54.8 202.2,54.1 204.9,53.2 207.7,53.9 210.5,54.1' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='215.2,61.0 218.4,61.0 221.6,60.3 224.2,62.5 227.5,62.9 229.8,65.3 233.0,66.4 235.1,68.9 236.0,72.1 239.1,72.6 241.2,74.9 242.9,77.5 245.5,79.1 247.8,81.2 251.0,81.5 253.2,83.5 256.1,84.4' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='215.8,104.5 214.9,106.3 214.1,108.1 214.1,110.2 213.1,112.0 212.7,113.9 212.7,115.9 211.9,117.7 211.6,119.7 212.1,121.9 211.2,123.9 210.7,125.9 209.7,127.7 207.9,129.1 205.8,129.6 204.9,131.6 203.6,133.3' stroke='%238f7dff' stroke-width='3.5' stroke-opacity='0.6' vector-effect='non-scaling-stroke' filter='url(%23h)'/%3E%3Cpolyline points='135.0,-4.0 138.1,-1.0 141.9,0.8 146.0,-0.3 150.3,-0.0 152.5,3.4 155.1,6.6 159.3,7.3 162.4,10.2 162.3,14.2 163.6,18.0 162.0,21.9 163.6,25.9 166.3,29.0 169.5,31.7 170.6,35.7 170.6,39.9 174.3,40.2 177.7,41.6 180.3,44.2 183.1,46.6 186.7,47.4 190.4,47.9 193.9,49.8 195.5,53.4 199.1,54.4 202.4,56.1 206.1,57.2 209.8,56.0 211.9,59.1 215.2,61.0 218.1,63.1 221.2,65.1 219.4,68.7 217.7,72.4 218.6,76.3 220.2,80.0 221.9,83.5 222.8,87.2 224.1,91.0 222.6,94.8 221.5,98.8 218.4,101.5 215.8,104.5 212.7,107.0 211.9,111.1 213.8,114.9 212.3,118.6 212.4,122.7 213.3,126.9 216.6,129.8 216.6,133.9 216.4,138.0 218.1,142.0 221.6,144.6 225.8,145.3 229.8,146.4 232.4,149.4 232.4,153.4 233.3,157.2 236.4,159.7 236.9,163.5 236.3,167.3 238.9,170.3 240.0,174.0' stroke='%23b9a8ff' stroke-width='3.5' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='170.6,39.9 172.4,42.1 174.2,44.4 176.3,46.3 178.0,48.6 181.0,48.7 183.8,49.7 186.0,51.7 188.2,53.7 191.0,54.0 193.8,54.1 196.6,53.9 199.4,54.8 202.2,54.1 204.9,53.2 207.7,53.9 210.5,54.1' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='215.2,61.0 218.4,61.0 221.6,60.3 224.2,62.5 227.5,62.9 229.8,65.3 233.0,66.4 235.1,68.9 236.0,72.1 239.1,72.6 241.2,74.9 242.9,77.5 245.5,79.1 247.8,81.2 251.0,81.5 253.2,83.5 256.1,84.4' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='215.8,104.5 214.9,106.3 214.1,108.1 214.1,110.2 213.1,112.0 212.7,113.9 212.7,115.9 211.9,117.7 211.6,119.7 212.1,121.9 211.2,123.9 210.7,125.9 209.7,127.7 207.9,129.1 205.8,129.6 204.9,131.6 203.6,133.3' stroke='%23b9a8ff' stroke-width='1.75' stroke-opacity='0.8' vector-effect='non-scaling-stroke' filter='url(%23b)'/%3E%3Cpolyline points='135.0,-4.0 138.1,-1.0 141.9,0.8 146.0,-0.3 150.3,-0.0 152.5,3.4 155.1,6.6 159.3,7.3 162.4,10.2 162.3,14.2 163.6,18.0 162.0,21.9 163.6,25.9 166.3,29.0 169.5,31.7 170.6,35.7 170.6,39.9 174.3,40.2 177.7,41.6 180.3,44.2 183.1,46.6 186.7,47.4 190.4,47.9 193.9,49.8 195.5,53.4 199.1,54.4 202.4,56.1 206.1,57.2 209.8,56.0 211.9,59.1 215.2,61.0 218.1,63.1 221.2,65.1 219.4,68.7 217.7,72.4 218.6,76.3 220.2,80.0 221.9,83.5 222.8,87.2 224.1,91.0 222.6,94.8 221.5,98.8 218.4,101.5 215.8,104.5 212.7,107.0 211.9,111.1 213.8,114.9 212.3,118.6 212.4,122.7 213.3,126.9 216.6,129.8 216.6,133.9 216.4,138.0 218.1,142.0 221.6,144.6 225.8,145.3 229.8,146.4 232.4,149.4 232.4,153.4 233.3,157.2 236.4,159.7 236.9,163.5 236.3,167.3 238.9,170.3 240.0,174.0' stroke='%23ffffff' stroke-width='1.8' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='170.6,39.9 172.4,42.1 174.2,44.4 176.3,46.3 178.0,48.6 181.0,48.7 183.8,49.7 186.0,51.7 188.2,53.7 191.0,54.0 193.8,54.1 196.6,53.9 199.4,54.8 202.2,54.1 204.9,53.2 207.7,53.9 210.5,54.1' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='215.2,61.0 218.4,61.0 221.6,60.3 224.2,62.5 227.5,62.9 229.8,65.3 233.0,66.4 235.1,68.9 236.0,72.1 239.1,72.6 241.2,74.9 242.9,77.5 245.5,79.1 247.8,81.2 251.0,81.5 253.2,83.5 256.1,84.4' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3Cpolyline points='215.8,104.5 214.9,106.3 214.1,108.1 214.1,110.2 213.1,112.0 212.7,113.9 212.7,115.9 211.9,117.7 211.6,119.7 212.1,121.9 211.2,123.9 210.7,125.9 209.7,127.7 207.9,129.1 205.8,129.6 204.9,131.6 203.6,133.3' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='1' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E");
+html[data-tema='electric'] {
+  color-scheme: dark;
+  @include mat.theme((color: (primary: mat.$violet-palette, tertiary: mat.$azure-palette)));
+  @include mat.snack-bar-overrides((container-color: #211c3a, button-color: #b9a8ff));
+  --c-fundo: #0e0c1a;
+  --c-sup-0: #0a0914;
+  --c-sup-1: #141126;
+  --c-sup-2: #18152b;
+  --c-sup-3: #211c3a;
+  --c-sup-4: #28233f;
+  --c-texto: #eeeaff;
+  --c-texto-2: #a19bc4;
+  --c-borda: #3c3560;
+  --c-linha: rgb(185 168 255 / 0.14);
+  --c-primaria: #8f7dff;
+  --c-primaria-esc: #7a66f0;
+  --c-sobre-primaria: #ffffff;
+  --c-primaria-fundo: linear-gradient(135deg, #5b45d6, #8f7dff 60%, #c9beff);
+  --c-primaria-fundo-hover: linear-gradient(135deg, #4f3bc4, #7f6cf0 60%, #b9acf5);
+  --c-primaria-brilho: 0 0 18px -4px rgb(143 125 255 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.3);
+  --c-destaque: #b9a8ff;
+  --c-serie-atual: #1e1a36;
+  --c-secundaria: #b9a8ff;
+  --c-secundaria-texto: #b9a8ff;
+  --c-secundaria-hover: #cfc3ff;
+  --c-sobre-secundaria: #1a1433;
+  --c-interruptor: #8f7dff;
+  --c-chama-base: #5b45d6;
+  --c-chama-topo: #ffffff;
+  /* Corrente: lilás → branco → lilás correndo pela barra (animação abaixo). */
+  --c-barra-xp: linear-gradient(90deg, #5b45d6, #b9a8ff, #ffffff, #b9a8ff, #5b45d6);
+  --c-check: #8f7dff;
+  --c-sobre-check: #ffffff;
+
+  .barra > :is(span, .preenchida) {
+    // !important: o `background:` do componente (mais específico) zera o tamanho, e o degradê pararia.
+    background-size: 200% 100% !important;
+    box-shadow: 0 0 10px rgb(185 168 255 / 0.7);
+    animation: calor 1.2s linear infinite;
+  }
+  .check.ok { background: var(--c-check); border-color: var(--c-check); color: var(--c-sobre-check); }
+  // Badges de XP com contorno lilás; a do topo solta faíscas do raio (::after com três pontos em box-shadow,
+  // que se afastam do ícone ao crescer).
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { box-shadow: inset 0 0 0 1px rgb(185 168 255 / 0.55); }
+  .topo > a.xp {
+    position: relative;
+    .icone { color: #ffffff; text-shadow: 0 0 6px rgb(185 168 255); }
+    &::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: -9px -12px 0 1.5px #fff, 6px -14px 0 1.5px #fff, -4px 11px 0 1.5px #fff,
+        -9px -12px 4px 2px rgb(185 168 255), 6px -14px 4px 2px rgb(185 168 255), -4px 11px 4px 2px rgb(185 168 255);
+      animation: faiscas-electric 2.6s infinite;
+    }
+  }
+  // Card do treino: contorno lilás com brilho, os raios piscando (::after troca de desenho a cada vez) e o card
+  // clareando junto (::before). O z-index -1 com isolation deixa o efeito sob o conteúdo, como no Ignite.
+  .cartao.treino {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgb(185 168 255 / 0.35), 0 0 16px -6px rgb(185 168 255 / 0.5);
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0;
+    }
+    &::before { background: radial-gradient(circle at 50% 40%, rgb(185 168 255 / 0.28), transparent 70%); animation: clarao-electric 5s infinite; }
+    &::after { background-size: 100% 100%; background-repeat: no-repeat; animation: raios-electric 5s infinite; }
+  }
+}
+// Cada raio pisca com tremida de flash; a troca de desenho acontece com tudo apagado.
+@keyframes raios-electric {
+  0%, 18% { opacity: 0; background-image: $electric-raio-1; }
+  19% { opacity: 1; }
+  20% { opacity: 0.15; }
+  21% { opacity: 0.9; }
+  23% { opacity: 0.5; }
+  25% { opacity: 0; background-image: $electric-raio-1; }
+  26%, 55% { opacity: 0; background-image: $electric-raio-2; }
+  56% { opacity: 1; }
+  57% { opacity: 0.2; }
+  58% { opacity: 0.85; }
+  60% { opacity: 0.4; }
+  62% { opacity: 0; background-image: $electric-raio-2; }
+  63%, 84% { opacity: 0; background-image: $electric-raio-3; }
+  85% { opacity: 0.9; }
+  86% { opacity: 0.1; }
+  87% { opacity: 1; }
+  88% { opacity: 0.4; }
+  90%, 100% { opacity: 0; background-image: $electric-raio-3; }
+}
+@keyframes clarao-electric {
+  0%, 18%, 24%, 55%, 61%, 84%, 89%, 100% { opacity: 0; }
+  19%, 56%, 87% { opacity: 1; }
+  21%, 58%, 85% { opacity: 0.4; }
+}
+@keyframes faiscas-electric {
+  0%, 70% { opacity: 0; transform: scale(0.2); }
+  72% { opacity: 1; }
+  85%, 100% { opacity: 0; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema='electric'] :is(.barra > span, .barra > .preenchida, .topo > a.xp::after, .cartao.treino::before, .cartao.treino::after) { animation: none; }
+}
+
+// Tema "Japan" (desbloqueia no nível 30, core/tema.ts), com três variantes que a pessoa troca no Perfil, como
+// o Commando: Sakura (cerejeiras à noite), Hokusai (gravura ukiyo-e) e Sumi-e (nanquim no papel washi, claro).
+// Padrões gerados por script (ladrilhos SVG), iguais aos da prévia aprovada.
+$japao-seigaiha-rosa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='18'%3E%3Cg fill='none' stroke='%23ffb7c5' stroke-opacity='.08' stroke-width='1'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Ccircle cx='0' cy='9' r='6'/%3E%3Ccircle cx='36' cy='9' r='6'/%3E%3Ccircle cx='18' cy='18' r='10'/%3E%3Ccircle cx='0' cy='9' r='10'/%3E%3Ccircle cx='36' cy='9' r='10'/%3E%3Ccircle cx='18' cy='18' r='14'/%3E%3Ccircle cx='0' cy='9' r='14'/%3E%3Ccircle cx='36' cy='9' r='14'/%3E%3Ccircle cx='18' cy='18' r='18'/%3E%3Ccircle cx='0' cy='9' r='18'/%3E%3Ccircle cx='36' cy='9' r='18'/%3E%3C/g%3E%3C/svg%3E");
+$japao-petalas-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='220'%3E%3Cpath transform='translate(20 30) rotate(30) scale(1)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.8'/%3E%3Cpath transform='translate(95 110) rotate(-20) scale(0.8)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.7'/%3E%3Cpath transform='translate(55 180) rotate(70) scale(1.1)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.75'/%3E%3C/svg%3E");
+$japao-petalas-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='300'%3E%3Cpath transform='translate(150 50) rotate(110) scale(0.7)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.5'/%3E%3Cpath transform='translate(40 160) rotate(-60) scale(0.6)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.45'/%3E%3Cpath transform='translate(120 250) rotate(20) scale(0.75)' d='M0 0c3-4 9-4 10 0-1 4-7 5-10 0Z' fill='%23f6b7c8' fill-opacity='0.5'/%3E%3C/svg%3E");
+$japao-nami: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='108' height='72'%3E%3Cg fill='none' stroke='%238fb8dc' stroke-opacity='.08' stroke-width='1'%3E%3Ccircle cx='-36' cy='-18' r='6'/%3E%3Ccircle cx='-36' cy='-18' r='10'/%3E%3Ccircle cx='-36' cy='-18' r='14'/%3E%3Ccircle cx='-36' cy='-18' r='18'/%3E%3Ccircle cx='0' cy='-18' r='6'/%3E%3Ccircle cx='0' cy='-18' r='10'/%3E%3Ccircle cx='0' cy='-18' r='14'/%3E%3Ccircle cx='0' cy='-18' r='18'/%3E%3Ccircle cx='36' cy='-18' r='6'/%3E%3Ccircle cx='36' cy='-18' r='10'/%3E%3Ccircle cx='36' cy='-18' r='14'/%3E%3Ccircle cx='36' cy='-18' r='18'/%3E%3Ccircle cx='72' cy='-18' r='6'/%3E%3Ccircle cx='72' cy='-18' r='10'/%3E%3Ccircle cx='72' cy='-18' r='14'/%3E%3Ccircle cx='72' cy='-18' r='18'/%3E%3Ccircle cx='108' cy='-18' r='6'/%3E%3Ccircle cx='108' cy='-18' r='10'/%3E%3Ccircle cx='108' cy='-18' r='14'/%3E%3Ccircle cx='108' cy='-18' r='18'/%3E%3Ccircle cx='144' cy='-18' r='6'/%3E%3Ccircle cx='144' cy='-18' r='10'/%3E%3Ccircle cx='144' cy='-18' r='14'/%3E%3Ccircle cx='144' cy='-18' r='18'/%3E%3Ccircle cx='-18' cy='-9' r='6'/%3E%3Ccircle cx='-18' cy='-9' r='10'/%3E%3Ccircle cx='-18' cy='-9' r='14'/%3E%3Ccircle cx='-18' cy='-9' r='18'/%3E%3Ccircle cx='18' cy='-9' r='6'/%3E%3Ccircle cx='18' cy='-9' r='10'/%3E%3Ccircle cx='18' cy='-9' r='14'/%3E%3Ccircle cx='18' cy='-9' r='18'/%3E%3Ccircle cx='54' cy='-9' r='6'/%3E%3Ccircle cx='54' cy='-9' r='10'/%3E%3Ccircle cx='54' cy='-9' r='14'/%3E%3Ccircle cx='54' cy='-9' r='18'/%3E%3Ccircle cx='90' cy='-9' r='6'/%3E%3Ccircle cx='90' cy='-9' r='10'/%3E%3Ccircle cx='90' cy='-9' r='14'/%3E%3Ccircle cx='90' cy='-9' r='18'/%3E%3Ccircle cx='126' cy='-9' r='6'/%3E%3Ccircle cx='126' cy='-9' r='10'/%3E%3Ccircle cx='126' cy='-9' r='14'/%3E%3Ccircle cx='126' cy='-9' r='18'/%3E%3Ccircle cx='-36' cy='0' r='6'/%3E%3Ccircle cx='-36' cy='0' r='10'/%3E%3Ccircle cx='-36' cy='0' r='14'/%3E%3Ccircle cx='-36' cy='0' r='18'/%3E%3Ccircle cx='0' cy='0' r='6'/%3E%3Ccircle cx='0' cy='0' r='10'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3Ccircle cx='0' cy='0' r='18'/%3E%3Ccircle cx='36' cy='0' r='6'/%3E%3Ccircle cx='36' cy='0' r='10'/%3E%3Ccircle cx='36' cy='0' r='14'/%3E%3Ccircle cx='36' cy='0' r='18'/%3E%3Ccircle cx='72' cy='0' r='6'/%3E%3Ccircle cx='72' cy='0' r='10'/%3E%3Ccircle cx='72' cy='0' r='14'/%3E%3Ccircle cx='72' cy='0' r='18'/%3E%3Ccircle cx='108' cy='0' r='6'/%3E%3Ccircle cx='108' cy='0' r='10'/%3E%3Ccircle cx='108' cy='0' r='14'/%3E%3Ccircle cx='108' cy='0' r='18'/%3E%3Ccircle cx='144' cy='0' r='6'/%3E%3Ccircle cx='144' cy='0' r='10'/%3E%3Ccircle cx='144' cy='0' r='14'/%3E%3Ccircle cx='144' cy='0' r='18'/%3E%3Ccircle cx='-18' cy='9' r='6'/%3E%3Ccircle cx='-18' cy='9' r='10'/%3E%3Ccircle cx='-18' cy='9' r='14'/%3E%3Ccircle cx='-18' cy='9' r='18'/%3E%3Ccircle cx='18' cy='9' r='6'/%3E%3Ccircle cx='18' cy='9' r='10'/%3E%3Ccircle cx='18' cy='9' r='14'/%3E%3Ccircle cx='18' cy='9' r='18'/%3E%3Ccircle cx='54' cy='9' r='6'/%3E%3Ccircle cx='54' cy='9' r='10'/%3E%3Ccircle cx='54' cy='9' r='14'/%3E%3Ccircle cx='54' cy='9' r='18'/%3E%3Ccircle cx='90' cy='9' r='6'/%3E%3Ccircle cx='90' cy='9' r='10'/%3E%3Ccircle cx='90' cy='9' r='14'/%3E%3Ccircle cx='90' cy='9' r='18'/%3E%3Ccircle cx='126' cy='9' r='6'/%3E%3Ccircle cx='126' cy='9' r='10'/%3E%3Ccircle cx='126' cy='9' r='14'/%3E%3Ccircle cx='126' cy='9' r='18'/%3E%3Ccircle cx='-36' cy='18' r='6'/%3E%3Ccircle cx='-36' cy='18' r='10'/%3E%3Ccircle cx='-36' cy='18' r='14'/%3E%3Ccircle cx='-36' cy='18' r='18'/%3E%3Ccircle cx='0' cy='18' r='6'/%3E%3Ccircle cx='0' cy='18' r='10'/%3E%3Ccircle cx='0' cy='18' r='14'/%3E%3Ccircle cx='0' cy='18' r='18'/%3E%3Ccircle cx='36' cy='18' r='6'/%3E%3Ccircle cx='36' cy='18' r='10'/%3E%3Ccircle cx='36' cy='18' r='14'/%3E%3Ccircle cx='36' cy='18' r='18'/%3E%3Ccircle cx='72' cy='18' r='6'/%3E%3Ccircle cx='72' cy='18' r='10'/%3E%3Ccircle cx='72' cy='18' r='14'/%3E%3Ccircle cx='72' cy='18' r='18'/%3E%3Ccircle cx='108' cy='18' r='6'/%3E%3Ccircle cx='108' cy='18' r='10'/%3E%3Ccircle cx='108' cy='18' r='14'/%3E%3Ccircle cx='108' cy='18' r='18'/%3E%3Ccircle cx='144' cy='18' r='6'/%3E%3Ccircle cx='144' cy='18' r='10'/%3E%3Ccircle cx='144' cy='18' r='14'/%3E%3Ccircle cx='144' cy='18' r='18'/%3E%3Ccircle cx='-18' cy='27' r='6'/%3E%3Ccircle cx='-18' cy='27' r='10'/%3E%3Ccircle cx='-18' cy='27' r='14'/%3E%3Ccircle cx='-18' cy='27' r='18'/%3E%3Ccircle cx='18' cy='27' r='6'/%3E%3Ccircle cx='18' cy='27' r='10'/%3E%3Ccircle cx='18' cy='27' r='14'/%3E%3Ccircle cx='18' cy='27' r='18'/%3E%3Ccircle cx='54' cy='27' r='6'/%3E%3Ccircle cx='54' cy='27' r='10'/%3E%3Ccircle cx='54' cy='27' r='14'/%3E%3Ccircle cx='54' cy='27' r='18'/%3E%3Ccircle cx='90' cy='27' r='6'/%3E%3Ccircle cx='90' cy='27' r='10'/%3E%3Ccircle cx='90' cy='27' r='14'/%3E%3Ccircle cx='90' cy='27' r='18'/%3E%3Ccircle cx='126' cy='27' r='6'/%3E%3Ccircle cx='126' cy='27' r='10'/%3E%3Ccircle cx='126' cy='27' r='14'/%3E%3Ccircle cx='126' cy='27' r='18'/%3E%3Ccircle cx='-36' cy='36' r='6'/%3E%3Ccircle cx='-36' cy='36' r='10'/%3E%3Ccircle cx='-36' cy='36' r='14'/%3E%3Ccircle cx='-36' cy='36' r='18'/%3E%3Ccircle cx='0' cy='36' r='6'/%3E%3Ccircle cx='0' cy='36' r='10'/%3E%3Ccircle cx='0' cy='36' r='14'/%3E%3Ccircle cx='0' cy='36' r='18'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3Ccircle cx='36' cy='36' r='10'/%3E%3Ccircle cx='36' cy='36' r='14'/%3E%3Ccircle cx='36' cy='36' r='18'/%3E%3Ccircle cx='72' cy='36' r='6'/%3E%3Ccircle cx='72' cy='36' r='10'/%3E%3Ccircle cx='72' cy='36' r='14'/%3E%3Ccircle cx='72' cy='36' r='18'/%3E%3Ccircle cx='108' cy='36' r='6'/%3E%3Ccircle cx='108' cy='36' r='10'/%3E%3Ccircle cx='108' cy='36' r='14'/%3E%3Ccircle cx='108' cy='36' r='18'/%3E%3Ccircle cx='144' cy='36' r='6'/%3E%3Ccircle cx='144' cy='36' r='10'/%3E%3Ccircle cx='144' cy='36' r='14'/%3E%3Ccircle cx='144' cy='36' r='18'/%3E%3Ccircle cx='-18' cy='45' r='6'/%3E%3Ccircle cx='-18' cy='45' r='10'/%3E%3Ccircle cx='-18' cy='45' r='14'/%3E%3Ccircle cx='-18' cy='45' r='18'/%3E%3Ccircle cx='18' cy='45' r='6'/%3E%3Ccircle cx='18' cy='45' r='10'/%3E%3Ccircle cx='18' cy='45' r='14'/%3E%3Ccircle cx='18' cy='45' r='18'/%3E%3Ccircle cx='54' cy='45' r='6'/%3E%3Ccircle cx='54' cy='45' r='10'/%3E%3Ccircle cx='54' cy='45' r='14'/%3E%3Ccircle cx='54' cy='45' r='18'/%3E%3Ccircle cx='90' cy='45' r='6'/%3E%3Ccircle cx='90' cy='45' r='10'/%3E%3Ccircle cx='90' cy='45' r='14'/%3E%3Ccircle cx='90' cy='45' r='18'/%3E%3Ccircle cx='126' cy='45' r='6'/%3E%3Ccircle cx='126' cy='45' r='10'/%3E%3Ccircle cx='126' cy='45' r='14'/%3E%3Ccircle cx='126' cy='45' r='18'/%3E%3Ccircle cx='-36' cy='54' r='6'/%3E%3Ccircle cx='-36' cy='54' r='10'/%3E%3Ccircle cx='-36' cy='54' r='14'/%3E%3Ccircle cx='-36' cy='54' r='18'/%3E%3Ccircle cx='0' cy='54' r='6'/%3E%3Ccircle cx='0' cy='54' r='10'/%3E%3Ccircle cx='0' cy='54' r='14'/%3E%3Ccircle cx='0' cy='54' r='18'/%3E%3Ccircle cx='36' cy='54' r='6'/%3E%3Ccircle cx='36' cy='54' r='10'/%3E%3Ccircle cx='36' cy='54' r='14'/%3E%3Ccircle cx='36' cy='54' r='18'/%3E%3Ccircle cx='72' cy='54' r='6'/%3E%3Ccircle cx='72' cy='54' r='10'/%3E%3Ccircle cx='72' cy='54' r='14'/%3E%3Ccircle cx='72' cy='54' r='18'/%3E%3Ccircle cx='108' cy='54' r='6'/%3E%3Ccircle cx='108' cy='54' r='10'/%3E%3Ccircle cx='108' cy='54' r='14'/%3E%3Ccircle cx='108' cy='54' r='18'/%3E%3Ccircle cx='144' cy='54' r='6'/%3E%3Ccircle cx='144' cy='54' r='10'/%3E%3Ccircle cx='144' cy='54' r='14'/%3E%3Ccircle cx='144' cy='54' r='18'/%3E%3Ccircle cx='-18' cy='63' r='6'/%3E%3Ccircle cx='-18' cy='63' r='10'/%3E%3Ccircle cx='-18' cy='63' r='14'/%3E%3Ccircle cx='-18' cy='63' r='18'/%3E%3Ccircle cx='18' cy='63' r='6'/%3E%3Ccircle cx='18' cy='63' r='10'/%3E%3Ccircle cx='18' cy='63' r='14'/%3E%3Ccircle cx='18' cy='63' r='18'/%3E%3Ccircle cx='54' cy='63' r='6'/%3E%3Ccircle cx='54' cy='63' r='10'/%3E%3Ccircle cx='54' cy='63' r='14'/%3E%3Ccircle cx='54' cy='63' r='18'/%3E%3Ccircle cx='90' cy='63' r='6'/%3E%3Ccircle cx='90' cy='63' r='10'/%3E%3Ccircle cx='90' cy='63' r='14'/%3E%3Ccircle cx='90' cy='63' r='18'/%3E%3Ccircle cx='126' cy='63' r='6'/%3E%3Ccircle cx='126' cy='63' r='10'/%3E%3Ccircle cx='126' cy='63' r='14'/%3E%3Ccircle cx='126' cy='63' r='18'/%3E%3Ccircle cx='-36' cy='72' r='6'/%3E%3Ccircle cx='-36' cy='72' r='10'/%3E%3Ccircle cx='-36' cy='72' r='14'/%3E%3Ccircle cx='-36' cy='72' r='18'/%3E%3Ccircle cx='0' cy='72' r='6'/%3E%3Ccircle cx='0' cy='72' r='10'/%3E%3Ccircle cx='0' cy='72' r='14'/%3E%3Ccircle cx='0' cy='72' r='18'/%3E%3Ccircle cx='36' cy='72' r='6'/%3E%3Ccircle cx='36' cy='72' r='10'/%3E%3Ccircle cx='36' cy='72' r='14'/%3E%3Ccircle cx='36' cy='72' r='18'/%3E%3Ccircle cx='72' cy='72' r='6'/%3E%3Ccircle cx='72' cy='72' r='10'/%3E%3Ccircle cx='72' cy='72' r='14'/%3E%3Ccircle cx='72' cy='72' r='18'/%3E%3Ccircle cx='108' cy='72' r='6'/%3E%3Ccircle cx='108' cy='72' r='10'/%3E%3Ccircle cx='108' cy='72' r='14'/%3E%3Ccircle cx='108' cy='72' r='18'/%3E%3Ccircle cx='144' cy='72' r='6'/%3E%3Ccircle cx='144' cy='72' r='10'/%3E%3Ccircle cx='144' cy='72' r='14'/%3E%3Ccircle cx='144' cy='72' r='18'/%3E%3Ccircle cx='-18' cy='81' r='6'/%3E%3Ccircle cx='-18' cy='81' r='10'/%3E%3Ccircle cx='-18' cy='81' r='14'/%3E%3Ccircle cx='-18' cy='81' r='18'/%3E%3Ccircle cx='18' cy='81' r='6'/%3E%3Ccircle cx='18' cy='81' r='10'/%3E%3Ccircle cx='18' cy='81' r='14'/%3E%3Ccircle cx='18' cy='81' r='18'/%3E%3Ccircle cx='54' cy='81' r='6'/%3E%3Ccircle cx='54' cy='81' r='10'/%3E%3Ccircle cx='54' cy='81' r='14'/%3E%3Ccircle cx='54' cy='81' r='18'/%3E%3Ccircle cx='90' cy='81' r='6'/%3E%3Ccircle cx='90' cy='81' r='10'/%3E%3Ccircle cx='90' cy='81' r='14'/%3E%3Ccircle cx='90' cy='81' r='18'/%3E%3Ccircle cx='126' cy='81' r='6'/%3E%3Ccircle cx='126' cy='81' r='10'/%3E%3Ccircle cx='126' cy='81' r='14'/%3E%3Ccircle cx='126' cy='81' r='18'/%3E%3Ccircle cx='-36' cy='90' r='6'/%3E%3Ccircle cx='-36' cy='90' r='10'/%3E%3Ccircle cx='-36' cy='90' r='14'/%3E%3Ccircle cx='-36' cy='90' r='18'/%3E%3Ccircle cx='0' cy='90' r='6'/%3E%3Ccircle cx='0' cy='90' r='10'/%3E%3Ccircle cx='0' cy='90' r='14'/%3E%3Ccircle cx='0' cy='90' r='18'/%3E%3Ccircle cx='36' cy='90' r='6'/%3E%3Ccircle cx='36' cy='90' r='10'/%3E%3Ccircle cx='36' cy='90' r='14'/%3E%3Ccircle cx='36' cy='90' r='18'/%3E%3Ccircle cx='72' cy='90' r='6'/%3E%3Ccircle cx='72' cy='90' r='10'/%3E%3Ccircle cx='72' cy='90' r='14'/%3E%3Ccircle cx='72' cy='90' r='18'/%3E%3Ccircle cx='108' cy='90' r='6'/%3E%3Ccircle cx='108' cy='90' r='10'/%3E%3Ccircle cx='108' cy='90' r='14'/%3E%3Ccircle cx='108' cy='90' r='18'/%3E%3Ccircle cx='144' cy='90' r='6'/%3E%3Ccircle cx='144' cy='90' r='10'/%3E%3Ccircle cx='144' cy='90' r='14'/%3E%3Ccircle cx='144' cy='90' r='18'/%3E%3C/g%3E%3C/svg%3E");
+$japao-washi: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .35' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .26 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .26 0 0 0 0 .2 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+$japao-enso: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.08' numOctaves='2' seed='5'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Ccircle cx='75' cy='75' r='52' fill='none' stroke='%231c1a17' stroke-opacity='.09' stroke-width='13' stroke-linecap='round' stroke-dasharray='290 40' transform='rotate(-70 75 75)' filter='url(%23p)'/%3E%3C/svg%3E");
+$japao-kasumi: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 110' preserveAspectRatio='none'%3E%3Cg fill='%231c1a17' fill-opacity='.045' stroke='%231c1a17' stroke-opacity='.08'%3E%3Crect x='60' y='20' width='200' height='14' rx='7'/%3E%3Crect x='18' y='46' width='240' height='18' rx='9'/%3E%3Crect x='96' y='78' width='160' height='12' rx='6'/%3E%3C/g%3E%3C/svg%3E");
+
+// Sakura: paleta Yozakura (ameixa escuro, rosa sakura e dourado de lanterna), seigaiha rosa nos cards e pétalas
+// caindo só dentro do card do treino; 桜 ao lado da marca e o check solta pétalas (core/efeito-check.ts).
+html[data-tema='japao-sakura'] {
+  color-scheme: dark;
+  @include mat.theme((color: (primary: mat.$rose-palette, tertiary: mat.$orange-palette)));
+  @include mat.snack-bar-overrides((container-color: #33233a, button-color: #ffb7c5));
+  --c-fundo: #1d1320;
+  --c-sup-0: #170f1a;
+  --c-sup-1: #241827;
+  --c-sup-2: #2a1c2d;
+  --c-sup-3: #33233a;
+  --c-sup-4: #3d2a40;
+  --c-texto: #fbeef2;
+  --c-texto-2: #c6a9b9;
+  --c-borda: #55405a;
+  --c-linha: rgb(255 183 197 / 0.14);
+  --c-primaria: #ffb7c5;
+  --c-primaria-esc: #e88aa3;
+  --c-sobre-primaria: #3a1424;
+  --c-primaria-fundo: linear-gradient(135deg, #e88aa3, #ffb7c5 60%, #ffd9e2);
+  --c-primaria-fundo-hover: linear-gradient(135deg, #d97a94, #f4a8b8 60%, #fbcbd6);
+  --c-primaria-brilho: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 4px 14px -6px rgb(255 183 197 / 0.6);
+  --c-destaque: #ffb7c5;
+  --c-serie-atual: #33223a;
+  /* Dourado de lanterna no XP. */
+  --c-secundaria: #f3c98b;
+  --c-secundaria-texto: #f3c98b;
+  --c-secundaria-hover: #f8d9a8;
+  --c-sobre-secundaria: #3a2530;
+  --c-interruptor: #ffb7c5;
+  --c-chama-base: #d9587a;
+  --c-chama-topo: #ffd9e2;
+  --c-barra-xp: linear-gradient(90deg, #d9587a, #ffb7c5);
+  --c-check: #ffb7c5;
+  --c-sobre-check: #3a1424;
+
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    box-shadow: inset 0 0 0 1px rgb(255 183 197 / 0.14);
+    background-image: $japao-seigaiha-rosa;
+    background-size: 36px 18px;
+  }
+  // Pétalas caindo só dentro do card do treino (o card corta o que passa da borda).
+  .cartao.treino {
+    position: relative;
+    overflow: hidden;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: $japao-petalas-a, $japao-petalas-b;
+      background-size: 140px 220px, 190px 300px;
+      animation: petalas-sakura 14s linear infinite;
+    }
+  }
+  .topo .marca::after { content: '桜'; margin-left: 6px; color: #ffb7c5; font-size: 0.9em; }
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { border-radius: 6px; color: #f3c98b; background: #3a2530; box-shadow: inset 0 0 0 1px rgb(243 201 139 / 0.55), 0 1px 3px rgb(0 0 0 / 0.4); }
+}
+@keyframes petalas-sakura { to { background-position: -40px 220px, 30px 600px; } }
+
+// Hokusai: azul-da-prússia sobre índigo, as escamas de onda nos cards e a gravura "A Grande Onda de Kanagawa"
+// (Hokusai, 1831, domínio público, public/temas/hokusai.jpg) no card do treino; 波 ao lado da marca, XP no
+// cartucho pêssego da gravura, barra bokashi e o check solta um respingo.
+html[data-tema='japao-hokusai'] {
+  color-scheme: dark;
+  @include mat.theme((color: (primary: mat.$blue-palette, tertiary: mat.$orange-palette)));
+  @include mat.snack-bar-overrides((container-color: #1a314c, button-color: #8fb8dc));
+  --c-fundo: #0c1828;
+  --c-sup-0: #08121f;
+  --c-sup-1: #102236;
+  --c-sup-2: #13283f;
+  --c-sup-3: #1a314c;
+  --c-sup-4: #203a57;
+  --c-texto: #f1e9d6;
+  --c-texto-2: #a3b6c9;
+  --c-borda: #2f4d6e;
+  --c-linha: rgb(143 184 220 / 0.14);
+  --c-primaria: #3f78ad;
+  --c-primaria-esc: #2b5b8a;
+  --c-sobre-primaria: #f6efe0;
+  --c-primaria-fundo: linear-gradient(135deg, #2b5b8a, #3f78ad 60%, #8fb8dc);
+  --c-primaria-fundo-hover: linear-gradient(135deg, #234d77, #356a9c 60%, #7aa6cd);
+  --c-primaria-brilho: inset 0 1px 0 rgb(241 233 214 / 0.35), 0 4px 14px -6px rgb(63 120 173 / 0.6);
+  --c-destaque: #8fb8dc;
+  --c-serie-atual: #18304b;
+  /* Pêssego do céu da gravura no XP. */
+  --c-secundaria: #e7c9a6;
+  --c-secundaria-texto: #e7c9a6;
+  --c-secundaria-hover: #f0d8bb;
+  --c-sobre-secundaria: #13283f;
+  --c-interruptor: #8fb8dc;
+  --c-chama-base: #2b5b8a;
+  --c-chama-topo: #f1e9d6;
+  --c-barra-xp: linear-gradient(90deg, #0f2a4a, #2b5b8a 55%, #8fb8dc);
+  --c-check: #8fb8dc;
+  --c-sobre-check: #0c1828;
+
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    box-shadow: inset 0 0 0 1px rgb(143 184 220 / 0.14);
+    background-image: $japao-nami;
+    background-size: 108px 72px;
+  }
+  // Véu índigo mais forte em cima (onde fica o texto), deixando a onda aparecer em volta do botão.
+  .cartao.treino {
+    background-image: linear-gradient(180deg, rgb(12 24 40 / 0.9) 0%, rgb(12 24 40 / 0.62) 50%, rgb(12 24 40 / 0.22) 100%), url('/temas/hokusai.jpg');
+    background-size: cover, cover;
+    background-position: center, 18% 55%;
+    background-repeat: no-repeat;
+  }
+  .topo .marca::after { content: '波'; margin-left: 6px; color: #8fb8dc; font-size: 0.9em; }
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { border-radius: 2px; color: #13283f; background: #e7c9a6; box-shadow: inset 0 0 0 2px #e7c9a6, inset 0 0 0 3px #13283f, 0 1px 3px rgb(0 0 0 / 0.4); }
+  // Bokashi: pontas retas e o contorno creme do entalhe.
+  .barra { border-radius: 2px; }
+  .barra > :is(span, .preenchida) { border-radius: 0; box-shadow: inset 0 0 0 1px rgb(241 233 214 / 0.55); }
+}
+
+// Sumi-e (claro): papel washi e nanquim, névoa kasumi nos cards e um ensō no card do treino; sol vermelho ao lado
+// da marca, XP num carimbo inkan torto, barra de XP em pincelada com cerdas secas e o carimbo 済 no check.
+html[data-tema='japao-sumie'] {
+  color-scheme: light;
+  @include mat.theme((color: (primary: mat.$orange-palette, tertiary: mat.$red-palette)));
+  @include mat.snack-bar-overrides((container-color: #1c1a17, supporting-text-color: #f7f2e7, button-color: #f3a08a));
+  --c-fundo: #efe8da;
+  --c-sup-0: #e8e0d0;
+  --c-sup-1: #f7f2e7;
+  --c-sup-2: #f7f2e7;
+  --c-sup-3: #e6dece;
+  --c-sup-4: #ddd3c0;
+  --c-texto: #1c1a17;
+  --c-texto-2: #6f675a;
+  --c-borda: #b8ac95;
+  --c-linha: rgb(28 26 23 / 0.1);
+  --c-primaria: #1c1a17;
+  --c-primaria-esc: #3a3630;
+  --c-sobre-primaria: #f7f2e7;
+  --c-primaria-fundo: #1c1a17;
+  --c-primaria-fundo-hover: #3a3630;
+  --c-primaria-brilho: none;
+  --c-destaque: #1c1a17;
+  --c-serie-atual: #ece4d3;
+  /* Vermelho do carimbo (inkan) no XP e no sol. */
+  --c-secundaria: #b3261e;
+  --c-secundaria-texto: #b3261e;
+  --c-secundaria-hover: #c8352b;
+  --c-sobre-secundaria: #ffffff;
+  --c-interruptor: #1c1a17;
+  --c-chama-base: #b3261e;
+  --c-chama-topo: #f3a08a;
+  --c-barra-xp: #1c1a17;
+  --c-check: #1c1a17;
+  --c-sobre-check: #f7f2e7;
+
+  :is(.cartao, .cartao-ex, .card, .esqueleto-cartao) {
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgb(28 26 23 / 0.12), inset 0 0 0 1px rgb(28 26 23 / 0.08);
+    background-image: $japao-kasumi, $japao-washi;
+    background-size: 200px 100px, auto;
+    background-position: right 0 bottom 10px, 0 0;
+    background-repeat: no-repeat, repeat;
+  }
+  .cartao.treino {
+    background-image: $japao-enso, $japao-washi;
+    background-size: 150px 150px, auto;
+    background-position: right -26px bottom -34px, 0 0;
+    background-repeat: no-repeat, repeat;
+  }
+  :is(.btn, .check) { border-radius: 6px; }
+  .topo .marca::after { content: ''; display: inline-block; width: 9px; height: 9px; margin-left: 6px; border-radius: 50%; background: #b3261e; vertical-align: middle; }
+  :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { border-radius: 3px; color: #b3261e; background: rgb(179 38 30 / 0.06); box-shadow: inset 0 0 0 1.5px #b3261e; transform: rotate(-2deg); }
+  // Pincelada: começa redonda, termina reta e se desfaz em cerdas secas no fim.
+  .barra { background: rgb(28 26 23 / 0.08); }
+  .barra > :is(span, .preenchida) {
+    border-radius: 5px 2px 2px 5px;
+    -webkit-mask: linear-gradient(90deg, #000 82%, transparent), repeating-linear-gradient(0deg, #000 0 1.2px, transparent 1.2px 2px);
+    mask: linear-gradient(90deg, #000 82%, transparent), repeating-linear-gradient(0deg, #000 0 1.2px, transparent 1.2px 2px);
+  }
+}
+html[data-tema^='japao'] .check.ok { background: var(--c-check); border-color: var(--c-check); color: var(--c-sobre-check); }
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema='japao-sakura'] .cartao.treino::after { animation: none; }
+}
+// Efeitos do check do Japan (core/efeito-check.ts): pétalas, a onda do Ignite em azul e o carimbo 済.
+.efeito-check.petala { width: 9px; height: 7px; background: #f6b7c8; border-radius: 80% 0 80% 0; }
+.efeito-check.onda-hokusai {
+  border: 1.5px solid rgb(143 184 220 / 0.85); box-shadow: 0 0 8px rgb(63 120 173 / 0.55), inset 0 0 6px rgb(63 120 173 / 0.3);
+}
+.efeito-check.hanko {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #b3261e;
+  border-radius: 6px;
+  color: #b3261e;
+  background: rgb(179 38 30 / 0.06);
+  font: 700 26px/1 serif;
 }
 
 * { box-sizing: border-box; }
