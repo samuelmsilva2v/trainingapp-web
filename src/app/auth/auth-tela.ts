@@ -3,7 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthApi, mensagemDeErro } from '../core/api';
 import { ForcaSenha } from '../compartilhado/forca-senha';
-import { AuthStore } from '../core/auth';
+import { AuthStore, destinoAposLogin } from '../core/auth';
 import { NO_APP } from '../core/cofre';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { senhaForte } from '../core/senha';
@@ -133,7 +133,7 @@ export class AuthTela implements OnInit {
   }
 
   private entrou(): void {
-    void this.router.navigateByUrl('/hoje');
+    void this.router.navigateByUrl(destinoAposLogin());
   }
 
   /** Abre o popup do Google. O cliente já foi criado ao carregar a tela: o navegador só deixa abrir popup direto do clique. */

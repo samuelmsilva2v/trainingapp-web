@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { PlanosApi, mensagemDeErro } from '../../core/api';
+import { compartilharLink } from '../../core/android';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
 import { Carregando } from '../../compartilhado/carregando';
@@ -28,6 +29,8 @@ export class PlanosLista implements OnInit {
   protected readonly abertos = signal<ReadonlySet<string>>(new Set());
   protected readonly detalhes = signal<ReadonlyMap<string, Plano>>(new Map());
   protected readonly erroResumo = signal<string | null>(null);
+  /** Id do plano cujo link está sendo gerado (desliga o botão para não gerar dois). */
+  protected readonly compartilhando = signal<string | null>(null);
 
   ngOnInit(): void {
     this.carregar();
@@ -87,6 +90,23 @@ export class PlanosLista implements OnInit {
         this.carregar();
       },
       error: e => this.aviso.open(mensagemDeErro(e), 'OK', { duration: 5000 }),
+    });
+  }
+
+  /** Gera um link novo (cópia do plano agora) e abre a folha de compartilhamento; sem ela, copia o link. */
+  protected compartilhar(plano: PlanoResumo): void {
+    this.compartilhando.set(plano.id);
+    this.api.compartilhar(plano.id).subscribe({
+      next: ({ link }) =>
+        void compartilharLink(`Plano de treino "${plano.nome}" no TrainingApp`, link)
+          .then(r => r === 'copiado' && this.aviso.open('Link copiado.', undefined, { duration: 3000 }))
+          // Navegador que nega a área de transferência: mostra o link para copiar à mão.
+          .catch(() => prompt('Copie o link do plano:', link))
+          .finally(() => this.compartilhando.set(null)),
+      error: e => {
+        this.compartilhando.set(null);
+        this.aviso.open(mensagemDeErro(e), 'OK', { duration: 5000 });
+      },
     });
   }
 

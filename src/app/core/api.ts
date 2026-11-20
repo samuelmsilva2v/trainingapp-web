@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CofreRefresh } from './cofre';
 import {
-  Acesso, Anterior, Exercicio, ExercicioRequest, FeedbackRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Peso, Plano, PlanoRequest, PlanoResumo,
+  Acesso, Anterior, Exercicio, ExercicioRequest, FeedbackRequest, Gamificacao, GrupoMuscular, Hoje, Perfil, PerfilRequest, Peso, Plano, PlanoCompartilhado, PlanoRequest, PlanoResumo,
   SessaoLocal, SessaoResumo,
 } from './modelos';
 
@@ -51,6 +51,19 @@ export class PlanosApi {
 
   ativar(id: string): Observable<Plano> {
     return this.http.post<Plano>(`${API_URL}/planos/${id}/ativar`, {});
+  }
+
+  /** Gera um link novo com uma cópia do plano como está agora. */
+  compartilhar(id: string): Observable<{ link: string }> {
+    return this.http.post<{ link: string }>(`${API_URL}/planos/${id}/compartilhar`, {});
+  }
+
+  compartilhado(token: string): Observable<PlanoCompartilhado> {
+    return this.http.get<PlanoCompartilhado>(`${API_URL}/compartilhados/${encodeURIComponent(token)}`);
+  }
+
+  salvarCompartilhado(token: string, ativar: boolean): Observable<Plano> {
+    return this.http.post<Plano>(`${API_URL}/compartilhados/${encodeURIComponent(token)}/salvar`, {}, { params: { ativar } });
   }
 }
 

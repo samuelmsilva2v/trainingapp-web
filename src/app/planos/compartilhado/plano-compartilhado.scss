@@ -1,0 +1,45 @@
+:host { display: block; min-height: 100dvh; }
+
+.topo {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 64px;
+  padding: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) 12px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--c-fundo) 85%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
+}
+
+.pagina { max-width: 640px; margin: 0 auto; padding: 80px 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.invalido { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }
+.invalido .icone { font-size: 56px; color: var(--c-texto-2); }
+.invalido h2, .invalido p { margin: 0; }
+.invalido .btn { margin-top: 8px; min-width: 200px; }
+
+.cabecalho { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.chip.objetivo { background: var(--c-primaria); color: var(--c-sobre-primaria); }
+.nome { margin: 0; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.por { margin: 0; display: flex; align-items: center; gap: 6px; .icone { font-size: 16px; } }
+
+.dias, .exercicios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.dias { gap: 12px; }
+.exercicios { gap: 8px; }
+.dia { padding: 12px; border-radius: var(--r-md); background: var(--c-sup-2); display: flex; flex-direction: column; gap: 10px; }
+.dia-nome { margin: 0; display: flex; align-items: center; gap: 6px; overflow-wrap: anywhere; font: 700 14px/20px 'Inter', sans-serif; }
+.ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--c-primaria); flex-shrink: 0; }
+
+.exercicio { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.miniatura { width: 44px; height: 44px; border-radius: var(--r-sm); object-fit: cover; flex-shrink: 0; background: var(--c-sup-3); }
+.texto { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ex-nome { font-weight: 600; overflow-wrap: anywhere; }
+.meta { display: flex; align-items: center; gap: 4px; font-size: 12px; .icone { font-size: 14px; } }
+.chip.drop { flex-shrink: 0; }
+
+.fixo { position: sticky; bottom: 0; z-index: 30; padding: 12px 0 calc(8px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; background: var(--c-fundo); }
+.fixo .btn { min-height: 48px; }
+.linha { display: flex; gap: 8px; .btn { flex: 1; } }

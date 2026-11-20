@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
-import { AuthStore, autenticadoGuard } from './auth';
+import { AuthStore, autenticadoGuard, destinoAposLogin } from './auth';
 import { autenticacaoInterceptor } from './auth.interceptor';
 import { CofreRefresh } from './cofre';
 
@@ -109,6 +109,19 @@ describe('login (AuthStore + interceptor)', () => {
     mock.expectOne('/api/auth/refresh').flush({ acesso: 't9', expiraEmSegundos: 900 });
     await de_novo;
     expect(TestBed.runInInjectionContext(() => autenticadoGuard({} as never, {} as never))).toBe(true);
+  });
+
+  it('link compartilhado aberto deslogado volta depois do login, uma vez só; outras rotas vão para /hoje', async () => {
+    const restaurando = auth.iniciar();
+    mock.expectOne('/api/auth/refresh').flush({}, NAO_AUTORIZADO);
+    await restaurando;
+    const guarda = (url: string) => TestBed.runInInjectionContext(() => autenticadoGuard({} as never, { url } as never));
+
+    guarda('/historico');
+    expect(destinoAposLogin()).toBe('/hoje');
+    guarda('/compartilhado/abc123');
+    expect(destinoAposLogin()).toBe('/compartilhado/abc123');
+    expect(destinoAposLogin()).toBe('/hoje');
   });
 
   it('falta de rede ao restaurar não derruba nem trava o app', async () => {

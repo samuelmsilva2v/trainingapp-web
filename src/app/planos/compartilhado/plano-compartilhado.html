@@ -1,0 +1,74 @@
+<header class="topo">
+  <button type="button" class="btn-icone" aria-label="Voltar" (click)="agoraNao()">
+    <span class="icone" aria-hidden="true">arrow_back</span>
+  </button>
+  <h1 class="titulo-sm">Plano compartilhado</h1>
+</header>
+
+<div class="pagina">
+  @if (erro(); as falha) {
+    @if (falha.tipo === 'nao-encontrada') {
+      <div class="invalido" role="alert">
+        <span class="icone" aria-hidden="true">search_off</span>
+        <h2 class="titulo-sm">Link inválido ou removido</h2>
+        <p class="suave">Peça um link novo para quem compartilhou o plano.</p>
+        <button type="button" class="btn btn-primario" (click)="agoraNao()">Ir para Hoje</button>
+      </div>
+    } @else {
+      <app-tela-erro [falha]="falha" (tentar)="carregar()" />
+    }
+  } @else if (plano(); as p) {
+    <section class="cabecalho">
+      <span class="chip objetivo">{{ rotuloObjetivo(p.objetivo) }}</span>
+      <h2 class="titulo-md nome">{{ p.nome }}</h2>
+      @if (p.compartilhadoPor) {
+        <p class="suave por"><span class="icone" aria-hidden="true">person</span> Compartilhado por {{ p.compartilhadoPor }}</p>
+      }
+    </section>
+
+    <ul class="dias">
+      @for (dia of p.dias; track $index) {
+        <li class="dia">
+          <h3 class="dia-nome"><span class="ponto" aria-hidden="true"></span>{{ dia.nome }}</h3>
+          @if (dia.exercicios.length) {
+            <ul class="exercicios">
+              @for (ex of dia.exercicios; track $index) {
+                <li class="exercicio">
+                  @if (ex.imagens?.[0]; as foto) {
+                    <img class="miniatura" [src]="foto" alt="" loading="lazy" (error)="$any($event.target).remove()" />
+                  }
+                  <div class="texto">
+                    <span class="ex-nome">{{ ex.exercicioNome }}</span>
+                    <span class="suave meta num">
+                      {{ ex.series }} × {{ faixaReps(ex.repsMin, ex.repsMax) }}
+                      @if (ex.descansoSegundos) {
+                        · <span class="icone" aria-hidden="true">timer</span> {{ cronometro(ex.descansoSegundos) }}
+                      }
+                    </span>
+                  </div>
+                  @if (ex.drops) {
+                    <span class="chip drop">DROP-SET</span>
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="suave">Nenhum exercício.</p>
+          }
+        </li>
+      }
+    </ul>
+
+    <div class="fixo">
+      <button type="button" class="btn btn-primario" [disabled]="salvando()" (click)="salvar(false)">
+        <span class="icone" aria-hidden="true">download</span> Salvar plano
+      </button>
+      <div class="linha">
+        <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="salvar(true)">Salvar e ativar</button>
+        <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="agoraNao()">Agora não</button>
+      </div>
+    </div>
+  } @else {
+    <app-carregando />
+  }
+</div>

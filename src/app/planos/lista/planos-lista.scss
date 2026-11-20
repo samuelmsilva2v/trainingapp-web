@@ -49,7 +49,8 @@
 .chip.objetivo { background: var(--c-sup-3); }
 .cartao.ativo .chip.objetivo { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 .ativo-chip { background: var(--c-sup-4); color: var(--c-destaque); .icone { font-size: 14px; } }
-.excluir { margin: -8px -8px -8px auto; .icone { font-size: 22px; } }
+.compartilhar { margin: -8px 0 -8px auto; .icone { font-size: 22px; } }
+.excluir { margin: -8px -8px -8px 0; .icone { font-size: 22px; } }
 
 .nome { letter-spacing: -0.01em; }
 .dias { display: flex; align-items: center; gap: 6px; .icone { font-size: 16px; } }

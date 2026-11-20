@@ -170,7 +170,26 @@ function gravarMarcaDeSessao(ativa: boolean): void {
 }
 
 /** Com falha na abertura, deixa a rota ativar: o app mostra a tela de erro no lugar dela e retoma depois. */
-export const autenticadoGuard: CanActivateFn = () => {
+export const autenticadoGuard: CanActivateFn = (_rota, estado) => {
   const auth = inject(AuthStore);
-  return auth.logado() || auth.falhaAbertura() !== null || inject(Router).createUrlTree(['/entrar']);
+  if (auth.logado() || auth.falhaAbertura() !== null) return true;
+  // Link de plano compartilhado aberto deslogado: volta a ele depois de entrar, mesmo passando pelo cadastro e pela
+  // confirmação do e-mail (por isso no localStorage, e não na URL do login).
+  if (estado?.url?.startsWith(PREFIXO_COMPARTILHADO)) {
+    try { localStorage.setItem(DESTINO_APOS_LOGIN, estado.url); } catch { /* sem storage: cai em /hoje */ }
+  }
+  return inject(Router).createUrlTree(['/entrar']);
 };
+
+const DESTINO_APOS_LOGIN = 'destino-apos-login';
+const PREFIXO_COMPARTILHADO = '/compartilhado/';
+
+/** Para onde ir ao entrar: o link compartilhado guardado pelo guard (uma vez só) ou /hoje. */
+export function destinoAposLogin(): string {
+  try {
+    const destino = localStorage.getItem(DESTINO_APOS_LOGIN);
+    localStorage.removeItem(DESTINO_APOS_LOGIN);
+    if (destino?.startsWith(PREFIXO_COMPARTILHADO)) return destino;
+  } catch { /* sem storage */ }
+  return '/hoje';
+}

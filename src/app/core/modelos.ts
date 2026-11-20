@@ -81,6 +81,14 @@ export interface PlanoRequest {
   }[];
 }
 
+/** Plano que chegou por link (prévia): sem ids nem carga alvo; `compartilhadoPor` é o nome de quem enviou. */
+export interface PlanoCompartilhado {
+  nome: string;
+  objetivo: Objetivo;
+  compartilhadoPor: string | null;
+  dias: { nome: string; exercicios: Omit<ItemPlano, 'id' | 'exercicioId' | 'cargaAlvo'>[] }[];
+}
+
 export type EstadoSessao = 'EM_ANDAMENTO' | 'CONCLUIDA' | 'ABANDONADA';
 
 export interface DiaHoje {

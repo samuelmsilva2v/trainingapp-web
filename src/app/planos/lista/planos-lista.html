@@ -36,6 +36,9 @@
               <span class="icone cheio" aria-hidden="true">check_circle</span> Ativo
             </span>
           }
+          <button type="button" class="btn-icone compartilhar" [attr.aria-label]="'Compartilhar ' + plano.nome" [disabled]="compartilhando() === plano.id" (click)="compartilhar(plano)">
+            <span class="icone" aria-hidden="true">share</span>
+          </button>
           <button type="button" class="btn-icone excluir" [attr.aria-label]="'Excluir ' + plano.nome" (click)="excluir(plano)">
             <span class="icone" aria-hidden="true">delete</span>
           </button>

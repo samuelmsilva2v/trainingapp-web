@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./configuracoes/configuracoes').then(m => m.ConfiguracoesTela),
       },
       {
+        path: 'compartilhado/:token',
+        loadComponent: () => import('./planos/compartilhado/plano-compartilhado').then(m => m.PlanoCompartilhadoTela),
+      },
+      {
         path: 'planos/novo',
         loadComponent: () => import('./planos/plano-editor/plano-editor').then(m => m.PlanoEditor),
         canDeactivate: [(editor: PlanoEditor) => editor.podeSair()],

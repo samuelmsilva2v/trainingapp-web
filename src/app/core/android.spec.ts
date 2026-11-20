@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
-import { IntegracaoAndroid, avisoDescansoLigado, salvarAvisoDescanso } from './android';
+import { IntegracaoAndroid, avisoDescansoLigado, compartilharLink, salvarAvisoDescanso } from './android';
 
 describe('voltar do Android', () => {
   let integracao: IntegracaoAndroid;
@@ -79,5 +79,35 @@ describe('aviso de fim do descanso', () => {
     expect(avisoDescansoLigado()).toBe(false);
     salvarAvisoDescanso(true);
     expect(avisoDescansoLigado()).toBe(true);
+  });
+});
+
+describe('compartilharLink na web', () => {
+  let copiado: string | null;
+
+  beforeEach(() => {
+    copiado = null;
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (t: string) => void (copiado = t) } });
+  });
+  afterEach(() => Object.defineProperty(navigator, 'share', { configurable: true, value: undefined }));
+
+  it('sem Web Share copia o link', async () => {
+    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+    expect(await compartilharLink('Plano', 'https://x/compartilhado/t')).toBe('copiado');
+    expect(copiado).toBe('https://x/compartilhado/t');
+  });
+
+  it('com Web Share abre a folha; cancelar não copia, falha copia', async () => {
+    const share = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, 'share', { configurable: true, value: share });
+    expect(await compartilharLink('Plano', 'u')).toBe('enviado');
+    expect(share).toHaveBeenCalledWith({ text: 'Plano', url: 'u' });
+
+    share.mockRejectedValueOnce(new DOMException('cancelou', 'AbortError'));
+    expect(await compartilharLink('Plano', 'u')).toBe('enviado');
+    expect(copiado).toBeNull();
+
+    share.mockRejectedValueOnce(new DOMException('sem gesto', 'NotAllowedError'));
+    expect(await compartilharLink('Plano', 'u')).toBe('copiado');
   });
 });

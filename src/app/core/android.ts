@@ -5,6 +5,7 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 import { App } from '@capacitor/app';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { Share } from '@capacitor/share';
 import { alarmeExato, conferirAlarmeExato } from './alarme-exato';
 import { NO_APP } from './cofre';
 import { CANAL_LEMBRETE, reagendarLembretes } from './lembrete';
@@ -135,3 +136,27 @@ export async function agendarFimDoDescanso(fim: number, texto: string): Promise<
 export function cancelarFimDoDescanso(): void {
   if (NO_APP) void LocalNotifications.cancel({ notifications: [{ id: DESCANSO }] }).catch(() => undefined);
 }
+
+/**
+ * Manda um link pela folha de compartilhamento do aparelho (o plugin no app, o Web Share no navegador do celular).
+ * Sem ela, ou se falhar, copia o link: devolve 'copiado' para a tela avisar. Cancelar a folha não é erro.
+ */
+export async function compartilharLink(texto: string, url: string): Promise<'enviado' | 'copiado'> {
+  try {
+    if (NO_APP) await Share.share({ text: texto, url, dialogTitle: 'Compartilhar plano' });
+    else if (typeof navigator.share === 'function') await navigator.share({ text: texto, url });
+    else return await copiar(url);
+    return 'enviado';
+  } catch (e) {
+    if (cancelado(e)) return 'enviado';
+    return await copiar(url);
+  }
+}
+
+async function copiar(url: string): Promise<'copiado'> {
+  await navigator.clipboard.writeText(url);
+  return 'copiado';
+}
+
+const cancelado = (e: unknown) =>
+  (e instanceof DOMException && e.name === 'AbortError') || (e instanceof Error && /cancel/i.test(e.message));
