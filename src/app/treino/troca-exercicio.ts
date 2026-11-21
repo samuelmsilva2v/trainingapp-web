@@ -6,6 +6,8 @@ import { ConfigTroca } from '../core/troca';
 
 export interface DadosTroca {
   exercicio: Exercicio;
+  /** Nome do exercício que sai, para a folha dizer o que está sendo trocado. */
+  original: string;
   /** Reps iniciais da 1ª etapa se o drop-set for ligado (as mínimas do exercício original). */
   reps: number;
 }

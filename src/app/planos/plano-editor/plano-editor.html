@@ -17,11 +17,12 @@
              placeholder="Ex.: Hipertrofia ABC" autocomplete="off"
              [value]="nome()" (input)="nome.set($any($event.target).value)" />
 
-      <span class="rotulo suave">Objetivo Principal</span>
-      <div class="objetivos" role="radiogroup" aria-label="Objetivo Principal">
+      <span class="rotulo suave">Objetivo principal (opcional)</span>
+      <!-- Opcional: tocar no marcado desmarca (por isso botões de alternar, não radio). -->
+      <div class="objetivos" role="group" aria-label="Objetivo principal, opcional">
         @for (o of objetivos; track o.valor) {
-          <button type="button" role="radio" class="pilula" [class.sel]="objetivo() === o.valor"
-                  [attr.aria-checked]="objetivo() === o.valor" (click)="objetivo.set(o.valor)">
+          <button type="button" class="pilula" [class.sel]="objetivo() === o.valor"
+                  [attr.aria-pressed]="objetivo() === o.valor" (click)="objetivo.set(objetivo() === o.valor ? null : o.valor)">
             <span class="icone" aria-hidden="true">{{ o.icone }}</span>
             {{ o.rotulo }}
           </button>

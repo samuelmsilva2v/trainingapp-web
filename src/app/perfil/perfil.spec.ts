@@ -117,7 +117,8 @@ describe('PerfilTela', () => {
 
   it('conquistas ficam recolhidas e abrem no clique, uma linha por família', () => {
     const { fixture, tela } = abrir();
-    expect(tela.querySelector('.contagem')!.textContent).toBe('4/7'); // a oculta não feita (Madrugador) não conta
+    // A oculta não feita (Madrugador) não aparece; a feita (Coruja) conta à parte, sem mudar o total.
+    expect(tela.querySelector('.contagem')!.textContent!.replace(/\s+/g, ' ').trim()).toBe('3/6 · 1 secreta');
     expect(tela.querySelectorAll('.familia').length).toBe(0);
 
     tela.querySelector<HTMLButtonElement>('.conquistas-topo')!.click();

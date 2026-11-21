@@ -71,13 +71,13 @@ html {
   --c-destaque: light-dark(#4a5c00, #caf300);
   --c-serie-atual: light-dark(#faffe0, #1e2022);
   --c-secundaria: light-dark(#e05e00, #fe6b00);
-  --c-secundaria-texto: light-dark(#b84d00, #fe6b00);
+  --c-secundaria-texto: light-dark(#af4900, #fe6b00);
   --c-secundaria-hover: light-dark(#c85400, #ff7d1a);
   --c-sobre-secundaria: light-dark(#2b1200, #572000);
   --c-interruptor: light-dark(#d4ff00, #fe6b00);
   --c-gelo: light-dark(#1e6fd9, #7cc4ff);
   --c-erro: light-dark(#c62828, #ffb4ab);
-  --c-perigo: light-dark(#c62828, #ff4d4d);
+  --c-perigo: light-dark(#c62828, #ff6666);
   --c-perigo-fundo: light-dark(#c62828, #93000a);
   --c-perigo-fundo-hover: light-dark(#a61f1f, #b3000f);
   --c-sobre-perigo: light-dark(#ffffff, #ffdad6);
@@ -159,7 +159,7 @@ html[data-tema='ignite'] {
   --c-primaria-fundo: linear-gradient(135deg, #ff4e00 0%, #ff5e14 60%, #ffae00 100%);
   --c-primaria-fundo-hover: linear-gradient(135deg, #e04400 0%, #f05410 60%, #f0a000 100%);
   --c-primaria-brilho: 0 4px 20px -2px rgb(255 78 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.25);
-  --c-destaque: #ff5e14;
+  --c-destaque: #ff6620;
   --c-serie-atual: #1a1e24;
   --c-secundaria: #ffae00;
   --c-secundaria-texto: #ffae00;
@@ -392,7 +392,7 @@ html[data-tema='cyberpunk'] {
   /* Chama da sequência do vermelho-rosa ao amarelo. */
   --c-chama-base: #ff2e63;
   --c-chama-topo: #f9ed69;
-  --c-perigo: #ff2e63;
+  --c-perigo: #ff3f6f;
   --c-perigo-fundo: #d1204f;
   --c-perigo-fundo-hover: #a8193f;
   --c-sobre-perigo: #ffffff;
@@ -543,7 +543,7 @@ html[data-tema^='commando'] {
     button-color: #d2c29a,
   ));
   --c-primaria-brilho: inset 0 -3px 0 rgb(0 0 0 / 0.25);
-  --c-perigo: #d9534f;
+  --c-perigo: #de6966;
   --c-perigo-fundo: #a8322d;
   --c-perigo-fundo-hover: #8a2824;
   --c-sobre-perigo: #ffffff;
@@ -589,7 +589,7 @@ html[data-tema='commando-deserto'] {
   --c-sup-3: #554b3a;
   --c-sup-4: #625744;
   --c-texto: #f4ecda;
-  --c-texto-2: #cbbd9f;
+  --c-texto-2: #dacfba;
   --c-borda: #7a6c53;
   --c-linha: rgb(255 240 210 / 0.14);
   --c-primaria: #d9bf86;
@@ -597,7 +597,9 @@ html[data-tema='commando-deserto'] {
   --c-sobre-primaria: #2a2112;
   --c-primaria-fundo: #d9bf86;
   --c-primaria-fundo-hover: #c7ac72;
-  --c-destaque: #e2c98f;
+  --c-destaque: #e5ce9a;
+  // O cáqui dos cards é médio: só um vermelho claro passa de 4,5:1 sobre ele.
+  --c-perigo: #edafad;
   --c-serie-atual: #514737;
   --c-secundaria: #e9d6a6;
   --c-secundaria-texto: #e9d6a6;
@@ -626,12 +628,12 @@ html[data-tema='commando-mata'] {
   --c-texto-2: #8e9c8c;
   --c-borda: #33453a;
   --c-linha: rgb(130 160 120 / 0.14);
-  --c-primaria: #5f7a4d;
+  --c-primaria: #5c764a;
   --c-primaria-esc: #536b43;
   --c-sobre-primaria: #f1f5ec;
-  --c-primaria-fundo: #5f7a4d;
+  --c-primaria-fundo: #5c764a;
   --c-primaria-fundo-hover: #536b43;
-  --c-destaque: #7f9b6c;
+  --c-destaque: #839e70;
   --c-serie-atual: #182419;
   /* Vermelho tático só no XP, no carimbo e na chama. */
   --c-secundaria: #c8352b;
@@ -682,7 +684,7 @@ html[data-tema='electric'] {
   --c-linha: rgb(185 168 255 / 0.14);
   --c-primaria: #8f7dff;
   --c-primaria-esc: #7a66f0;
-  --c-sobre-primaria: #ffffff;
+  --c-sobre-primaria: #0e0c1a;
   --c-primaria-fundo: linear-gradient(135deg, #5b45d6, #8f7dff 60%, #c9beff);
   --c-primaria-fundo-hover: linear-gradient(135deg, #4f3bc4, #7f6cf0 60%, #b9acf5);
   --c-primaria-brilho: 0 0 18px -4px rgb(143 125 255 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.3);
@@ -869,7 +871,7 @@ html[data-tema='japao-hokusai'] {
   --c-texto-2: #a3b6c9;
   --c-borda: #2f4d6e;
   --c-linha: rgb(143 184 220 / 0.14);
-  --c-primaria: #3f78ad;
+  --c-primaria: #3a6fa0;
   --c-primaria-esc: #2b5b8a;
   --c-sobre-primaria: #f6efe0;
   --c-primaria-fundo: linear-gradient(135deg, #2b5b8a, #3f78ad 60%, #8fb8dc);
@@ -903,6 +905,8 @@ html[data-tema='japao-hokusai'] {
   }
   .topo .marca::after { content: '波'; margin-left: 6px; color: #8fb8dc; font-size: 0.9em; }
   :is(.topo > a.xp, .chip-status.nivel, .chip.xp) { border-radius: 2px; color: #13283f; background: #e7c9a6; box-shadow: inset 0 0 0 2px #e7c9a6, inset 0 0 0 3px #13283f, 0 1px 3px rgb(0 0 0 / 0.4); }
+  // No chip creme, o raio do Hoje (azul-claro do destaque) sumia: segue a cor escura do chip, como o do cabeçalho.
+  .chip-status.nivel .icone { color: inherit; }
   // Bokashi: pontas retas e o contorno creme do entalhe.
   .barra { border-radius: 2px; }
   .barra > :is(span, .preenchida) { border-radius: 0; box-shadow: inset 0 0 0 1px rgb(241 233 214 / 0.55); }
@@ -921,13 +925,15 @@ html[data-tema='japao-sumie'] {
   --c-sup-3: #e6dece;
   --c-sup-4: #ddd3c0;
   --c-texto: #1c1a17;
-  --c-texto-2: #6f675a;
+  --c-texto-2: #615a4e;
   --c-borda: #b8ac95;
   --c-linha: rgb(28 26 23 / 0.1);
   --c-primaria: #1c1a17;
   --c-primaria-esc: #3a3630;
   --c-sobre-primaria: #f7f2e7;
   --c-primaria-fundo: #1c1a17;
+  // O vermelho de perigo do tema claro fica abaixo de 4,5:1 sobre o creme dos cards.
+  --c-perigo: #ae2323;
   --c-primaria-fundo-hover: #3a3630;
   --c-primaria-brilho: none;
   --c-destaque: #1c1a17;
@@ -1157,7 +1163,13 @@ a.btn { text-decoration: none; }
 .legenda { font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; }
 
 // Diálogo em tela cheia (seletor de exercícios) e de confirmação
-.dialogo-cheio .mat-mdc-dialog-surface { border-radius: 0 !important; background: var(--c-fundo) !important; }
+// Tela cheia no app edge-to-edge: o conteúdo fica fora das barras de status e de navegação do Android.
+.dialogo-cheio .mat-mdc-dialog-surface {
+  border-radius: 0 !important;
+  background: var(--c-fundo) !important;
+  box-sizing: border-box;
+  padding: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) 0 var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
 .dialogo-confirmar .mat-mdc-dialog-surface { border-radius: var(--r-lg) !important; background: var(--c-sup-1) !important; }
 // Folha na base da tela (formulário "Novo exercício")
 .dialogo-folha .mat-mdc-dialog-surface { border-radius: 24px 24px 0 0 !important; background: var(--c-sup-2) !important; }

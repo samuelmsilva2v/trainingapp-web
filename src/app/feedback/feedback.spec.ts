@@ -72,27 +72,31 @@ describe('FeedbackTela', () => {
     expect(gatilho.textContent).toContain('lightbulb');
   });
 
-  it('só habilita o Enviar com nome, categoria e mensagem de 10 a 2.000 caracteres (sem contar espaços nas pontas)', () => {
-    const { tela, digitar, escolher, botao } = abrir();
-    expect(botao().disabled).toBe(true);
+  it('só envia com nome, categoria e mensagem de 10 a 2.000 caracteres; antes diz o que falta', async () => {
+    const { tela, digitar, escolher, botao, submeter } = abrir();
+    const alerta = () => tela.querySelector('[role=alert]')?.textContent ?? '';
+    expect(botao().disabled).toBe(false);
 
     digitar('textarea', 'O treino travou ao concluir');
-    expect(botao().disabled).toBe(true); // sem categoria
+    await submeter();
+    expect(alerta()).toContain('Escolha uma categoria.');
 
     escolher('Reportar bug');
     digitar('textarea', '   curta    ');
     expect(tela.querySelector('.contador')!.textContent).toBe('5/2000');
-    expect(botao().disabled).toBe(true);
-
-    digitar('textarea', 'O treino travou ao concluir');
-    expect(botao().disabled).toBe(false);
+    await submeter();
+    expect(alerta()).toContain('Escreva pelo menos 10 caracteres');
 
     digitar('input[name=nome]', '   ');
-    expect(botao().disabled).toBe(true);
+    digitar('textarea', 'O treino travou ao concluir');
+    await submeter();
+    expect(alerta()).toContain('Informe seu nome.');
     digitar('input[name=nome]', 'Samuel');
 
     digitar('textarea', 'a'.repeat(2001));
-    expect(botao().disabled).toBe(true);
+    await submeter();
+    expect(alerta()).toContain('passou de 2000 caracteres');
+    expect(enviar).not.toHaveBeenCalled();
   });
 
   it('envia os campos aparados com o contexto, agradece e volta ao Perfil', async () => {

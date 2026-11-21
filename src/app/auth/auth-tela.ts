@@ -7,6 +7,8 @@ import { AuthStore, destinoAposLogin } from '../core/auth';
 import { NO_APP } from '../core/cofre';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { senhaForte } from '../core/senha';
+import { MatDialog } from '@angular/material/dialog';
+import { TipoDocumento, abrirDocumento } from '../compartilhado/documento-legal';
 import { Observable } from 'rxjs';
 
 /** A rota define o modo (`data.modo`); as cinco telas compartilham o cartão, os campos e o tratamento de erro. */
@@ -20,6 +22,7 @@ type Modo = 'entrar' | 'cadastrar' | 'esqueci' | 'redefinir' | 'confirmar';
 })
 export class AuthTela implements OnInit {
   private readonly auth = inject(AuthStore);
+  private readonly dialogo = inject(MatDialog);
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
   private readonly rota = inject(ActivatedRoute);
@@ -33,7 +36,7 @@ export class AuthTela implements OnInit {
   protected readonly confirmacao = signal('');
   protected readonly mostrarSenha = signal(false);
   protected readonly mostrarConfirmacao = signal(false);
-  /** Enfeite por enquanto (não há páginas de termos nem registro do aceite): só impede avançar sem marcar. */
+  /** Aceite dos Termos e da Privacidade (compartilhado/documento-legal): impede avançar sem marcar; ainda não é gravado. */
   protected readonly termos = signal(false);
   protected readonly enviando = signal(false);
   protected readonly erro = signal<string | null>(null);
@@ -47,14 +50,19 @@ export class AuthTela implements OnInit {
 
   protected readonly conferem = computed(() => this.senha() === this.confirmacao());
 
-  protected readonly valido = computed(() => {
+  /** O que falta para enviar, na ordem dos campos; null quando está tudo certo. O botão fica habilitado e mostra isto. */
+  protected readonly pendencia = computed((): string | null => {
+    const email = this.email().includes('@') ? null : 'Informe um e-mail válido.';
+    const novaSenha = !senhaForte(this.senha()) ? 'A senha ainda não atende a todos os requisitos.'
+      : !this.conferem() ? 'As senhas não conferem.' : null;
     switch (this.modo) {
-      case 'entrar': return this.email().includes('@') && this.senha().length > 0;
+      case 'entrar': return email ?? (this.senha().length > 0 ? null : 'Informe a senha.');
       case 'cadastrar':
-        return this.nome().trim().length > 0 && this.email().includes('@') && senhaForte(this.senha()) && this.conferem() && this.termos();
-      case 'esqueci': return this.email().includes('@');
-      case 'redefinir': return senhaForte(this.senha()) && this.conferem();
-      default: return false;
+        return (this.nome().trim() ? null : 'Informe como quer ser chamado.') ?? email ?? novaSenha
+          ?? (this.termos() ? null : 'Marque que concorda com os Termos de Uso e a Política de Privacidade.');
+      case 'esqueci': return email;
+      case 'redefinir': return novaSenha;
+      default: return 'Formulário indisponível.';
     }
   });
 
@@ -79,8 +87,20 @@ export class AuthTela implements OnInit {
     }
   }
 
+  /** O link fica dentro do rótulo do checkbox: abre o documento por cima, sem marcar a caixa nem perder o formulário. */
+  protected verDocumento(evento: Event, tipo: TipoDocumento): void {
+    evento.preventDefault();
+    evento.stopPropagation();
+    abrirDocumento(this.dialogo, tipo);
+  }
+
   protected enviar(): void {
-    if (!this.valido() || this.enviando()) return;
+    if (this.enviando()) return;
+    const pendencia = this.pendencia();
+    if (pendencia) {
+      this.erro.set(pendencia);
+      return;
+    }
     this.enviando.set(true);
     this.erro.set(null);
     const email = this.email().trim();

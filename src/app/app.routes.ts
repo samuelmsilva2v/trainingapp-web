@@ -4,6 +4,7 @@ import { Casca } from './layout/casca';
 import type { PlanoEditor } from './planos/plano-editor/plano-editor';
 
 const auth = () => import('./auth/auth-tela').then(m => m.AuthTela);
+const documento = () => import('./compartilhado/documento-legal').then(m => m.DocumentoLegal);
 
 export const routes: Routes = [
   // Públicas: o login e os links que chegam por e-mail.
@@ -12,6 +13,9 @@ export const routes: Routes = [
   { path: 'esqueci-senha', loadComponent: auth, data: { modo: 'esqueci' } },
   { path: 'redefinir-senha', loadComponent: auth, data: { modo: 'redefinir' } },
   { path: 'confirmar-email', loadComponent: auth, data: { modo: 'confirmar' } },
+  // Públicas também: a Play Store pede um link aberto para a política de privacidade.
+  { path: 'termos', loadComponent: documento, data: { tipo: 'termos' } },
+  { path: 'privacidade', loadComponent: documento, data: { tipo: 'privacidade' } },
   {
     path: '',
     canActivate: [autenticadoGuard],

@@ -6,20 +6,10 @@
 
   @if (xp > 0) {
     <section class="xp" aria-label="XP ganho">
-      <!-- Só conquistas (ex.: 2º treino do dia que credita conquistas antigas): o motivo no lugar de "+0 XP". -->
-      @if (xpTreino > 0) {
-        <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpTreino }} XP</p>
-      } @else {
+      <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xp }} XP</p>
+      <!-- Só conquistas (ex.: 2º treino do dia que credita conquistas antigas): explica por que as séries não renderam. -->
+      @if (xpTreino === 0) {
         <p class="sem-xp suave">{{ motivoSemXp }}</p>
-      }
-      @if (bonus) {
-        <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ bonus }} bônus</p>
-      }
-      @if (xpConquistas) {
-        <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ xpConquistas }} conquistas</p>
-      }
-      @if (xpDesafios) {
-        <p class="xp-bonus num"><span class="icone cheio" aria-hidden="true">flag</span>+{{ xpDesafios }} desafios</p>
       }
       <ul class="detalhe num">
         @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
@@ -32,9 +22,6 @@
         }
         @if (xpDesafios) {
           <li class="xp-bonus"><span>Desafios</span><span>+{{ xpDesafios }}</span></li>
-        }
-        @if (bonus || xpConquistas || xpDesafios) {
-          <li class="total"><span>Total</span><span>+{{ xp }}</span></li>
         }
       </ul>
     </section>
@@ -53,7 +40,7 @@
         @if (estadoPlano() === 'erro') {
           <p class="erro" role="alert">Não foi possível atualizar o plano. Tente de novo ou mude no editor de planos.</p>
         } @else {
-          <p class="suave">Você mudou o treino. Levar para o {{ sessao.diaNome }} do plano?</p>
+          <p class="suave">Você mudou o treino. Levar para o dia {{ sessao.diaNome }} do plano?</p>
         }
         <ul class="lista-mudancas">
           @for (mudanca of m.mudancas; track mudanca.texto) {

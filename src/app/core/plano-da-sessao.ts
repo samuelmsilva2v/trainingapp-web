@@ -56,7 +56,7 @@ export function mudancasDoPlano(sessao: SessaoLocal, plano: Plano): MudancasDoPl
     }
     const series = blocos(ex.series).length;
     if (series > 0 && series !== item.series) {
-      mudancas.push({ icone: series > item.series ? 'add' : 'remove', texto: `${ex.nome}: ${item.series} → ${series} séries` });
+      mudancas.push({ icone: series > item.series ? 'add' : 'remove', texto: `${ex.nome}: ${item.series} → ${series} ${series === 1 ? 'série' : 'séries'}` });
       novo.series = series;
     }
     const drops = dropsDaSessao(ex);

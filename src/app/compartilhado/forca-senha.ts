@@ -20,7 +20,8 @@ import { criteriosDaSenha, forcaDaSenha } from '../core/senha';
           </li>
         }
       </ul>
-      <span class="rotulo-forca" aria-live="polite">{{ forca().rotulo }}</span>
+      <!-- Campo vazio: sem rótulo (um "FRACA" antes de digitar soa como erro). -->
+      <span class="rotulo-forca" aria-live="polite">{{ senha() ? forca().rotulo : '' }}</span>
     </div>
   `,
   host: { '[attr.data-forca]': 'chave()' },

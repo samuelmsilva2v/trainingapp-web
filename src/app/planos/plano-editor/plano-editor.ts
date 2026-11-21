@@ -81,7 +81,8 @@ export class PlanoEditor implements OnInit {
   protected readonly erroCarga = signal<Falha | null>(null);
 
   protected readonly nome = signal('');
-  protected readonly objetivo = signal<Objetivo>('HIPERTROFIA');
+  /** Opcional: plano novo começa sem objetivo (antes vinha Hipertrofia, e todo plano saía etiquetado assim). */
+  protected readonly objetivo = signal<Objetivo | null>(null);
   protected readonly dias = signal<DiaPlano[]>([{ nome: 'Treino A', exercicios: [] }]);
   protected readonly diaAtivo = signal(0);
 

@@ -67,8 +67,8 @@ describe('ResultadoTreino', () => {
     });
     const texto = el.textContent ?? '';
 
-    expect(el.querySelector('.grande')?.textContent).toContain('+90 XP'); // 115 − 25 das conquistas
-    expect(texto).toContain('+25 conquistas');
+    expect(el.querySelector('.grande')?.textContent).toContain('+115 XP'); // o total, com as conquistas
+    expect(texto).toContain('Conquistas');
     expect(texto).toContain('+65');
     expect(texto).toContain('+25');
     expect(texto).toContain('Subiu para o nível 2!');
@@ -92,7 +92,7 @@ describe('ResultadoTreino', () => {
     expect(el.textContent).not.toContain('🏆');
   });
 
-  it('mostra o bônus da sequência à parte: XP do treino em destaque, linha da sequência e o total', () => {
+  it('o total em destaque e, no detalhe, as séries e a sequência que somam esse total', () => {
     const el = abrir({
       sessao: comXpPorExercicio(sessao({ xpGanho: 51, xpSeries: 36, xpStreak: 15, recordes: [] }), 36),
       antes: null,
@@ -100,11 +100,10 @@ describe('ResultadoTreino', () => {
     });
     const texto = el.textContent ?? '';
 
-    expect(el.querySelector('.grande')?.textContent).toContain('+36 XP'); // 51 − 15
-    expect(texto).toContain('+15 bônus');
-    expect(texto).toContain('Sequência (4 dias)');
-    expect(texto).toContain('Total');
-    expect(texto).toContain('+51');
+    expect(el.querySelector('.grande')?.textContent).toContain('+51 XP');
+    expect(el.querySelector('.detalhe')?.textContent).toContain('Séries (3)+36');
+    expect(el.querySelector('.detalhe')?.textContent).toContain('Sequência (4 dias)+15');
+    expect(texto).not.toContain('Total');
     expect(el.querySelector('.metricas dd')?.textContent).toBe('36');
   });
 
@@ -127,9 +126,8 @@ describe('ResultadoTreino', () => {
     expect(texto).toContain('+50 XP');
     expect(texto).toContain('Uma semana de fogo');
     expect(texto).toContain('Conquistas');
-    expect(texto).toContain('+100');
-    expect(texto).toContain('Total');
-    expect(el.querySelector('.grande')).toBeNull(); // sem XP de treino: nada de "+0 XP"
+    expect(el.querySelector('.grande')?.textContent).toContain('+100 XP');
+    expect(el.querySelector('.sem-xp')).not.toBeNull(); // sem XP das séries: explica o motivo
   });
 
   it('mostra os desafios cumpridos com o XP e a linha de desafios, à parte do XP do treino', () => {
@@ -145,12 +143,11 @@ describe('ResultadoTreino', () => {
       depois: gamificacao({}),
     });
     const texto = el.textContent ?? '';
-    expect(el.querySelector('.grande')?.textContent).toContain('+36 XP');
-    expect(texto).toContain('+70 desafios');
+    expect(el.querySelector('.grande')?.textContent).toContain('+106 XP');
+    expect(el.querySelector('.detalhe')?.textContent).toContain('Desafios+70');
     expect(texto).toContain('Desafios cumpridos');
     expect(texto).toContain('3 treinos na semana');
     expect(texto).toContain('+50 XP');
-    expect(texto).toContain('Total');
   });
 
   it('avisa o título novo quando o treino muda a faixa de nível, e só nesse caso', () => {
@@ -209,7 +206,7 @@ describe('ResultadoTreino', () => {
 
     it('desligado: pergunta com a lista; "Salvar no plano" grava e mostra a linha', () => {
       const el = abrir(comMudancas());
-      expect(el.textContent).toContain('Levar para o Push do plano?');
+      expect(el.textContent).toContain('Levar para o dia Push do plano?');
       expect(el.textContent).toContain('Supino reto → Supino inclinado');
       expect(atualizarPlano).not.toHaveBeenCalled();
       clicar(el, 'Salvar no plano');

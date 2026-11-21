@@ -211,17 +211,6 @@ form { display: flex; flex-direction: column; gap: 16px; }
   a { padding: 12px 0; color: var(--c-texto-2); font-weight: 600; text-decoration: none; &:hover { color: var(--c-destaque); } }
 }
 
-.rodape {
-  text-align: center;
-  font: 600 11px/14px 'Inter', sans-serif;
-  letter-spacing: 0.05em;
-  color: var(--c-texto-2);
-  opacity: 0.5;
-}
-
-/* Cadastro (Stitch "Criar Conta"). */
-.cadastro .legenda { text-transform: none; letter-spacing: normal; font-weight: 500; }
-
 .topo-cadastro { position: relative; display: flex; flex-direction: column; gap: 4px; p { margin-top: 4px; } }
 .marca-pequena { margin-bottom: 8px; font: 600 16px/24px var(--fonte-titulo); letter-spacing: -0.01em; text-transform: uppercase; span { color: var(--c-destaque); } }
 .titulo-cadastro { margin: 0; font: 700 32px/40px var(--fonte-titulo); letter-spacing: -0.02em; text-transform: uppercase; }
@@ -253,7 +242,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
 }
 .termos input:checked + .caixa-termos { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 .termos input:focus-visible + .caixa-termos { outline: 2px solid var(--c-destaque); outline-offset: 2px; }
-.link-falso { color: var(--c-destaque); font-weight: 600; }
+.link-doc { color: var(--c-destaque); font-weight: 600; }
 
 .enviar.grande { gap: 8px; font: 600 20px/28px var(--fonte-titulo); letter-spacing: 0.02em; .icone { font-size: 24px; } }
 

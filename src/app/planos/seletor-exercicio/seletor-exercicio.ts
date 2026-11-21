@@ -20,6 +20,8 @@ export interface DadosSeletor {
   multiplo?: boolean;
   /** Exercícios que já estão no dia aberto: marcar um deles pede confirmação. */
   noDia?: string[];
+  /** Exercício que não entra na lista (na troca do treino, o próprio original). */
+  excluir?: string;
 }
 
 @Component({
@@ -84,7 +86,7 @@ export class SeletorExercicio {
   protected readonly filtrados = computed(() => {
     const eq = this.equipamento();
     const meus = this.apenasMeus();
-    return this.resultado().filter(e => (!eq || e.equipamento === eq) && (!meus || e.personalizado));
+    return this.resultado().filter(e => e.id !== this.dados?.excluir && (!eq || e.equipamento === eq) && (!meus || e.personalizado));
   });
   protected readonly exibidos = computed(() => this.filtrados().slice(0, LIMITE_EXIBIDO));
   protected readonly excedente = computed(() => Math.max(0, this.filtrados().length - LIMITE_EXIBIDO));

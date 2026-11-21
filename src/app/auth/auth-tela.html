@@ -44,14 +44,14 @@
     @if (aviso(); as mensagem) {
       <p class="sucesso" role="status">{{ mensagem }}</p>
       @if (modo !== 'cadastrar' && modo !== 'esqueci') {
-        <a class="btn btn-primario" routerLink="/entrar">Ir para o login</a>
+        <a class="btn btn-primario" routerLink="/entrar">Entrar</a>
       }
     } @else if (modo === 'confirmar') {
       @if (enviando()) {
         <p class="suave" role="status">Confirmando…</p>
       } @else if (erro()) {
         <p class="erro" role="alert">{{ erro() }}</p>
-        <a class="btn btn-secundario" routerLink="/entrar">Ir para o login</a>
+        <a class="btn btn-secundario" routerLink="/entrar">Entrar</a>
       }
     } @else {
       @if (modo === 'esqueci') {
@@ -97,7 +97,7 @@
               <span class="icone" aria-hidden="true">lock</span>
               <input id="campo-senha" [type]="mostrarSenha() ? 'text' : 'password'" maxlength="72"
                      [attr.autocomplete]="modo === 'entrar' ? 'current-password' : 'new-password'"
-                     [placeholder]="modo === 'entrar' ? '••••••••••••' : 'Mínimo 8 caracteres'"
+                     [placeholder]="modo === 'entrar' ? '••••••••••••' : '8+ caracteres, com A, a, 1 e #'"
                      [value]="senha()" (input)="senha.set($any($event.target).value)" />
               <button type="button" class="olho" [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Revelar senha'"
                       [attr.aria-pressed]="mostrarSenha()" (click)="mostrarSenha.set(!mostrarSenha())">
@@ -132,7 +132,8 @@
           <label class="termos">
             <input type="checkbox" class="so-leitor" [checked]="termos()" (change)="termos.set($any($event.target).checked)" />
             <span class="caixa-termos" aria-hidden="true"><span class="icone">check</span></span>
-            <span>Concordo com os <span class="link-falso">Termos de Uso</span> e <span class="link-falso">Política de Privacidade</span>.</span>
+            <span>Concordo com os <a class="link-doc" href="/termos" (click)="verDocumento($event, 'termos')">Termos de Uso</a>
+              e <a class="link-doc" href="/privacidade" (click)="verDocumento($event, 'privacidade')">Política de Privacidade</a>.</span>
           </label>
         }
 
@@ -140,7 +141,7 @@
           <p class="erro" role="alert">{{ erro() }}</p>
         }
 
-        <button type="submit" class="btn btn-primario enviar" [class.grande]="modo === 'cadastrar'" [disabled]="!valido() || enviando()">
+        <button type="submit" class="btn btn-primario enviar" [class.grande]="modo === 'cadastrar'" [disabled]="enviando()">
           @if (enviando()) {
             <span class="icone girando" aria-hidden="true">progress_activity</span>
           } @else if (modo === 'entrar') {
@@ -173,13 +174,11 @@
         <a class="cadastre" routerLink="/cadastrar">Cadastre-se</a>
       </div>
     } @else if (modo === 'cadastrar') {
-      <p class="ja-tem-conta">Já possui uma conta? <a routerLink="/entrar">Fazer Login</a></p>
+      <p class="ja-tem-conta">Já possui uma conta? <a routerLink="/entrar">Entrar</a></p>
     } @else {
       <nav class="links">
         <a routerLink="/entrar" [state]="{ email: email() }">Voltar ao login</a>
       </nav>
     }
   </section>
-
-  <footer class="rodape">TrainingApp • Umbrella Corp. ™</footer>
 </main>

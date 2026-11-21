@@ -1,6 +1,6 @@
 <section class="cabecalho">
   <h1 class="titulo-md">Meus Planos de Treino</h1>
-  <p class="suave">Alterne ou gerencie suas rotinas de musculação</p>
+  <p class="suave">Alterne ou gerencie seus planos de musculação</p>
 </section>
 
 @if (carregando()) {
@@ -20,7 +20,7 @@
   <div class="vazio">
     <span class="icone circulo" aria-hidden="true">fitness_center</span>
     <h2 class="titulo-sm">Você ainda não possui planos de treino</h2>
-    <p class="suave">Crie uma rotina com dias de treino, séries, repetições e cargas para começar sua evolução.</p>
+    <p class="suave">Crie um plano com dias de treino, séries, repetições e cargas para começar sua evolução.</p>
     <a class="btn btn-primario" routerLink="/planos/novo">
       <span class="icone" aria-hidden="true">add_circle</span> Criar plano agora
     </a>
@@ -30,7 +30,7 @@
     @for (plano of planos(); track plano.id) {
       <li class="cartao" [class.ativo]="plano.ativo">
         <div class="chips">
-          <span class="chip objetivo">{{ rotuloObjetivo(plano.objetivo) }}</span>
+          @if (plano.objetivo) { <span class="chip objetivo">{{ rotuloObjetivo(plano.objetivo) }}</span> }
           @if (plano.ativo) {
             <span class="chip ativo-chip">
               <span class="icone cheio" aria-hidden="true">check_circle</span> Ativo
@@ -71,7 +71,7 @@
 
         @if (!plano.ativo) {
           <button type="button" class="ver-resumo" [attr.aria-expanded]="abertos().has(plano.id)" (click)="alternar(plano)">
-            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo da rotina ({{ plano.quantidadeDias }} {{ plano.quantidadeDias === 1 ? 'treino' : 'treinos' }})</span>
+            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo do plano ({{ plano.quantidadeDias }} {{ plano.quantidadeDias === 1 ? 'dia' : 'dias' }})</span>
             <span class="icone chevron" aria-hidden="true">{{ abertos().has(plano.id) ? 'expand_less' : 'expand_more' }}</span>
           </button>
         }

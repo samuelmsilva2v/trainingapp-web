@@ -84,28 +84,28 @@
                   <span class="chip xp"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xpDoTreino(s) }} XP</span>
                 }
                 @if (s.xpDesafios) {
-                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">flag</span>+{{ s.xpDesafios }}</span>
+                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">flag</span>+{{ s.xpDesafios }}<span class="so-leitor"> XP de desafios</span></span>
                 }
                 @if (s.xpConquistas) {
-                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ s.xpConquistas }}</span>
+                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">emoji_events</span>+{{ s.xpConquistas }}<span class="so-leitor"> XP de conquistas</span></span>
                 }
                 @if (s.xpStreak) {
-                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ s.xpStreak }} bônus</span>
+                  <span class="chip bonus"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ s.xpStreak }} bônus<span class="so-leitor"> de sequência</span></span>
                 }
               </span>
             </header>
 
             <ul class="dados">
               <li><span class="icone" aria-hidden="true">timer</span><span class="num">{{ duracaoMinutos(s.iniciadaEm, s.finalizadaEm) }} min</span></li>
-              <li><span class="icone" aria-hidden="true">format_list_numbered</span><span class="num">{{ s.seriesConcluidas }} séries</span></li>
+              <li><span class="icone" aria-hidden="true">format_list_numbered</span><span class="num">{{ s.seriesConcluidas }} {{ s.seriesConcluidas === 1 ? 'série' : 'séries' }}</span></li>
               @if (s.repsPesoCorporal) {
-                <li><span class="icone" aria-hidden="true">fitness_center</span><span class="num">{{ s.repsPesoCorporal }} reps</span></li>
+                <li><span class="icone" aria-hidden="true">fitness_center</span><span class="num">{{ s.repsPesoCorporal }} {{ s.repsPesoCorporal === 1 ? 'rep' : 'reps' }}</span></li>
               }
             </ul>
 
             <button type="button" class="detalhes" [attr.aria-expanded]="abertas().has(s.id)" (click)="alternar(s)">
               <span class="icone" aria-hidden="true">read_more</span>
-              Detalhes dos exercícios
+              Detalhes dos exercícios<span class="so-leitor"> de {{ s.diaNome }}, {{ formatarDataRelativa(s.iniciadaEm) }}</span>
               <span class="icone chevron" aria-hidden="true">{{ abertas().has(s.id) ? 'expand_less' : 'expand_more' }}</span>
             </button>
 
@@ -126,7 +126,7 @@
                             <span class="etapas num">
                               @if (serie.concluida) {
                                 @if (pc) {
-                                  <span>{{ serie.reps }} reps</span>
+                                  <span>{{ serie.reps }} {{ serie.reps === 1 ? 'rep' : 'reps' }}</span>
                                 } @else {
                                   <span>{{ serie.carga === null ? '—' : formatarCarga(serie.carga) + ' kg' }} × {{ serie.reps }}</span>
                                 }

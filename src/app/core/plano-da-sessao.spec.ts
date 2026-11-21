@@ -72,6 +72,9 @@ describe('mudancasDoPlano', () => {
     const menos = mudancasDoPlano(sessao([linha(supino, normais(3)), linha(crucifixo, comDrops(2, 2))]), plano)!;
     expect(menos.mudancas).toEqual([{ icone: 'remove', texto: 'Crucifixo: 3 → 2 séries' }]);
     expect(menos.plano.dias[1].exercicios[1]).toMatchObject({ series: 2, drops: 2 });
+
+    const uma = mudancasDoPlano(sessao([linha(supino, normais(3)), linha(crucifixo, comDrops(2))]), plano)!;
+    expect(uma.mudancas).toEqual([{ icone: 'remove', texto: 'Crucifixo: 3 → 1 série' }]);
   });
 
   it('drop-set ligado pela troca entra no plano, com reps únicas', () => {

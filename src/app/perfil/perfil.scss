@@ -37,7 +37,7 @@
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; padding: 0;
   border: 2px solid #0b0f02; border-radius: 50%;
-  background: var(--c-primaria); color: #0b0f02; cursor: pointer;
+  background: var(--c-primaria); color: var(--c-sobre-primaria); cursor: pointer;
   .icone { font-size: 18px; }
   /* Alvo de toque de 48 px sem mudar o desenho. */
   &::after { content: ''; position: absolute; inset: -8px; }

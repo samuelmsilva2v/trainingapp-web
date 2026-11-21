@@ -1,7 +1,7 @@
-<section class="folha" role="dialog" aria-label="Trocar exercício">
+<section class="folha">
   <header class="cabecalho">
     <div>
-      <p class="rotulo suave">Trocar por</p>
+      <p class="rotulo suave">Trocar {{ dados.original }} por</p>
       <h2 class="titulo-sm">{{ dados.exercicio.nome }}</h2>
       <p class="suave nota">Vale neste treino. Ao concluir, dá para levar a troca para o plano.</p>
     </div>
@@ -43,7 +43,7 @@
   <div class="acoes">
     <button type="button" class="btn btn-secundario" (click)="fechar()">Cancelar</button>
     <button type="button" class="btn btn-primario" (click)="confirmar()">
-      <span class="icone" aria-hidden="true">swap_horiz</span> Confirmar troca
+      <span class="icone" aria-hidden="true">swap_horiz</span> Trocar
     </button>
   </div>
 </section>

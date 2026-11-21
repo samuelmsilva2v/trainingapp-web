@@ -123,6 +123,10 @@
 .numero.atual { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 .valor { text-align: center; font: 700 18px/24px var(--fonte-titulo); white-space: nowrap; }
 .pequeno { width: 40px; height: 40px; .icone { font-size: 20px; } }
+// Área de toque de 48 px (alvo do Android) sem mudar o desenho dos botões de 40 px.
+.pequeno, .check.mini { position: relative; &::after { content: ''; position: absolute; inset: -4px; } }
+// O inset conta da borda interna: o check tem 1,5 px de borda, então precisa de mais 2 px para chegar a 48.
+.check.mini::after { inset: -6px; }
 
 .linha-atual {
   display: flex; flex-direction: column; gap: 10px; padding: 12px;
@@ -254,6 +258,7 @@
   div { display: flex; flex-direction: column-reverse; align-items: center; padding: 12px 4px; border-radius: var(--r-md); background: var(--c-sup-3); }
   dd { margin: 0; font: 700 24px/32px var(--fonte-titulo); }
   dd.xp-bonus { font: 600 12px/16px 'Inter', sans-serif; }
+  dd.xp-series { color: var(--c-texto-2); }
   dt { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); text-transform: uppercase; letter-spacing: 0.05em; }
 }
 .aviso { color: var(--c-secundaria-texto); text-align: center; }

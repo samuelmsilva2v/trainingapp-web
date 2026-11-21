@@ -207,7 +207,7 @@ export class Treino implements OnInit, OnDestroy {
     const s = series[d === -1 ? outro.inicio : outro.drops[d]];
     if (!s || s.reps === null) return null;
     // Peso corporal ignora a carga, inclusive a gravada em treinos antigos.
-    return s.carga === null || ehPesoCorporal(ex) ? `${s.reps} reps` : `${s.reps} × ${this.kg(s.carga)} kg`;
+    return s.carga === null || ehPesoCorporal(ex) ? `${s.reps} ${s.reps === 1 ? 'rep' : 'reps'}` : `${s.reps} × ${this.kg(s.carga)} kg`;
   }
 
   /** Ex.: "4 × 10 @ 62,5 kg" (nº de séries × reps da melhor série @ carga). */
@@ -215,7 +215,8 @@ export class Treino implements OnInit, OnDestroy {
     const series = this.anteriores().get(ex.exercicioId)?.series ?? [];
     if (ehPesoCorporal(ex)) {
       const reps = series.map(s => s.reps ?? 0);
-      return reps.length === 0 ? null : `${blocos(series).length} × ${Math.max(...reps)} reps`;
+      const max = Math.max(...reps);
+      return reps.length === 0 ? null : `${blocos(series).length} × ${max} ${max === 1 ? 'rep' : 'reps'}`;
     }
     const comCarga = series.filter(s => s.reps !== null && s.carga !== null);
     if (comCarga.length === 0) return null;
@@ -276,7 +277,7 @@ export class Treino implements OnInit, OnDestroy {
         maxWidth: '100vw',
         width: '100vw',
         height: '100dvh',
-        data: { grupo: ex.grupoMuscular },
+        data: { grupo: ex.grupoMuscular, excluir: ex.exercicioId },
       })
       .afterClosed()
       .subscribe(novo => {
@@ -287,7 +288,8 @@ export class Treino implements OnInit, OnDestroy {
             position: { bottom: '0' },
             width: '512px',
             maxWidth: '100vw',
-            data: { exercicio: novo, reps: ex.metaRepsMin },
+            ariaLabel: 'Trocar exercício',
+            data: { exercicio: novo, original: ex.nome, reps: ex.metaRepsMin },
           })
           .afterClosed()
           .subscribe(config => config && this.aplicarTroca(indice, novo, config));
@@ -297,7 +299,13 @@ export class Treino implements OnInit, OnDestroy {
   /** Configurações por cima do treino: sair da tela encerraria o descanso em curso. */
   protected abrirConfiguracoes(): void {
     this.dialogo
-      .open(ConfiguracoesTreino, { panelClass: 'dialogo-folha', position: { bottom: '0' }, width: '512px', maxWidth: '100vw' })
+      .open(ConfiguracoesTreino, {
+        panelClass: 'dialogo-folha',
+        position: { bottom: '0' },
+        width: '512px',
+        maxWidth: '100vw',
+        ariaLabel: 'Configurações de treino',
+      })
       .afterClosed()
       .subscribe(() => this.passo.set(lerPassoCarga()));
   }
@@ -521,8 +529,9 @@ export class Treino implements OnInit, OnDestroy {
         panelClass: 'dialogo-confirmar',
         data: {
           titulo: 'Abandonar treino',
-          mensagem: 'O treino será encerrado sem avançar a rotação.',
+          mensagem: 'O treino será encerrado sem avançar a rotação. As séries feitas ficam no histórico, sem XP.',
           confirmar: 'Abandonar',
+          cancelar: 'Continuar treino',
         },
       })
       .afterClosed()

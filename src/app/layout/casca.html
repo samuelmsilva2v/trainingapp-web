@@ -13,7 +13,7 @@
 
 <nav class="abas" aria-label="Navegação principal">
   @for (aba of abas; track aba.caminho) {
-    <a class="aba" [routerLink]="aba.caminho" routerLinkActive="ativa">
+    <a class="aba" [routerLink]="aba.caminho" routerLinkActive="ativa" ariaCurrentWhenActive="page">
       <span class="icone" aria-hidden="true">{{ aba.icone }}</span>
       <span class="rotulo-aba">{{ aba.rotulo }}</span>
     </a>

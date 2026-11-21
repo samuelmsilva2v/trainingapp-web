@@ -28,7 +28,7 @@ export interface ExercicioRequest {
 export interface PlanoResumo {
   id: string;
   nome: string;
-  objetivo: Objetivo;
+  objetivo: Objetivo | null;
   ativo: boolean;
   quantidadeDias: number;
 }
@@ -59,14 +59,14 @@ export interface DiaPlano {
 export interface Plano {
   id: string;
   nome: string;
-  objetivo: Objetivo;
+  objetivo: Objetivo | null;
   ativo: boolean;
   dias: DiaPlano[];
 }
 
 export interface PlanoRequest {
   nome: string;
-  objetivo: Objetivo;
+  objetivo: Objetivo | null;
   dias: {
     nome: string;
     exercicios: {
@@ -81,11 +81,13 @@ export interface PlanoRequest {
   }[];
 }
 
-/** Plano que chegou por link (prévia): sem ids nem carga alvo; `compartilhadoPor` é o nome de quem enviou. */
+/** Plano que chegou por link (prévia): sem ids nem carga alvo; `compartilhadoPor` é o primeiro nome de quem enviou. */
 export interface PlanoCompartilhado {
   nome: string;
-  objetivo: Objetivo;
+  objetivo: Objetivo | null;
   compartilhadoPor: string | null;
+  /** Quem abriu é o próprio dono do link: a prévia não oferece salvar uma cópia. */
+  seu: boolean;
   dias: { nome: string; exercicios: Omit<ItemPlano, 'id' | 'exercicioId' | 'cargaAlvo'>[] }[];
 }
 

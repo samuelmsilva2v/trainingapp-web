@@ -7,7 +7,7 @@ import { OpcoesTreino } from '../configuracoes/opcoes-treino';
   selector: 'app-configuracoes-treino',
   imports: [OpcoesTreino],
   template: `
-    <section class="folha" role="dialog" aria-label="Configurações de treino">
+    <section class="folha">
       <header class="cabecalho">
         <h2 class="titulo-sm">Configurações</h2>
         <button type="button" class="btn-icone" aria-label="Fechar" (click)="ref.close()">

@@ -59,7 +59,13 @@ export class FeedbackTela implements OnInit {
   protected readonly tamanho = computed(() => this.mensagem().trim().length);
   protected readonly nomeValido = computed(() => this.nome().trim().length > 0);
   protected readonly mensagemValida = computed(() => this.tamanho() >= MENSAGEM_MIN && this.tamanho() <= MENSAGEM_MAX);
-  protected readonly valido = computed(() => this.nomeValido() && this.categoria() !== null && this.mensagemValida());
+  /** O que falta para enviar; o botão fica habilitado e mostra isto no lugar de só ficar apagado. */
+  protected readonly pendencia = computed((): string | null =>
+    !this.nomeValido() ? 'Informe seu nome.'
+      : this.categoria() === null ? 'Escolha uma categoria.'
+      : this.tamanho() < MENSAGEM_MIN ? `Escreva pelo menos ${MENSAGEM_MIN} caracteres na mensagem.`
+      : !this.mensagemValida() ? `A mensagem passou de ${MENSAGEM_MAX} caracteres.`
+      : null);
 
   ngOnInit(): void {
     this.perfil.obter().subscribe({ next: p => { if (!this.nome()) this.nome.set(p.nome); }, error: () => {} });
@@ -72,7 +78,12 @@ export class FeedbackTela implements OnInit {
 
   protected async enviar(): Promise<void> {
     const categoria = this.categoria();
-    if (!this.valido() || !categoria || this.enviando()) return;
+    if (this.enviando()) return;
+    const pendencia = this.pendencia();
+    if (pendencia || !categoria) {
+      this.erro.set(pendencia);
+      return;
+    }
     this.enviando.set(true);
     this.erro.set(null);
     const versaoApp = NO_APP ? (await App.getInfo()).version : null;

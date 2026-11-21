@@ -8,7 +8,7 @@
       @switch (store.status()) {
         @case ('salvo') { <span class="icone" aria-hidden="true">cloud_done</span> Salvo }
         @case ('salvando') { <span class="icone" aria-hidden="true">sync</span> Salvando… }
-        @case ('offline') { <span class="icone" aria-hidden="true">cloud_off</span> Offline: salvo no aparelho }
+        @case ('offline') { <span class="icone" aria-hidden="true">cloud_off</span> Salvo no aparelho<span class="so-leitor">, sem conexão</span> }
         @case ('erro') {
           <button type="button" class="tentar" (click)="store.reenviar()">
             <span class="icone" aria-hidden="true">cloud_off</span> {{ store.erro() }} · tentar de novo
@@ -29,7 +29,9 @@
         <span class="suave num">{{ store.seriesConcluidas() }}/{{ store.totalSeries() }} séries</span>
       </div>
       <div class="hud-acoes">
-        <button type="button" class="btn btn-primario finalizar" (click)="abrirResumo()">
+        <!-- Sem série feita, o destaque cheio fica para o check da série atual. -->
+        <button type="button" class="btn finalizar" [class.btn-primario]="store.seriesConcluidas() > 0"
+                [class.btn-secundario]="store.seriesConcluidas() === 0" (click)="abrirResumo()">
           Finalizar <span class="icone" aria-hidden="true">flag</span>
         </button>
         <button type="button" class="abandonar" aria-label="Abandonar treino" (click)="abandonar()">
@@ -190,7 +192,7 @@
         <button type="button" class="proximo" (click)="irPara(1)">
           <span class="icone" aria-hidden="true">playlist_play</span>
           <span class="texto"><span class="rotulo suave">A seguir</span><span class="nome">{{ prox.nome }}</span></span>
-          <span class="suave num">{{ totalSeries(prox) }} séries</span>
+          <span class="suave num">{{ totalSeries(prox) }} {{ totalSeries(prox) === 1 ? 'série' : 'séries' }}</span>
         </button>
       }
     } @else {
@@ -237,7 +239,13 @@
           @if (previa()?.xpStreak) {
             <dd class="xp-bonus num"><span class="icone cheio" aria-hidden="true">local_fire_department</span>+{{ previa()!.xpStreak }} bônus</dd>
           }
-          <dd class="num">{{ previa() ? xpDoTreino(previa()!) : '—' }}</dd><dt>xp</dt>
+          <!-- Com extras, a parte das séries também aparece: as linhas somam o total do número grande. -->
+          @if (previa(); as p) {
+            @if (p.xpStreak || p.xpConquistas || p.xpDesafios) {
+              <dd class="xp-bonus xp-series num">+{{ xpDoTreino(p) }} séries</dd>
+            }
+          }
+          <dd class="num">{{ previa()?.xpGanho ?? '—' }}</dd><dt>xp</dt>
         </div>
         <div><dd class="num">{{ cronometro(decorrido()) }}</dd><dt>tempo</dt></div>
       </dl>

@@ -14,7 +14,7 @@
   </span>
   <span class="chip-status nivel">
     <span class="icone cheio" aria-hidden="true">bolt</span>
-    Nível {{ g?.nivel ?? 1 }} · {{ (g?.xpTotal ?? 0).toLocaleString('pt-BR') }} XP
+    Nível {{ g?.nivel ?? 1 }}
   </span>
 </section>
 
@@ -77,7 +77,8 @@
             }
           </ul>
           @if (c.itens.length > 4) {
-            <p class="suave resto">+{{ c.itens.length - 4 }} exercícios restantes na sessão</p>
+            @let resto = c.itens.length - 4;
+            <p class="suave resto">+{{ resto }} {{ resto === 1 ? 'exercício restante' : 'exercícios restantes' }} na sessão</p>
           }
           @if (c.andamento) {
             <button type="button" class="btn btn-primario" (click)="continuar()">
@@ -90,7 +91,7 @@
           }
 
           <button type="button" class="ver-resumo" [attr.aria-expanded]="resumoAberto()" (click)="resumoAberto.set(!resumoAberto())">
-            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo do treino ({{ c.itens.length }} {{ c.itens.length === 1 ? 'exercício' : 'exercícios' }})</span>
+            <span class="resumo-rotulo"><span class="icone" aria-hidden="true">format_list_bulleted</span>Ver resumo do dia ({{ c.itens.length }} {{ c.itens.length === 1 ? 'exercício' : 'exercícios' }})</span>
             <span class="icone chevron" aria-hidden="true">{{ resumoAberto() ? 'expand_less' : 'expand_more' }}</span>
           </button>
           @if (resumoAberto()) {

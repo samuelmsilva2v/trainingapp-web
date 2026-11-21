@@ -10,6 +10,7 @@ const PREVIA: PlanoCompartilhado = {
   nome: 'ABC',
   objetivo: 'HIPERTROFIA',
   compartilhadoPor: 'Samuel',
+  seu: false,
   dias: [
     {
       nome: 'Treino A',
@@ -55,6 +56,18 @@ describe('PlanoCompartilhadoTela', () => {
     expect(texto).toContain('01:30');
     expect(texto).toContain('3 × 6');
     expect(el.querySelectorAll('.chip.drop')).toHaveLength(1);
+  });
+
+  it('o dono que abre o próprio link vê o aviso e não recebe a oferta de salvar', () => {
+    const { fixture, http, el } = abrir();
+    http.expectOne('/api/compartilhados/tok').flush({ ...PREVIA, seu: true });
+    fixture.detectChanges();
+
+    expect(el.textContent).toContain('Este plano é seu.');
+    expect(el.textContent).not.toContain('Compartilhado por');
+    expect(el.textContent).not.toContain('Salvar');
+    botao(el, 'Voltar').click();
+    expect(navigateByUrl).toHaveBeenCalled();
   });
 
   it('salvar e ativar manda ativar=true e vai para Planos; agora não volta para Hoje', () => {

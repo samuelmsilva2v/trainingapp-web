@@ -96,9 +96,12 @@
             <span class="icone" aria-hidden="true">edit</span>
           </span>
         </label>
-        <button type="submit" class="btn btn-primario" [disabled]="!valido() || !alterado() || salvando()">
-          <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar nome' }}
-        </button>
+        <!-- Só depois de editar: parado, era uma faixa cheia e apagada ocupando o card o tempo todo. -->
+        @if (alterado() || salvando()) {
+          <button type="submit" class="btn btn-primario" [disabled]="!valido() || salvando()">
+            <span class="icone" aria-hidden="true">check</span> {{ salvando() ? 'Salvando…' : 'Salvar nome' }}
+          </button>
+        }
       </form>
 
       <app-peso-secao />
@@ -209,7 +212,7 @@
         <button type="button" class="conquistas-topo" [attr.aria-expanded]="conquistasAbertas()"
                 aria-controls="lista-conquistas" (click)="conquistasAbertas.set(!conquistasAbertas())">
           <span class="titulo"><span class="icone cheio laranja" aria-hidden="true">emoji_events</span> Conquistas</span>
-          <span class="contagem num">{{ conquistadas() }}/{{ conquistasVisiveis().length }}</span>
+          <span class="contagem num">{{ conquistadas() }}/{{ totalConquistas() }}@if (secretas()) { · {{ secretas() }} {{ secretas() === 1 ? 'secreta' : 'secretas' }}}</span>
           <span class="icone" aria-hidden="true">{{ conquistasAbertas() ? 'expand_less' : 'expand_more' }}</span>
         </button>
 

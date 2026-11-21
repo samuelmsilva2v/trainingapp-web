@@ -19,9 +19,11 @@
     }
   } @else if (plano(); as p) {
     <section class="cabecalho">
-      <span class="chip objetivo">{{ rotuloObjetivo(p.objetivo) }}</span>
+      @if (p.objetivo) { <span class="chip objetivo">{{ rotuloObjetivo(p.objetivo) }}</span> }
       <h2 class="titulo-md nome">{{ p.nome }}</h2>
-      @if (p.compartilhadoPor) {
+      @if (p.seu) {
+        <p class="suave por"><span class="icone" aria-hidden="true">person</span> Este plano é seu. É assim que ele aparece para quem recebe o link.</p>
+      } @else if (p.compartilhadoPor) {
         <p class="suave por"><span class="icone" aria-hidden="true">person</span> Compartilhado por {{ p.compartilhadoPor }}</p>
       }
     </section>
@@ -60,13 +62,17 @@
     </ul>
 
     <div class="fixo">
-      <button type="button" class="btn btn-primario" [disabled]="salvando()" (click)="salvar(false)">
-        <span class="icone" aria-hidden="true">download</span> Salvar plano
-      </button>
-      <div class="linha">
-        <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="salvar(true)">Salvar e ativar</button>
-        <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="agoraNao()">Agora não</button>
-      </div>
+      @if (p.seu) {
+        <button type="button" class="btn btn-secundario" (click)="agoraNao()">Voltar</button>
+      } @else {
+        <button type="button" class="btn btn-primario" [disabled]="salvando()" (click)="salvar(false)">
+          <span class="icone" aria-hidden="true">download</span> Salvar plano
+        </button>
+        <div class="linha">
+          <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="salvar(true)">Salvar e ativar</button>
+          <button type="button" class="btn btn-secundario" [disabled]="salvando()" (click)="agoraNao()">Agora não</button>
+        </div>
+      }
     </div>
   } @else {
     <app-carregando />

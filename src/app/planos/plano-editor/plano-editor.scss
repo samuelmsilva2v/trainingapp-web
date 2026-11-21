@@ -155,7 +155,11 @@ input.valor.carga.longa { font-size: 17px; }
 
 /* Repetições (mín/máx) em caixas embutidas e descanso em linha, como no Stitch. */
 .reps .controle { padding: 6px; border-radius: var(--r-sm); background: var(--c-sup-0); }
-.reps .controle button, .descanso .controle button, .drops .controle button { width: 40px; height: 40px; }
+.reps .controle button, .descanso .controle button, .drops .controle button {
+  width: 40px; height: 40px;
+  // Área de toque de 48 px (alvo do Android) sem mudar o desenho.
+  position: relative; &::after { content: ''; position: absolute; inset: -4px; }
+}
 .reps .controle button { background: var(--c-sup-3); &:active { background: var(--c-primaria); } }
 .descanso, .drops {
   flex-direction: row;

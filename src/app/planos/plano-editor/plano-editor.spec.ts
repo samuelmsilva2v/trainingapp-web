@@ -111,6 +111,31 @@ describe('PlanoEditor: peso corporal', () => {
   });
 });
 
+describe('PlanoEditor: objetivo opcional', () => {
+  it('plano novo começa sem objetivo; tocar marca, tocar de novo desmarca, e salva null', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+    const fixture = TestBed.createComponent(PlanoEditor);
+    const editor = fixture.componentInstance as unknown as { nome: { set(v: string): void }; dias: { set(v: unknown): void }; salvar(): void };
+    editor.nome.set('ABC');
+    editor.dias.set([{ nome: 'Treino A', exercicios: [{ ...item, exercicioNome: 'Supino', grupoMuscular: 'PEITO', equipamento: 'BARRA' }] }]);
+    fixture.detectChanges();
+    const tela: HTMLElement = fixture.nativeElement;
+    const forca = () => [...tela.querySelectorAll<HTMLButtonElement>('.objetivos button')].find(b => b.textContent!.includes('Força'))!;
+    expect(tela.querySelectorAll('.objetivos [aria-pressed=true]').length).toBe(0);
+
+    forca().click();
+    fixture.detectChanges();
+    expect(forca().getAttribute('aria-pressed')).toBe('true');
+    forca().click();
+    fixture.detectChanges();
+    expect(forca().getAttribute('aria-pressed')).toBe('false');
+
+    editor.salvar();
+    const req = TestBed.inject(HttpTestingController).expectOne(r => r.method === 'POST');
+    expect(req.request.body.objetivo).toBeNull();
+  });
+});
+
 describe('PlanoEditor: dia sem exercícios (web#79)', () => {
   function abrir(confirma: boolean) {
     const open = vi.fn(() => ({ afterClosed: () => of(confirma) }));

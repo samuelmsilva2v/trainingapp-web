@@ -120,15 +120,20 @@ describe('AuthTela', () => {
     expect(tela.querySelector('[role=alert]')!.textContent).toContain('O Google não autorizou');
   });
 
-  it('entrar: só habilita com e-mail e senha e vai para o Hoje', () => {
+  it('entrar: o botão fica habilitado, diz o que falta e, completo, vai para o Hoje', () => {
     const { tela, digitar, enviar } = abrir('entrar');
     const navegar = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    const botao = tela.querySelector<HTMLButtonElement>('button[type=submit]')!;
-    expect(botao.disabled).toBe(true);
+    const alerta = () => tela.querySelector('[role=alert]')?.textContent ?? '';
+    expect(tela.querySelector<HTMLButtonElement>('button[type=submit]')!.disabled).toBe(false);
 
+    enviar();
+    expect(alerta()).toContain('Informe um e-mail válido.');
     digitar('E-mail', 'maria@teste.com');
+    enviar();
+    expect(alerta()).toContain('Informe a senha.');
+    expect(auth.entrar).not.toHaveBeenCalled();
+
     digitar('Senha', 'senha-forte-123');
-    expect(botao.disabled).toBe(false);
     enviar();
 
     expect(auth.entrar).toHaveBeenCalledWith('maria@teste.com', 'senha-forte-123');
@@ -174,14 +179,16 @@ describe('AuthTela', () => {
     expect(tela.querySelector('app-forca-senha')).not.toBeNull();
     expect(tela.querySelector('#campo-confirmacao')).not.toBeNull();
     expect(tela.querySelector('.termos')!.textContent).toContain('Termos de Uso');
+    expect(tela.querySelector('.termos a[href="/termos"]')).not.toBeNull();
+    expect(tela.querySelector('.termos a[href="/privacidade"]')).not.toBeNull();
     expect(tela.querySelector('.termos')!.textContent).toContain('Política de Privacidade');
     expect(tela.querySelector('.enviar')!.textContent).toContain('Criar minha conta');
     expect(tela.querySelector('.ja-tem-conta a')!.getAttribute('href')).toBe('/entrar');
   });
 
-  it('cadastrar: só habilita com senha forte, confirmação igual e termos marcados', () => {
-    const { fixture, tela, digitar } = abrir('cadastrar');
-    const botao = tela.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  it('cadastrar: só envia com senha forte, confirmação igual e termos marcados; antes diz o que falta', () => {
+    const { fixture, tela, digitar, enviar } = abrir('cadastrar');
+    const alerta = () => tela.querySelector('p.erro[role=alert]')?.textContent ?? '';
     const marcarTermos = () => {
       const caixa = tela.querySelector<HTMLInputElement>('.termos input')!;
       caixa.checked = true;
@@ -190,25 +197,32 @@ describe('AuthTela', () => {
     };
 
     preencherCadastro(digitar, 'fraca');
-    marcarTermos();
-    expect(botao.disabled).toBe(true); // senha fraca
+    enviar();
+    expect(alerta()).toContain('A senha ainda não atende a todos os requisitos.');
 
     preencherCadastro(digitar, 'Senha-Forte-123!', 'Senha-Forte-123?');
-    expect(botao.disabled).toBe(true); // confirmação diferente
     expect(tela.querySelector('.nao-confere')!.textContent).toContain('As senhas não conferem');
+    enviar();
+    expect(alerta()).toContain('As senhas não conferem.');
 
     preencherCadastro(digitar, 'Senha-Forte-123!');
     expect(tela.querySelector('.nao-confere')).toBeNull();
-    expect(botao.disabled).toBe(false);
+    enviar();
+    expect(alerta()).toContain('Marque que concorda com os Termos de Uso');
+    expect(api.cadastrar).not.toHaveBeenCalled();
+
+    marcarTermos();
+    enviar();
+    expect(api.cadastrar).toHaveBeenCalled();
   });
 
   it('cadastrar: sem marcar os termos não avança, mesmo com tudo preenchido', () => {
     const { tela, digitar, enviar } = abrir('cadastrar');
     preencherCadastro(digitar, 'Senha-Forte-123!');
 
-    expect(tela.querySelector<HTMLButtonElement>('button[type=submit]')!.disabled).toBe(true);
     enviar();
     expect(api.cadastrar).not.toHaveBeenCalled();
+    expect(tela.querySelector('p.erro[role=alert]')!.textContent).toContain('Marque que concorda com os Termos de Uso');
   });
 
   it('cadastrar: o medidor acompanha a senha e depois do cadastro pede para abrir o e-mail', () => {
@@ -279,18 +293,20 @@ describe('AuthTela', () => {
 
   it('redefinir: exige senha forte e confirmação igual e manda o token do link junto com a nova senha', () => {
     const { tela, digitar, enviar } = abrir('redefinir', 'abc123');
-    const botao = tela.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const alerta = () => tela.querySelector('p.erro[role=alert]')?.textContent ?? '';
 
     digitar('Nova senha', 'fraca');
     digitar('Confirmar', 'fraca');
-    expect(botao.disabled).toBe(true);
+    enviar();
+    expect(alerta()).toContain('A senha ainda não atende a todos os requisitos.');
 
     digitar('Nova senha', 'Outra-Senha-456!');
     digitar('Confirmar', 'Outra-Senha-456?');
-    expect(botao.disabled).toBe(true);
+    enviar();
+    expect(alerta()).toContain('As senhas não conferem.');
+    expect(api.redefinirSenha).not.toHaveBeenCalled();
 
     digitar('Confirmar', 'Outra-Senha-456!');
-    expect(botao.disabled).toBe(false);
     enviar();
 
     expect(api.redefinirSenha).toHaveBeenCalledWith('abc123', 'Outra-Senha-456!');

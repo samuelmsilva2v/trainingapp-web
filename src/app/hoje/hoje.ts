@@ -196,11 +196,12 @@ export class HojeTela implements OnInit {
         this.carregando.set(false);
       },
     });
-    // O último treino pode ser concluído ou abandonado; o cartão indica qual dos dois.
+    // Prefere o último concluído: um abandonado logo depois de um treino bom não deve tomar o destaque.
+    // Sem concluído entre os recentes, mostra o abandonado mesmo; o cartão indica qual dos dois.
     this.ultimoCarregado.set(false);
-    this.api.historico(0, 1).subscribe({
+    this.api.historico(0, 10).subscribe({
       next: lista => {
-        this.ultimo.set(lista[0] ?? null);
+        this.ultimo.set(lista.find(s => s.estado === 'CONCLUIDA') ?? lista[0] ?? null);
         this.ultimoCarregado.set(true);
       },
       error: () => {

@@ -102,7 +102,11 @@ export class PerfilTela implements OnInit, OnDestroy {
     return dias <= 0 ? 'Termina hoje' : dias === 1 ? 'Falta 1 dia' : `Faltam ${dias} dias`;
   });
 
-  protected readonly conquistadas = computed(() => this.conquistasVisiveis().filter(c => c.conquistada).length);
+  // A meta não muda quando uma secreta sai: "8/45 · 1 secreta" em vez de o total pular de 45 para 46.
+  protected readonly conquistadas = computed(() => this.conquistasVisiveis().filter(c => c.conquistada && !c.oculta).length);
+  protected readonly totalConquistas = computed(() => this.conquistasVisiveis().filter(c => !c.oculta).length);
+  /** Secretas visíveis são só as já feitas. */
+  protected readonly secretas = computed(() => this.conquistasVisiveis().filter(c => c.oculta).length);
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
   protected readonly frequenciasPeso = [7, 15, 30];
