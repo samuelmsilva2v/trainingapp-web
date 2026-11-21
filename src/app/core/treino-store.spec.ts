@@ -237,6 +237,34 @@ describe('TreinoStore', () => {
     expect(store.avisoConflito()).toContain('outro aparelho');
   });
 
+  it('409 com o treino já encerrado em outro aparelho: larga o treino e avisa', async () => {
+    const encerrado = { ...sessao, estado: 'CONCLUIDA' as const, finalizadaEm: '2026-01-01T11:00:00Z' };
+    salvar.mockImplementationOnce(() => throwError(() => new HttpErrorResponse({ status: 409, error: encerrado })));
+    marcarReps(9);
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(store.sessao()).toBeNull();
+    expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+    expect(store.avisoConflito()).toContain('encerrado em outro aparelho');
+  });
+
+  it('não envia duas vezes ao mesmo tempo o treino encerrado sem rede', async () => {
+    salvar.mockImplementationOnce(semRede);
+    await store.encerrar('CONCLUIDA');
+
+    const resposta = new Subject<SessaoLocal>();
+    salvar.mockImplementationOnce(() => resposta);
+    await redeVolta();
+    await redeVolta();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(salvar).toHaveBeenCalledTimes(2); // o encerramento sem rede e um só reenvio
+
+    resposta.next(guardado().sessao);
+    resposta.complete();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(localStorage.getItem('trainingapp.treino')).toBeNull();
+  });
+
   it('encerrar sem rede guarda o treino no aparelho e o envia quando a rede volta', async () => {
     salvar.mockImplementationOnce(semRede);
     expect(await store.encerrar('CONCLUIDA')).toBe('offline');

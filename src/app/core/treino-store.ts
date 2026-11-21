@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Network } from '@capacitor/network';
 import { firstValueFrom } from 'rxjs';
 import { SessoesApi, mensagemDeErro } from './api';
+import { guardar, lerJson } from './armazenamento';
 import { Anterior, DiaHoje, EstadoSessao, ExercicioLocal, ItemPlano, SerieLocal, SessaoLocal, TipoSerie } from './modelos';
 import { blocos, cargaDoDrop, ehPesoCorporal, espelharDrops, repsDoDrop, seriesFeitas, totalSeries } from './series';
 
@@ -30,33 +31,18 @@ export interface TelaTreino {
   descanso: { fim: number; total: number; texto: string } | null;
 }
 
-function lerLocal(): TreinoLocal | null {
-  try {
-    const texto = localStorage.getItem(CHAVE_LOCAL);
-    return texto ? (JSON.parse(texto) as TreinoLocal) : null;
-  } catch {
-    return null;
-  }
-}
+const lerLocal = () => lerJson<TreinoLocal>(CHAVE_LOCAL);
 
-/** Grava o treino; a tela gravada antes continua, se for da mesma sessão. */
+/** Grava o treino; a tela gravada antes continua, se for da mesma sessão. Sem armazenamento, segue só na memória. */
 function gravarLocal(local: TreinoLocal): void {
-  try {
-    const antes = local.tela ? null : lerLocal();
-    const tela = local.tela ?? (antes?.sessao.id === local.sessao.id ? antes.tela : undefined);
-    localStorage.setItem(CHAVE_LOCAL, JSON.stringify({ ...local, tela }));
-  } catch {
-    // Sem armazenamento (navegação privada, cota cheia): o treino segue só na memória, como antes.
-  }
+  const antes = local.tela ? null : lerLocal();
+  const tela = local.tela ?? (antes?.sessao.id === local.sessao.id ? antes.tela : undefined);
+  guardar(CHAVE_LOCAL, JSON.stringify({ ...local, tela }));
 }
 
 /** Ao sair da conta: o treino guardado no aparelho é de quem saiu. */
 export function apagarTreinoLocal(): void {
-  try {
-    localStorage.removeItem(CHAVE_LOCAL);
-  } catch {
-    // nada guardado
-  }
+  guardar(CHAVE_LOCAL, null);
 }
 
 const semRede = (erro: unknown) => erro instanceof HttpErrorResponse && erro.status === 0;
@@ -94,6 +80,7 @@ export class TreinoStore {
   private pendente = false;
   /** Treino encerrado sem rede, à espera de ser enviado. */
   private encerradoPendente: SessaoLocal | null = null;
+  private enviandoPendente = false;
   /** Conta os treinos encerrados sem rede que chegaram à API: a Hoje recarrega a cada um (web#61). */
   readonly pendenteEnviado = signal(0);
 
@@ -331,6 +318,9 @@ export class TreinoStore {
       if (this.sessao() && this.status() !== 'salvo') await this.enviar();
       return;
     }
+    // Abrir o app e a rede voltar disparam juntos: dois envios do encerramento disputariam o XP do dia (500).
+    if (this.enviandoPendente) return;
+    this.enviandoPendente = true;
     try {
       await firstValueFrom(this.api.salvar(encerrado));
       await this.apagarSeVazio(encerrado);
@@ -339,6 +329,8 @@ export class TreinoStore {
       // deploy), o treino fica no aparelho e vai na próxima vez que a rede voltar ou o app abrir.
       if (!recusado(erro)) return;
       console.warn('Treino encerrado sem rede foi recusado pela API', erro);
+    } finally {
+      this.enviandoPendente = false;
     }
     this.encerradoPendente = null;
     apagarTreinoLocal();
@@ -348,6 +340,14 @@ export class TreinoStore {
 
   private adotarDoServidor(erro: HttpErrorResponse): void {
     const servidor = erro.error as SessaoLocal;
+    if (servidor.estado !== 'EM_ANDAMENTO') {
+      // Encerrado em outro aparelho: não há mais o que editar aqui.
+      apagarTreinoLocal();
+      this.sessao.set(null);
+      this.status.set('salvo');
+      this.avisoConflito.set('Este treino foi encerrado em outro aparelho.');
+      return;
+    }
     this.sessao.set(servidor);
     gravarLocal({ sessao: servidor, enviado: true });
     this.status.set('salvo');
