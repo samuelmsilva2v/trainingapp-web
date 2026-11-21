@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Observable, catchError, finalize, firstValueFrom, map, of, share, tap, throwError, timeout } from 'rxjs';
 import { AuthApi, ProvaDeIdentidade } from './api';
+import { guardar, lerArmazenado } from './armazenamento';
 import { CofreRefresh } from './cofre';
 import { apagarTreinoLocal } from './treino-store';
 import { Acesso } from './modelos';
@@ -152,22 +153,9 @@ export const TEMPO_ABERTURA_MS = 15_000;
 /** "Este navegador já entrou": distingue sessão expirada (avisa) de primeira visita (não avisa) no 401 da abertura. */
 const CHAVE_SESSAO = 'trainingapp.sessao';
 
-function lerMarcaDeSessao(): boolean {
-  try {
-    return localStorage.getItem(CHAVE_SESSAO) === '1';
-  } catch {
-    return false;
-  }
-}
-
-function gravarMarcaDeSessao(ativa: boolean): void {
-  try {
-    if (ativa) localStorage.setItem(CHAVE_SESSAO, '1');
-    else localStorage.removeItem(CHAVE_SESSAO);
-  } catch {
-    // sem armazenamento: só não haverá o aviso de sessão expirada
-  }
-}
+const lerMarcaDeSessao = () => lerArmazenado(CHAVE_SESSAO) === '1';
+// Sem armazenamento só não há o aviso de sessão expirada.
+const gravarMarcaDeSessao = (ativa: boolean) => guardar(CHAVE_SESSAO, ativa ? '1' : null);
 
 /** Com falha na abertura, deixa a rota ativar: o app mostra a tela de erro no lugar dela e retoma depois. */
 export const autenticadoGuard: CanActivateFn = (_rota, estado) => {
@@ -175,9 +163,7 @@ export const autenticadoGuard: CanActivateFn = (_rota, estado) => {
   if (auth.logado() || auth.falhaAbertura() !== null) return true;
   // Link de plano compartilhado aberto deslogado: volta a ele depois de entrar, mesmo passando pelo cadastro e pela
   // confirmação do e-mail (por isso no localStorage, e não na URL do login).
-  if (estado?.url?.startsWith(PREFIXO_COMPARTILHADO)) {
-    try { localStorage.setItem(DESTINO_APOS_LOGIN, estado.url); } catch { /* sem storage: cai em /hoje */ }
-  }
+  if (estado?.url?.startsWith(PREFIXO_COMPARTILHADO)) guardar(DESTINO_APOS_LOGIN, estado.url); // sem storage: cai em /hoje
   return inject(Router).createUrlTree(['/entrar']);
 };
 
@@ -186,10 +172,7 @@ const PREFIXO_COMPARTILHADO = '/compartilhado/';
 
 /** Para onde ir ao entrar: o link compartilhado guardado pelo guard (uma vez só) ou /hoje. */
 export function destinoAposLogin(): string {
-  try {
-    const destino = localStorage.getItem(DESTINO_APOS_LOGIN);
-    localStorage.removeItem(DESTINO_APOS_LOGIN);
-    if (destino?.startsWith(PREFIXO_COMPARTILHADO)) return destino;
-  } catch { /* sem storage */ }
-  return '/hoje';
+  const destino = lerArmazenado(DESTINO_APOS_LOGIN);
+  guardar(DESTINO_APOS_LOGIN, null);
+  return destino?.startsWith(PREFIXO_COMPARTILHADO) ? destino : '/hoje';
 }

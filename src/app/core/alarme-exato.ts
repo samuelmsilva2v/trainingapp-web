@@ -1,5 +1,6 @@
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { NO_APP } from './cofre';
+import { guardar, lerArmazenado } from './armazenamento';
 
 /**
  * Alarme exato (permissão "Alarmes e lembretes" do Android). Sem ele, o Android adia um aviso inexato em até 75% do
@@ -29,20 +30,12 @@ export async function conferirAlarmeExato(): Promise<boolean> {
 /** Ainda não tem a permissão e nunca foi perguntado: a tela explica antes de abrir as configurações do Android. */
 export function devePedirAlarmeExato(): boolean {
   if (!NO_APP || permitido) return false;
-  try {
-    return !localStorage.getItem(CHAVE_PEDIDO);
-  } catch {
-    return false;
-  }
+  return !lerArmazenado(CHAVE_PEDIDO);
 }
 
 /** Abre "Alarmes e lembretes" (se `abrir`) e marca que já perguntou, aceitando ou não. Devolve se ficou permitido. */
 export async function pedirAlarmeExato(abrir: boolean): Promise<boolean> {
-  try {
-    localStorage.setItem(CHAVE_PEDIDO, new Date().toISOString());
-  } catch {
-    // sem armazenamento: pode perguntar de novo numa próxima abertura
-  }
+  guardar(CHAVE_PEDIDO, new Date().toISOString()); // sem armazenamento, pergunta de novo numa próxima abertura
   if (!abrir || !NO_APP) return permitido;
   try {
     permitido = (await LocalNotifications.changeExactNotificationSetting()).exact_alarm === 'granted';

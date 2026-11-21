@@ -1,3 +1,4 @@
+import { guardar, lerArmazenado } from './armazenamento';
 /** Passos do "+/−" de carga (kg), no treino e no editor de plano; a pessoa escolhe em Configurações de treino. */
 export const PASSOS_CARGA = [1, 2.5, 5] as const;
 export type PassoCarga = (typeof PASSOS_CARGA)[number];
@@ -9,20 +10,12 @@ const CHAVE_PASSO = 'trainingapp.passoCarga';
 
 /** Guardado só no aparelho; valor estranho ou sem armazenamento volta ao padrão. */
 export function lerPassoCarga(): PassoCarga {
-  try {
-    const valor = Number(localStorage.getItem(CHAVE_PASSO));
-    return PASSOS_CARGA.find(p => p === valor) ?? PASSO_PADRAO;
-  } catch {
-    return PASSO_PADRAO;
-  }
+  const valor = Number(lerArmazenado(CHAVE_PASSO));
+  return PASSOS_CARGA.find(p => p === valor) ?? PASSO_PADRAO;
 }
 
 export function salvarPassoCarga(passo: PassoCarga): void {
-  try {
-    localStorage.setItem(CHAVE_PASSO, String(passo));
-  } catch {
-    // sem armazenamento: o passo vale só até fechar o app
-  }
+  guardar(CHAVE_PASSO, String(passo));
 }
 
 /** Próximo valor na grade do passo: com 2,5, de 23 o "+" vai a 25 e o "−" a 22,5 (de 25, a 27,5 e 22,5). Nunca fica negativo. */

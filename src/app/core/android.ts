@@ -8,6 +8,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { Share } from '@capacitor/share';
 import { alarmeExato, conferirAlarmeExato } from './alarme-exato';
 import { NO_APP } from './cofre';
+import { guardar, lerArmazenado } from './armazenamento';
 import { CANAL_LEMBRETE, reagendarLembretes } from './lembrete';
 
 /** Onde o voltar do sistema fecha o app: a tela inicial de quem está logado e a de quem não está. */
@@ -89,20 +90,11 @@ const CHAVE_AVISO_DESCANSO = 'trainingapp.avisoDescanso';
 
 /** Preferência do aparelho (Perfil > Notificações): desligada, o fim do descanso fica só no cronômetro e na vibração da tela. */
 export function avisoDescansoLigado(): boolean {
-  try {
-    return localStorage.getItem(CHAVE_AVISO_DESCANSO) !== 'desligado';
-  } catch {
-    return true;
-  }
+  return lerArmazenado(CHAVE_AVISO_DESCANSO) !== 'desligado';
 }
 
 export function salvarAvisoDescanso(ligado: boolean): void {
-  try {
-    if (ligado) localStorage.removeItem(CHAVE_AVISO_DESCANSO);
-    else localStorage.setItem(CHAVE_AVISO_DESCANSO, 'desligado');
-  } catch {
-    // sem armazenamento: vale o padrão (ligado)
-  }
+  guardar(CHAVE_AVISO_DESCANSO, ligado ? null : 'desligado');
   if (!ligado) cancelarFimDoDescanso();
 }
 

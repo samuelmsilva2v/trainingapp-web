@@ -1,6 +1,7 @@
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { alarmeExato } from './alarme-exato';
 import { NO_APP } from './cofre';
+import { guardar, lerJson } from './armazenamento';
 
 /** Lembrete de dia de treino, guardado só no aparelho (é uma notificação local dele). */
 export interface ConfigLembrete {
@@ -29,22 +30,8 @@ const CHAVE_CONTEXTO = 'trainingapp.lembrete.contexto';
 const DIAS_AGENDADOS = 14;
 const PRIMEIRO_ID = 200;
 
-function ler<T>(chave: string): T | null {
-  try {
-    const texto = localStorage.getItem(chave);
-    return texto ? (JSON.parse(texto) as T) : null;
-  } catch {
-    return null;
-  }
-}
-
-function gravar(chave: string, valor: unknown): void {
-  try {
-    localStorage.setItem(chave, JSON.stringify(valor));
-  } catch {
-    // sem armazenamento: o lembrete vale só até fechar o app
-  }
-}
+const ler = lerJson;
+const gravar = (chave: string, valor: unknown) => guardar(chave, JSON.stringify(valor));
 
 export function lerLembrete(): ConfigLembrete {
   return { ...LEMBRETE_PADRAO, ...ler<ConfigLembrete>(CHAVE_CONFIG) };

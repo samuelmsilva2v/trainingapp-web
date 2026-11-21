@@ -1,5 +1,6 @@
 import { SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { NO_APP } from './cofre';
+import { guardar, lerArmazenado } from './armazenamento';
 
 // "sistema" saiu em 2026-11-19: quem tinha ele guardado volta ao padrão pelo lerTema.
 // O Commando é um tema só com duas camuflagens: cada uma é um valor próprio, para o tema guardado e o
@@ -43,19 +44,12 @@ const CLAROS: readonly Tema[] = ['claro', 'japao-sumie'];
 
 /** Guardado só no aparelho; valor estranho ou sem armazenamento volta ao padrão. */
 export function lerTema(): Tema {
-  try {
-    return TEMAS.find(t => t === localStorage.getItem(CHAVE_TEMA)) ?? TEMA_PADRAO;
-  } catch {
-    return TEMA_PADRAO;
-  }
+  const guardado = lerArmazenado(CHAVE_TEMA);
+  return TEMAS.find(t => t === guardado) ?? TEMA_PADRAO;
 }
 
 export function salvarTema(tema: Tema): void {
-  try {
-    localStorage.setItem(CHAVE_TEMA, tema);
-  } catch {
-    // sem armazenamento: o tema vale só até fechar o app
-  }
+  guardar(CHAVE_TEMA, tema);
   aplicarTema(tema);
 }
 
