@@ -1,4 +1,4 @@
-import { iniciarTema, lerTema, salvarTema } from './tema';
+import { aplicarTemaDaConta, conferirTema, iniciarTema, lerTema, salvarTema } from './tema';
 
 describe('tema', () => {
   beforeEach(() => {
@@ -77,5 +77,24 @@ describe('tema', () => {
     expect(corDaBarra()).toBe('#0c1828');
     salvarTema('japao-sumie');
     expect(corDaBarra()).toBe('#efe8da');
+  });
+
+  it('tema guardado acima do nível da conta volta ao padrão; liberado ou sem trava fica', () => {
+    salvarTema('ignite'); // nível 15
+    expect(conferirTema(15)).toBe('ignite');
+    expect(conferirTema(4)).toBe('escuro');
+    expect(localStorage.getItem('trainingapp.tema')).toBe('escuro');
+    expect(document.documentElement.dataset['tema']).toBe('escuro');
+
+    salvarTema('claro');
+    expect(conferirTema(1)).toBe('claro');
+  });
+
+  it('tema da conta vence o do aparelho; conta sem tema ou com valor estranho mantém o do aparelho', () => {
+    salvarTema('claro');
+    expect(aplicarTemaDaConta('chrome')).toBe('chrome');
+    expect(localStorage.getItem('trainingapp.tema')).toBe('chrome');
+    expect(aplicarTemaDaConta(null)).toBe('chrome');
+    expect(aplicarTemaDaConta('rosa')).toBe('chrome');
   });
 });

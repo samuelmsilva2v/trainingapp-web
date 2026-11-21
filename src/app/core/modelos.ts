@@ -209,6 +209,8 @@ export interface Perfil {
   fotoTipo?: FotoTipo;
   /** Foto da conta Google (só vale com o tipo GOOGLE); pode faltar ou quebrar, e aí ficam as iniciais. */
   fotoGoogleUrl?: string | null;
+  /** Tema escolhido pela conta (vale em qualquer aparelho); null = nunca escolheu, fica o do aparelho. */
+  tema?: string | null;
 }
 
 export type FotoTipo = 'PADRAO' | 'GOOGLE' | 'PROPRIA';

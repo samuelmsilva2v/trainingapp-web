@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { GamificacaoApi } from './api';
 import { Gamificacao } from './modelos';
+import { conferirTema } from './tema';
 
 /** Situação de gamificação compartilhada pelo cabeçalho, Hoje e Perfil. */
 @Injectable({ providedIn: 'root' })
@@ -27,6 +28,7 @@ export class GamificacaoStore {
   atualizar(): void {
     this.api.resumo().subscribe({
       next: dados => {
+        conferirTema(dados.nivel);
         this.dados.set(dados);
         this.erro.set(false);
       },

@@ -149,6 +149,11 @@ export class PerfilApi {
   removerFoto(): Observable<Perfil> {
     return this.http.delete<Perfil>(`${API_URL}/perfil/foto`);
   }
+
+  /** O tema acompanha a conta; a API recusa (422) tema acima do nível. */
+  escolherTema(tema: string): Observable<Perfil> {
+    return this.http.put<Perfil>(`${API_URL}/perfil/tema`, { tema });
+  }
 }
 
 @Injectable({ providedIn: 'root' })

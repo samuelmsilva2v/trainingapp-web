@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, linkedSignal, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -14,7 +14,7 @@ import { formatarKg } from '../core/formatos';
 import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
-import { NIVEL_DO_TEMA, Tema, lerTema, salvarTema } from '../core/tema';
+import { NIVEL_DO_TEMA, Tema, aplicarTemaDaConta, lerTema, salvarTema } from '../core/tema';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -130,7 +130,8 @@ export class PerfilTela implements OnInit, OnDestroy {
       { valor: 'japao-sumie', rotulo: 'Sumi-e' },
     ],
   };
-  protected readonly tema = signal<Tema>(lerTema());
+  // Relê quando o nível chega: a GamificacaoStore pode ter voltado um tema travado ao padrão (conferirTema).
+  protected readonly tema = linkedSignal<Tema>(() => (this.gamificacao.dados(), lerTema()));
   protected readonly variantes = computed(() => this.variantesDoGrupo[grupoDoTema(this.tema())] ?? null);
   /** O botão do grupo fica marcado em qualquer variante dele. */
   protected selecionado(valor: Tema): boolean {
@@ -168,6 +169,7 @@ export class PerfilTela implements OnInit, OnDestroy {
   private aplicar(perfil: Perfil): void {
     this.salvo.set(perfil);
     this.nome.set(perfil.nome);
+    this.tema.set(aplicarTemaDaConta(perfil.tema));
     if (perfil.fotoTipo === 'PROPRIA' && !this.fotoPropria()) this.carregarFotoPropria();
     if (perfil.fotoTipo !== 'PROPRIA') this.trocarFotoPropria(null);
   }
@@ -289,6 +291,11 @@ export class PerfilTela implements OnInit, OnDestroy {
     }
     salvarTema(tema);
     this.tema.set(tema);
+    const salvo = this.salvo();
+    if (salvo) this.salvo.set({ ...salvo, tema });
+    this.api.escolherTema(tema).subscribe({
+      error: () => this.aviso.open('Não deu para salvar o tema na conta: ele ficou só neste aparelho.', 'OK', { duration: 5000 }),
+    });
   }
 
   protected mudarLembretePeso(dias: number | null): void {

@@ -71,6 +71,28 @@ export function aplicarTema(tema: Tema = lerTema()): void {
   if (NO_APP) void SystemBars.setStyle({ style: claro ? SystemBarsStyle.Light : SystemBarsStyle.Dark }).catch(() => undefined);
 }
 
+/**
+ * Quando o perfil chega: o tema da conta vence o do aparelho. A cópia no aparelho continua servindo para pintar
+ * a tela antes do login (script do index.html). Conta que nunca escolheu (null) fica com o tema do aparelho.
+ */
+export function aplicarTemaDaConta(tema: string | null | undefined): Tema {
+  const daConta = TEMAS.find(t => t === tema);
+  if (daConta && daConta !== lerTema()) salvarTema(daConta);
+  return lerTema();
+}
+
+/**
+ * Conta que nunca escolheu tema herda o do aparelho, que pode estar travado para ela (deixado por outra conta).
+ * Chamado quando o nível da conta chega; volta ao padrão se o tema guardado ainda não foi liberado.
+ */
+export function conferirTema(nivel: number): Tema {
+  const tema = lerTema();
+  const minimo = NIVEL_DO_TEMA[tema];
+  if (!minimo || nivel >= minimo) return tema;
+  salvarTema(TEMA_PADRAO);
+  return TEMA_PADRAO;
+}
+
 /** Na inicialização: aplica a escolha guardada. */
 export function iniciarTema(): void {
   aplicarTema();

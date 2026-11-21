@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { PerfilApi } from '../core/api';
 import { GamificacaoStore } from '../core/gamificacao-store';
+import { aplicarTemaDaConta } from '../core/tema';
 import { formatarKg } from '../core/formatos';
 
 @Component({
@@ -11,6 +13,7 @@ import { formatarKg } from '../core/formatos';
 })
 export class Casca implements OnInit {
   protected readonly gamificacao = inject(GamificacaoStore);
+  private readonly perfil = inject(PerfilApi);
   protected readonly formatar = formatarKg;
 
   protected readonly abas = [
@@ -22,5 +25,7 @@ export class Casca implements OnInit {
 
   ngOnInit(): void {
     this.gamificacao.atualizar();
+    // Sem rede ou com erro, fica o tema do aparelho.
+    this.perfil.obter().subscribe({ next: p => aplicarTemaDaConta(p.tema), error: () => undefined });
   }
 }
