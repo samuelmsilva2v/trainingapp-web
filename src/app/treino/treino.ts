@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, Injector, OnDestroy, OnInit, afterNextRender, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, Injector, OnDestroy, OnInit, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -52,6 +52,7 @@ export class Treino implements OnInit, OnDestroy {
       if (!mensagem) return;
       this.aviso.open(mensagem, 'OK', { duration: 6000 });
       this.store.avisoConflito.set(null);
+      if (!untracked(this.store.sessao)) this.roteador.navigate(['/hoje']); // encerrado em outro aparelho
     });
     // O Android mata o app em segundo plano durante o descanso: guarda onde a tela está para voltar a ela (web#62).
     effect(() => {
