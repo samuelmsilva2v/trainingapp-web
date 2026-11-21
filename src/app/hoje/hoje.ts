@@ -11,6 +11,7 @@ import { TreinoStore } from '../core/treino-store';
 import { falhaDe, Falha } from '../core/falha';
 import { CuboGelo } from '../compartilhado/cubo-gelo';
 import { TelaErro } from '../compartilhado/tela-erro';
+import { IlustracaoVazio } from '../compartilhado/ilustracao-vazio';
 import { ehPesoCorporal, seriesFeitas, totalSeries } from '../core/series';
 import { duracaoMinutos, faixaReps, formatarDataRelativa, kg } from '../core/formatos';
 import { RegistrarPeso, RegistrarPesoDados } from '../compartilhado/registrar-peso';
@@ -52,7 +53,7 @@ interface CartaoTreino {
 
 @Component({
   selector: 'app-hoje',
-  imports: [RouterLink, TelaErro, CuboGelo],
+  imports: [RouterLink, TelaErro, CuboGelo, IlustracaoVazio],
   templateUrl: './hoje.html',
   styleUrl: './hoje.scss',
 })

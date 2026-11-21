@@ -6,6 +6,7 @@ import { PlanosApi, mensagemDeErro } from '../../core/api';
 import { compartilharLink } from '../../core/android';
 import { Falha, falhaDe } from '../../core/falha';
 import { TelaErro } from '../../compartilhado/tela-erro';
+import { IlustracaoVazio } from '../../compartilhado/ilustracao-vazio';
 import { Carregando } from '../../compartilhado/carregando';
 import { DiaPlano, Plano, PlanoResumo } from '../../core/modelos';
 import { rotuloObjetivo } from '../../core/rotulos';
@@ -13,7 +14,7 @@ import { ConfirmarDialogo } from '../../compartilhado/confirmar-dialogo';
 
 @Component({
   selector: 'app-planos-lista',
-  imports: [RouterLink, TelaErro, Carregando],
+  imports: [RouterLink, TelaErro, Carregando, IlustracaoVazio],
   templateUrl: './planos-lista.html',
   styleUrl: './planos-lista.scss',
 })

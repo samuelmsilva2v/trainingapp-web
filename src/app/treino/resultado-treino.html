@@ -1,33 +1,56 @@
 <div class="corpo">
-  <header>
-    <p class="rotulo suave">Treino concluído</p>
-    <h2 class="titulo-md">{{ sessao.diaNome }}</h2>
-  </header>
-
-  @if (xp > 0) {
-    <section class="xp" aria-label="XP ganho">
-      <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xp }} XP</p>
-      <!-- Só conquistas (ex.: 2º treino do dia que credita conquistas antigas): explica por que as séries não renderam. -->
-      @if (xpTreino === 0) {
-        <p class="sem-xp suave">{{ motivoSemXp }}</p>
+  <!-- Celebração do tema (só decoração, aria-hidden): reflexo, raios, brasas, falha, carimbo, pétalas, onda ou hanko. -->
+  <div class="celebra" [attr.data-efeito]="celebracao">
+    <div class="fx" aria-hidden="true">
+      @switch (celebracao) {
+        @case ('raios') {
+          <svg viewBox="0 0 300 170" preserveAspectRatio="none"><path d="M20 0 L60 45 L45 60 L90 105 L80 118 L130 170"/><path d="M150 0 L170 34 L158 48 L200 88 L188 100 L230 170"/><path d="M280 0 L250 38 L262 54 L220 98"/></svg>
+        }
+        @case ('brasas') {
+          @for (b of brasas; track $index) { <i [style.left.%]="b.x" [style.--dx.px]="b.dx" [style.animation-delay.s]="b.atraso"></i> }
+        }
+        @case ('petalas') {
+          @for (p of petalas; track $index) { <i [style.left.%]="p.x" [style.animation-delay.s]="p.atraso"></i> }
+        }
+        @case ('onda') {
+          <svg class="onda" viewBox="0 0 360 200" preserveAspectRatio="xMinYMax meet"><path fill="#203a57" d="M0 200 L0 150 C40 140 70 120 100 92 C130 64 168 40 210 34 C246 29 278 40 292 62 C302 78 296 96 280 100 C266 104 258 92 266 82 C250 84 240 100 250 116 C262 134 300 134 330 122 L360 200 Z"/><path fill="#3a6fa0" d="M0 200 L0 162 C46 154 80 136 108 112 C138 86 170 62 210 56 C238 52 262 60 274 74 C262 72 252 78 246 88 C236 104 246 126 268 136 C296 148 330 140 360 128 L360 200 Z"/><path fill="none" stroke="#f1e9d6" stroke-width="2.5" stroke-linecap="round" d="M120 104 C150 76 182 58 214 52 M140 118 C168 94 196 80 226 76 M162 132 C186 114 210 104 236 102"/><g fill="#f1e9d6"><circle cx="210" cy="34" r="5"/><circle cx="224" cy="32" r="4.75"/><circle cx="238" cy="33" r="4.5"/><circle cx="251" cy="36" r="4.25"/><circle cx="263" cy="41" r="4"/><circle cx="274" cy="48" r="3.75"/><circle cx="283" cy="56" r="3.5"/><circle cx="289" cy="66" r="3.25"/><circle cx="291" cy="77" r="3"/><circle cx="288" cy="88" r="2.75"/><circle cx="262" cy="84" r="3.2"/><circle cx="255" cy="92" r="3.2"/><circle cx="252" cy="101" r="3.2"/></g></svg>
+        }
       }
-      <ul class="detalhe num">
-        @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
-        @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
-        @if (bonus) {
-          <li class="xp-bonus"><span>Sequência ({{ diasSequencia }} {{ diasSequencia === 1 ? 'dia' : 'dias' }})</span><span>+{{ bonus }}</span></li>
+    </div>
+    @if (celebracao === 'carimbo') { <span class="selo" aria-hidden="true">MISSÃO<br>CUMPRIDA</span> }
+    @if (celebracao === 'hanko') { <span class="selo" aria-hidden="true">達成</span> }
+    @if (celebracao === 'petalas') { <span class="kanji" aria-hidden="true">桜</span> }
+    @if (celebracao === 'falha') { <p class="titulo-fx" aria-hidden="true">MISSÃO CONCLUÍDA_</p> }
+    <header>
+      <p class="rotulo suave">Treino concluído</p>
+      <h2 class="titulo-md">{{ sessao.diaNome }}</h2>
+    </header>
+
+    @if (xp > 0) {
+      <section class="xp" aria-label="XP ganho">
+        <p class="grande num"><span class="icone cheio" aria-hidden="true">bolt</span>+{{ xp }} XP</p>
+        <!-- Só conquistas (ex.: 2º treino do dia que credita conquistas antigas): explica por que as séries não renderam. -->
+        @if (xpTreino === 0) {
+          <p class="sem-xp suave">{{ motivoSemXp }}</p>
         }
-        @if (xpConquistas) {
-          <li class="xp-bonus"><span>Conquistas</span><span>+{{ xpConquistas }}</span></li>
-        }
-        @if (xpDesafios) {
-          <li class="xp-bonus"><span>Desafios</span><span>+{{ xpDesafios }}</span></li>
-        }
-      </ul>
-    </section>
-  } @else {
-    <p class="sem-xp suave">{{ motivoSemXp }}</p>
-  }
+        <ul class="detalhe num">
+          @if (sessao.xpSeries) { <li><span>Séries ({{ feitas }})</span><span>+{{ sessao.xpSeries }}</span></li> }
+          @if (sessao.xpRecordes) { <li><span>Recordes</span><span>+{{ sessao.xpRecordes }}</span></li> }
+          @if (bonus) {
+            <li class="xp-bonus"><span>Sequência ({{ diasSequencia }} {{ diasSequencia === 1 ? 'dia' : 'dias' }})</span><span>+{{ bonus }}</span></li>
+          }
+          @if (xpConquistas) {
+            <li class="xp-bonus"><span>Conquistas</span><span>+{{ xpConquistas }}</span></li>
+          }
+          @if (xpDesafios) {
+            <li class="xp-bonus"><span>Desafios</span><span>+{{ xpDesafios }}</span></li>
+          }
+        </ul>
+      </section>
+    } @else {
+      <p class="sem-xp suave">{{ motivoSemXp }}</p>
+    }
+  </div>
 
   @if (mudancas; as m) {
     @if (estadoPlano() === 'salvo') {

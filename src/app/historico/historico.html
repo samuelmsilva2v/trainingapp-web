@@ -21,9 +21,9 @@
   <app-tela-erro [falha]="erro()!" (tentar)="carregarPagina()" />
 } @else if (sessoes().length === 0) {
   <div class="estado">
-    <span class="icone circulo" aria-hidden="true">event_busy</span>
-    <h2 class="titulo-sm">Nenhum treino registrado ainda</h2>
-    <p class="suave">Inicie seu primeiro treino para acompanhar sua evolução.</p>
+    <app-ilustracao-vazio><span class="icone circulo" aria-hidden="true">event_busy</span></app-ilustracao-vazio>
+    <h2 class="titulo-sm">{{ textoVazio?.titulo ?? 'Nenhum treino registrado ainda' }}</h2>
+    <p class="suave">{{ textoVazio?.texto ?? 'Inicie seu primeiro treino para acompanhar sua evolução.' }}</p>
     <a class="btn btn-primario" routerLink="/hoje">
       <span class="icone" aria-hidden="true">play_arrow</span> Ir para Hoje
     </a>

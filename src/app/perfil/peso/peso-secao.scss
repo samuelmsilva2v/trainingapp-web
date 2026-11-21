@@ -16,7 +16,7 @@
   margin: 0;
   div { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
   dt { font-size: 11px; line-height: 14px; }
-  dd { margin: 0; font: 700 14px/20px 'Inter', sans-serif; }
+  dd { margin: 0; font: 700 14px/20px var(--fonte-corpo); }
 }
 
 .periodos { grid-template-columns: repeat(3, 1fr); }
@@ -24,7 +24,7 @@
 .grafico { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 svg { display: block; width: 100%; height: auto; overflow: visible; }
 .grade { stroke: var(--c-sup-4); stroke-width: 1; }
-.rotulo-eixo { fill: var(--c-texto-2); font: 400 10px 'Inter', sans-serif; }
+.rotulo-eixo { fill: var(--c-texto-2); font: 400 10px var(--fonte-corpo); }
 .ponto { fill: var(--c-secundaria); stroke: var(--c-sup-1); stroke-width: 1.5; }
 .linha-pesos { fill: none; stroke: var(--c-destaque); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .tendencia { fill: none; stroke: var(--c-texto-2); stroke-width: 1.5; stroke-dasharray: 4 4; stroke-linecap: round; }

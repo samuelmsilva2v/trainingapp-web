@@ -15,6 +15,15 @@ export interface ResultadoDados {
 
 const MINIMO_SERIES_XP = 3;
 
+/** Efeito de celebração de cada tema no topo do resultado (prévias aprovadas em 2026-11-21; CSS no resultado-treino.scss). */
+type Celebracao = 'reflexo-tema' | 'reflexo' | 'raios' | 'brasas' | 'falha' | 'carimbo' | 'petalas' | 'onda' | 'hanko';
+const CELEBRACAO: Record<string, Celebracao> = {
+  escuro: 'reflexo-tema', claro: 'reflexo-tema', chrome: 'reflexo', electric: 'raios', ignite: 'brasas', cyberpunk: 'falha',
+  'commando-deserto': 'carimbo', 'commando-mata': 'carimbo', 'japao-sakura': 'petalas', 'japao-hokusai': 'onda', 'japao-sumie': 'hanko',
+};
+const BRASAS = Array.from({ length: 16 }, (_, i) => ({ x: 4 + i * 6, dx: (i % 3 - 1) * 14, atraso: (i % 5) * 0.12 }));
+const PETALAS = Array.from({ length: 18 }, (_, i) => ({ x: 3 + i * 5.5, atraso: (i % 6) * 0.18 }));
+
 /** Tela de resultado ao concluir: XP, nível, recordes, sequência, conquistas e o resumo do treino. */
 @Component({
   selector: 'app-resultado-treino',
@@ -23,6 +32,10 @@ const MINIMO_SERIES_XP = 3;
 })
 export class ResultadoTreino implements OnInit {
   protected readonly dados = inject<ResultadoDados>(MAT_DIALOG_DATA);
+  // O tema já está no <html> quando o diálogo abre.
+  protected readonly celebracao = CELEBRACAO[document.documentElement.dataset['tema'] ?? ''] ?? 'reflexo-tema';
+  protected readonly brasas = BRASAS;
+  protected readonly petalas = PETALAS;
   protected readonly ref = inject(MatDialogRef<ResultadoTreino>);
   private readonly planos = inject(PlanosApi);
 

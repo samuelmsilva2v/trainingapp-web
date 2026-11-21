@@ -44,7 +44,7 @@
   align-items: center;
   gap: 12px;
   text-align: left;
-  font: 400 16px/24px 'Inter', sans-serif;
+  font: 400 16px/24px var(--fonte-corpo);
   .valor { flex: 1; }
   .icone { font-size: 20px; color: var(--c-texto-2); }
 }
@@ -85,7 +85,7 @@ input, textarea {
   border-radius: var(--r-sm);
   background: var(--c-sup-3);
   color: var(--c-texto);
-  font: 400 16px/24px 'Inter', sans-serif;
+  font: 400 16px/24px var(--fonte-corpo);
   &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 input { height: 48px; padding: 0 14px 0 44px; }

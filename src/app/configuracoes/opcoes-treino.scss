@@ -11,10 +11,10 @@
   gap: 16px;
 }
 .card-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px 'Inter', sans-serif; .icone { color: var(--c-destaque); font-size: 20px; } }
+.titulo { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/24px var(--fonte-corpo); .icone { color: var(--c-destaque); font-size: 20px; } }
 
 .campo { display: flex; flex-direction: column; gap: 6px; }
-.legenda { font: 600 12px/16px 'Inter', sans-serif; color: var(--c-texto-2); }
+.legenda { font: 600 12px/16px var(--fonte-corpo); color: var(--c-texto-2); }
 .entrada { position: relative; display: flex; align-items: center; }
 input {
   width: 100%;
@@ -24,7 +24,7 @@ input {
   border-radius: var(--r-sm);
   background: var(--c-sup-3);
   color: var(--c-texto);
-  font: 400 16px/24px 'Inter', sans-serif;
+  font: 400 16px/24px var(--fonte-corpo);
   &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-4); }
 }
 
@@ -38,7 +38,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 14px/20px 'Inter', sans-serif;
+  font: 700 14px/20px var(--fonte-corpo);
   &.sel { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 }
 .dica { margin: 0; font-size: 11px; line-height: 14px; }

@@ -6,6 +6,7 @@ import { ConfirmarDialogo } from '../compartilhado/confirmar-dialogo';
 import { SessoesApi, mensagemDeErro } from '../core/api';
 import { TEXTOS_FALHA, Falha, falhaDe } from '../core/falha';
 import { TelaErro } from '../compartilhado/tela-erro';
+import { IlustracaoVazio, textoVazioDoTema } from '../compartilhado/ilustracao-vazio';
 import { Carregando } from '../compartilhado/carregando';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { duracaoMinutos, formatarCarga, formatarDataRelativa } from '../core/formatos';
@@ -24,7 +25,7 @@ interface Mes {
 
 @Component({
   selector: 'app-historico',
-  imports: [RouterLink, TelaErro, Carregando],
+  imports: [RouterLink, TelaErro, Carregando, IlustracaoVazio],
   templateUrl: './historico.html',
   styleUrl: './historico.scss',
 })
@@ -32,6 +33,7 @@ export class Historico implements OnInit {
   private readonly api = inject(SessoesApi);
   private readonly dialogo = inject(MatDialog);
   private readonly aviso = inject(MatSnackBar);
+  protected readonly textoVazio = textoVazioDoTema();
   private readonly gamificacao = inject(GamificacaoStore);
 
   protected readonly sessoes = signal<SessaoResumo[]>([]);

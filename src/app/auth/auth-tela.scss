@@ -60,7 +60,7 @@
   border-radius: 9999px;
   background: var(--c-sup-3);
   color: var(--c-destaque);
-  font: 600 11px/14px 'Inter', sans-serif;
+  font: 600 11px/14px var(--fonte-corpo);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   .icone { font-size: 14px; }
@@ -83,9 +83,9 @@ form { display: flex; flex-direction: column; gap: 16px; }
 
 .campo { display: flex; flex-direction: column; gap: 6px; }
 .legenda-linha { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.legenda { font: 600 12px/16px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; color: var(--c-texto-2); }
+.legenda { font: 600 12px/16px var(--fonte-corpo); letter-spacing: 0.05em; text-transform: uppercase; color: var(--c-texto-2); }
 /* Área de toque de 48 px (web#76): o padding cresce e a margem negativa devolve o espaço, sem mudar o visual. */
-.esqueceu { padding: 16px 0; margin: -16px 0; font: 600 12px/16px 'Inter', sans-serif; color: var(--c-destaque); text-decoration: none; &:hover { text-decoration: underline; } }
+.esqueceu { padding: 16px 0; margin: -16px 0; font: 600 12px/16px var(--fonte-corpo); color: var(--c-destaque); text-decoration: none; &:hover { text-decoration: underline; } }
 .dica { font-size: 11px; line-height: 14px; }
 
 .entrada {
@@ -108,7 +108,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   border-radius: var(--r-md);
   background: transparent;
   color: var(--c-texto);
-  font: 400 16px/24px 'Inter', sans-serif;
+  font: 400 16px/24px var(--fonte-corpo);
   outline: none;
   &::placeholder { color: var(--c-texto-2); opacity: 0.4; }
 }
@@ -150,7 +150,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   display: flex;
   justify-content: center;
   margin: 8px 0 0;
-  font: 600 11px/14px 'Inter', sans-serif;
+  font: 600 11px/14px var(--fonte-corpo);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--c-texto-2);
@@ -170,7 +170,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font: 600 16px/24px 'Inter', sans-serif;
+  font: 600 16px/24px var(--fonte-corpo);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--c-sombra) 5%, transparent);
   transition: background 0.15s, transform 0.1s;
   svg { flex-shrink: 0; width: 20px; height: 20px; }
@@ -189,7 +189,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  .texto { display: flex; flex-direction: column; min-width: 0; .suave { font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; } }
+  .texto { display: flex; flex-direction: column; min-width: 0; .suave { font: 600 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; } }
 }
 .cadastre {
   flex-shrink: 0;
@@ -197,7 +197,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   border-radius: var(--r-sm);
   background: var(--c-sup-4);
   color: var(--c-texto);
-  font: 600 12px/16px 'Inter', sans-serif;
+  font: 600 12px/16px var(--fonte-corpo);
   letter-spacing: 0.04em;
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
@@ -215,7 +215,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
 .marca-pequena { margin-bottom: 8px; font: 600 16px/24px var(--fonte-titulo); letter-spacing: -0.01em; text-transform: uppercase; span { color: var(--c-destaque); } }
 .titulo-cadastro { margin: 0; font: 700 32px/40px var(--fonte-titulo); letter-spacing: -0.02em; text-transform: uppercase; }
 
-.nao-confere { margin: 0; display: flex; align-items: center; gap: 4px; color: var(--c-secundaria-texto); font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; .icone { font-size: 14px; } }
+.nao-confere { margin: 0; display: flex; align-items: center; gap: 4px; color: var(--c-secundaria-texto); font: 600 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; .icone { font-size: 14px; } }
 
 .termos {
   position: relative;
@@ -223,7 +223,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
   align-items: flex-start;
   gap: 12px;
   cursor: pointer;
-  font: 400 14px/20px 'Inter', sans-serif;
+  font: 400 14px/20px var(--fonte-corpo);
   color: var(--c-texto);
 }
 .caixa-termos {
@@ -249,7 +249,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
 .botao-google.compacto {
   background: var(--c-sup-3);
   gap: 8px;
-  font: 700 14px/20px 'Inter', sans-serif;
+  font: 700 14px/20px var(--fonte-corpo);
   letter-spacing: 0.02em;
   &:hover:not(:disabled), &:active:not(:disabled) { background: var(--c-sup-4); }
   &:active:not(:disabled) { transform: scale(0.98); }
@@ -259,5 +259,5 @@ form { display: flex; flex-direction: column; gap: 16px; }
   margin: 8px 0 0;
   text-align: center;
   color: var(--c-texto-2);
-  a { display: inline-block; padding: 12px 0; margin: -12px 0 -12px 4px; color: var(--c-destaque); font: 700 16px/24px 'Inter', sans-serif; text-decoration: none; &:hover { text-decoration: underline; } }
+  a { display: inline-block; padding: 12px 0; margin: -12px 0 -12px 4px; color: var(--c-destaque); font: 700 16px/24px var(--fonte-corpo); text-decoration: none; &:hover { text-decoration: underline; } }
 }

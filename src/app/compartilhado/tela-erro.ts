@@ -30,7 +30,7 @@ export const NOVA_TENTATIVA_MS = 10_000;
     :host([data-tipo='inesperado']) .icone, :host([data-tipo='restrito']) .icone { color: var(--c-secundaria); }
     h2, p { margin: 0; }
     .suave { max-width: 320px; }
-    .codigo { font: 600 11px/14px 'Inter', sans-serif; color: var(--c-texto-2); letter-spacing: 0.05em; }
+    .codigo { font: 600 11px/14px var(--fonte-corpo); color: var(--c-texto-2); letter-spacing: 0.05em; }
     .btn { margin-top: 8px; min-width: 200px; }
   `,
 })

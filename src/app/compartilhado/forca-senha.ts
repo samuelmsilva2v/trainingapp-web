@@ -30,11 +30,11 @@ import { criteriosDaSenha, forcaDaSenha } from '../core/senha';
     .barras { display: flex; gap: 4px; height: 6px; }
     .barras span { flex: 1; border-radius: 9999px; background: var(--c-sup-4); transition: background 0.15s; }
     .linha { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .criterios { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; color: var(--c-texto-2); }
+    .criterios { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font: 600 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; color: var(--c-texto-2); }
     .criterios li { display: inline-flex; align-items: center; gap: 4px; transition: color 0.15s; }
     .criterios li.ok { color: var(--c-destaque); }
     .criterios .icone { font-size: 14px; }
-    .rotulo-forca { flex-shrink: 0; font: 700 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; color: var(--c-texto-2); }
+    .rotulo-forca { flex-shrink: 0; font: 700 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; color: var(--c-texto-2); }
     .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     /* Cores do Stitch: fraca em laranja, média em laranja claro, forte em lima. */
     :host([data-forca='fraca']) .barras .cheia { background: var(--c-secundaria); }

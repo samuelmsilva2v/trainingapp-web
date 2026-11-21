@@ -35,7 +35,7 @@
   border: 0;
   border-radius: 9999px;
   background: var(--c-sup-3);
-  font: 600 12px/16px 'Inter', sans-serif;
+  font: 600 12px/16px var(--fonte-corpo);
   letter-spacing: 0.04em;
   &.sel { background: var(--c-primaria); color: var(--c-sobre-primaria); }
 }
@@ -88,9 +88,9 @@ button.miniatura { padding: 0; border: 0; }
   text-align: left;
 }
 .texto { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.nome { font: 600 16px/24px 'Inter', sans-serif; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+.nome { font: 600 16px/24px var(--fonte-corpo); overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { padding: 2px 8px; border-radius: 4px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px 'Inter', sans-serif; }
+.tag { padding: 2px 8px; border-radius: 4px; background: var(--c-sup-3); color: var(--c-texto-2); font: 600 11px/14px var(--fonte-corpo); }
 .tag.meu { background: color-mix(in srgb, var(--c-secundaria) 15%, transparent); color: var(--c-secundaria-texto); }
 .mais {
   flex-shrink: 0;

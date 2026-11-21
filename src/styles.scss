@@ -18,6 +18,15 @@
   font-display: swap;
   src: url('/fonts/outfit-latin.woff2') format('woff2');
 }
+// Fontes dos temas (OFL, Google Fonts, subconjunto latin).
+@font-face { font-family: 'Oxanium'; font-weight: 400 800; font-display: swap; src: url('/fonts/oxanium-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Stardos Stencil'; font-weight: 400; font-display: swap; src: url('/fonts/stardos-stencil-400-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Stardos Stencil'; font-weight: 700; font-display: swap; src: url('/fonts/stardos-stencil-700-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Saira Condensed'; font-weight: 500; font-display: swap; src: url('/fonts/saira-condensed-500-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Saira Condensed'; font-weight: 600; font-display: swap; src: url('/fonts/saira-condensed-600-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Saira Condensed'; font-weight: 700; font-display: swap; src: url('/fonts/saira-condensed-700-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Shippori Mincho'; font-weight: 500; font-display: swap; src: url('/fonts/shippori-mincho-500-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Shippori Mincho'; font-weight: 800; font-display: swap; src: url('/fonts/shippori-mincho-800-latin.woff2') format('woff2'); }
 @font-face {
   font-family: 'Material Symbols Outlined';
   font-style: normal;
@@ -37,8 +46,8 @@ html {
       tertiary: mat.$orange-palette,
     ),
     typography: (
-      plain-family: 'Inter, sans-serif',
-      brand-family: 'Outfit, sans-serif',
+      plain-family: 'var(--fonte-corpo)',
+      brand-family: 'var(--fonte-titulo)',
     ),
     density: 0,
   ));
@@ -89,6 +98,27 @@ html {
   --r-lg: 1rem;
   --alvo: 48px;
   --fonte-titulo: 'Outfit', sans-serif;
+  --fonte-corpo: 'Inter', sans-serif;
+  --fonte-botao: var(--fonte-corpo);
+}
+
+// Fonte própria em todos os elementos dos temas Commando, Cyberpunk e Japan (prévia aprovada em 2026-11-21).
+// Commando: estêncil nos títulos, números grandes e botões, condensada no resto. As @font-face só baixam
+// o arquivo quando o tema está ativo.
+html[data-tema^='commando'] {
+  --fonte-titulo: 'Stardos Stencil', serif;
+  --fonte-corpo: 'Saira Condensed', sans-serif;
+  --fonte-botao: 'Stardos Stencil', serif;
+}
+html[data-tema='cyberpunk'] {
+  --fonte-titulo: 'Oxanium', sans-serif;
+  --fonte-corpo: 'Oxanium', sans-serif;
+  --fonte-botao: 'Oxanium', sans-serif;
+}
+html[data-tema^='japao'] {
+  --fonte-titulo: 'Shippori Mincho', serif;
+  --fonte-corpo: 'Shippori Mincho', serif;
+  --fonte-botao: 'Shippori Mincho', serif;
 }
 
 // Texturas do Ignite (geradas: grão de carvão e dois ladrilhos de brasas com brilho).
@@ -1004,7 +1034,7 @@ html, body {
   min-height: 100%;
   background: var(--c-fundo);
   color: var(--c-texto);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--fonte-corpo);
   font-size: 14px;
   line-height: 20px;
   overscroll-behavior: none;
@@ -1066,7 +1096,7 @@ input, select { font: inherit; color: inherit; }
 
 .titulo-md { font: 700 24px/32px var(--fonte-titulo); letter-spacing: -0.01em; }
 .titulo-sm { font: 600 20px/28px var(--fonte-titulo); }
-.rotulo { font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+.rotulo { font: 600 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; text-transform: uppercase; }
 .suave { color: var(--c-texto-2); }
 
 .btn {
@@ -1078,7 +1108,7 @@ input, select { font: inherit; color: inherit; }
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font: 700 14px/20px 'Inter', sans-serif;
+  font: 700 14px/20px var(--fonte-botao);
   letter-spacing: 0.02em;
   transition: background 0.15s, transform 0.1s;
   &:active { transform: scale(0.98); }
@@ -1115,7 +1145,7 @@ a.btn { text-decoration: none; }
   padding: 2px 8px;
   border-radius: 9999px;
   background: var(--c-sup-3);
-  font: 600 11px/14px 'Inter', sans-serif;
+  font: 600 11px/14px var(--fonte-corpo);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -1124,7 +1154,7 @@ a.btn { text-decoration: none; }
 // Peso corporal: o verde de destaque (o mesmo do "trocar exercício").
 .chip.peso { background: color-mix(in srgb, var(--c-destaque) 15%, transparent); color: var(--c-destaque); }
 // Bônus de XP fora do treino (sequência): laranja, sempre à parte do XP do treino.
-.xp-bonus { color: var(--c-secundaria-texto); font: 600 12px/16px 'Inter', sans-serif; .icone { font-size: 14px; vertical-align: -2px; } }
+.xp-bonus { color: var(--c-secundaria-texto); font: 600 12px/16px var(--fonte-corpo); .icone { font-size: 14px; vertical-align: -2px; } }
 .chip.bonus { background: color-mix(in srgb, var(--c-secundaria) 15%, transparent); color: var(--c-secundaria-texto); .icone { font-size: 14px; } }
 
 /* Interruptor ("Meus exercícios", "Drop-set"), como no Stitch: trilho 36x20, laranja quando ligado, bolinha de 16px. */
@@ -1160,7 +1190,7 @@ a.btn { text-decoration: none; }
 }
 .alternar input:checked + .trilho { background: var(--c-interruptor); &::after { transform: translateX(16px); } }
 .alternar input:focus-visible + .trilho { outline: 2px solid var(--c-destaque); outline-offset: 2px; }
-.legenda { font: 600 11px/14px 'Inter', sans-serif; letter-spacing: 0.05em; }
+.legenda { font: 600 11px/14px var(--fonte-corpo); letter-spacing: 0.05em; }
 
 // Diálogo em tela cheia (seletor de exercícios) e de confirmação
 // Tela cheia no app edge-to-edge: o conteúdo fica fora das barras de status e de navegação do Android.
@@ -1221,3 +1251,179 @@ a.btn { text-decoration: none; }
   100% { transform: scale(1, 1.02) rotate(-2deg); filter: drop-shadow(0 0 2px color-mix(in srgb, var(--c-secundaria) 60%, transparent)); }
 }
 @media (prefers-reduced-motion: reduce) { .chama-viva { animation: none; } }
+
+// Barra de descanso por tema (prévias aprovadas em 2026-11-21): a mesma barra fina em todos, só muda o acabamento.
+// Os seletores com .descanso vencem as regras da barra de XP (.barra), que também a alcançariam.
+@property --decorrido { syntax: '<number>'; initial-value: 0; inherits: true; }
+@keyframes descanso-metal { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+@keyframes descanso-faisca { to { left: 100%; } }
+@keyframes descanso-oscila { 0%, 70%, 74%, 100% { opacity: 1; } 72% { opacity: 0.55; } }
+@keyframes descanso-brasa { 0%, 100% { box-shadow: 0 0 6px #ff4e0088; } 50% { box-shadow: 0 0 14px #ff6a00cc, 0 0 3px #ffd27a; } }
+// Commando: contagem "T-01:26" em estêncil (a fonte vem de --fonte-titulo); a barra segue em segmentos.
+html[data-tema^='commando'] .descanso .tempo::before { content: 'T-' / ''; }
+// Chrome: metal com um reflexo que corre devagar (sem o reflexo genérico da barra de XP por cima).
+html[data-tema='chrome'] .descanso .barra > span {
+  background: linear-gradient(90deg, #6f747a 0%, #c9cdd2 20%, #ffffff 30%, #c9cdd2 40%, #8d9298 70%, #d4d7db 100%);
+  background-size: 260% 100%;
+  animation: descanso-metal 3.2s linear infinite;
+  &::after { content: none; }
+}
+// Electric: brilho lilás, uma faísca correndo por dentro e uma oscilação rápida de tempos em tempos.
+html[data-tema='electric'] .descanso .barra > span {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #6d5be0, #b9a8ff);
+  background-size: 100% 100% !important;
+  box-shadow: 0 0 6px #8f7dff, 0 0 12px #8f7dff88;
+  animation: descanso-oscila 1.8s steps(1) infinite;
+  &::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40px; width: 40px; background: linear-gradient(90deg, transparent, #fff, transparent); animation: descanso-faisca 1.3s linear infinite; }
+}
+// Ignite: incandescente, do vermelho ao dourado na ponta, com o brilho pulsando devagar.
+html[data-tema='ignite'] .descanso .barra > span {
+  background: linear-gradient(90deg, #5a1500, #c43a00 45%, #ff4e00 80%, #ffd27a);
+  background-size: 100% 100% !important;
+  animation: descanso-brasa 2.2s ease-in-out infinite;
+}
+// Sumi-e: no lugar da barra, um ensō de pincel ao redor do tempo, desenhado conforme o descanso passa
+// (--decorrido vem do treino; a máscara revela o traço pronto: cabeça carregada, corpo afinando, cauda em fios secos).
+html[data-tema='japao-sumie'] .descanso {
+  transition: --decorrido 1s linear;
+  :is(.barra, .descanso-corpo > .icone, .rotulo) { display: none; }
+  .descanso-corpo .tempo { flex: 0 0 84px; height: 84px; margin-right: auto; position: relative; display: grid; place-items: center; font-size: 18px; line-height: 1; }
+  .enso { display: block; position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .enso-guia { fill: none; stroke: color-mix(in srgb, var(--c-texto) 16%, transparent); stroke-width: 1; stroke-dasharray: 1.5 3; }
+  .enso-tinta { fill: var(--c-texto); opacity: 0.94; }
+  .enso-fios { fill: none; stroke: var(--c-texto); stroke-linecap: round; }
+  .enso-mascara { fill: none; stroke: #fff; stroke-width: 16; stroke-linecap: round; stroke-dasharray: calc(var(--decorrido) * 1) 200; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema] .descanso .barra > span, html[data-tema] .descanso .barra > span::after { animation: none; }
+  html[data-tema='japao-sumie'] .descanso { transition: none; }
+}
+
+// Série atual por tema (prévias aprovadas em 2026-11-21): a forma e o lugar do card, dos steppers e do check não mudam.
+@property --serie-ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes serie-respira { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-destaque) 28%, transparent); } 55%, 100% { box-shadow: 0 0 0 6px transparent; } }
+@keyframes serie-gira { to { --serie-ang: 360deg; } }
+// Escuro: o pulso lima suave; steppers com cantos mais retos.
+html[data-tema='escuro'] .linha-atual {
+  &:not(.feita) { animation: serie-respira 3s ease-out infinite; }
+  .controle button { border-radius: 6px; }
+}
+// Claro: sombra elevada no lugar da borda; steppers brancos com contorno oliva.
+html[data-tema='claro'] .linha-atual {
+  border: 0;
+  box-shadow: 0 6px 18px rgb(20 23 26 / 0.12), 0 1px 0 rgb(20 23 26 / 0.06);
+  .controle button { background: #fff; box-shadow: inset 0 0 0 1.5px var(--c-destaque); color: var(--c-destaque); }
+}
+// Chrome: metal escovado com bisel; steppers de aço em relevo.
+html[data-tema='chrome'] .linha-atual {
+  border-color: #8d9298;
+  background: repeating-linear-gradient(100deg, #24262a 0 2px, #2a2c30 2px 3px);
+  box-shadow: inset 0 1px 0 #ffffff22, inset 0 -1px 0 #0008, 0 0 0 1px #000;
+  .controle button { background: linear-gradient(180deg, #e3e6e9, #9ba0a6); color: #141518; box-shadow: inset 0 1px 0 #fff, 0 2px 0 #00000080; }
+}
+// Electric: borda neon com um ponto de luz percorrendo o contorno.
+html[data-tema='electric'] .linha-atual {
+  border: 2px solid transparent;
+  background: var(--c-serie-atual) padding-box, conic-gradient(from var(--serie-ang), transparent 0 70%, var(--c-destaque) 85%, transparent 100%) border-box;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c-primaria) 30%, transparent);
+  animation: serie-gira 3.5s linear infinite;
+}
+// Ignite: borda em gradiente de chama.
+html[data-tema='ignite'] .linha-atual {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--c-serie-atual), var(--c-serie-atual)) padding-box, linear-gradient(135deg, #ff4e00, #ffae00, #ff4e00) border-box;
+}
+// Cyberpunk: moldura de HUD chanfrada com os cantos marcados em rosa; steppers e check chanfrados.
+html[data-tema='cyberpunk'] .linha-atual {
+  position: relative;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  box-shadow: inset 0 0 0 1.5px var(--c-destaque);
+  &::before, &::after { content: ''; position: absolute; width: 14px; height: 14px; border: 2px solid #ff2e63; pointer-events: none; }
+  &::before { top: 3px; right: 3px; border-left: 0; border-bottom: 0; }
+  &::after { bottom: 3px; left: 3px; border-right: 0; border-top: 0; }
+  :is(.stepper, .controle button, .check) { border-radius: 0; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+}
+// Commando: cantos quase retos no card, nos steppers, no número e no check.
+html[data-tema^='commando'] .linha-atual {
+  &, :is(.stepper, .controle button, .check, .numero) { border-radius: 2px; }
+}
+// Hokusai: moldura dupla de gravura.
+html[data-tema='japao-hokusai'] .linha-atual { border: 2px solid #f1e9d6; outline: 3px solid #203a57; outline-offset: -6px; border-radius: 3px; }
+// Sumi-e: contorno de pincel quase reto; steppers como traços de nanquim.
+html[data-tema='japao-sumie'] .linha-atual {
+  border: 2.5px solid #1c1a17;
+  border-radius: 6px 11px 7px 10px / 10px 6px 11px 7px;
+  box-shadow: 1px 1px 0 -1px #1c1a17;
+  .controle button { background: transparent; border: 2px solid #1c1a17; border-radius: 9px 7px 10px 8px / 8px 10px 7px 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema] .linha-atual { animation: none !important; }
+}
+
+// Barra de abas (prévias aprovadas em 2026-11-21): o desenho fica igual; muda só o detalhe.
+// Cyberpunk: linhas de varredura no fundo e o ícone ativo com o contorno rosa e ciano.
+html[data-tema='cyberpunk'] .abas { background: linear-gradient(transparent 50%, #ffffff0a 50%) 0 0 / 100% 3px, color-mix(in srgb, var(--c-sup-0) 90%, transparent); }
+html[data-tema='cyberpunk'] .aba.ativa .icone { text-shadow: 2px 0 #ff2e63, -2px 0 #08d9d6; }
+// Electric: brilho lilás no ícone ativo, com uma oscilação rápida de tempos em tempos.
+@keyframes aba-zumbido { 0%, 86%, 90%, 100% { opacity: 1; } 88% { opacity: 0.55; } }
+html[data-tema='electric'] .aba.ativa .icone { text-shadow: 0 0 6px var(--c-destaque), 0 0 14px var(--c-primaria); animation: aba-zumbido 3s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { html[data-tema='electric'] .aba.ativa .icone { animation: none; } }
+
+// Folhas e avisos (prévias aprovadas em 2026-11-21). Commando: dossiê com o canto chanfrado e a faixa no topo.
+html[data-tema^='commando'] :is(.dialogo-folha .mat-mdc-dialog-surface, .folha) {
+  border-radius: 4px !important;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  border-top: 3px solid var(--c-destaque);
+}
+// Cyberpunk: moldura de HUD; o aviso vira uma linha de log ("> treino salvo_") com o cursor piscando.
+@keyframes cursor-hud { 50% { opacity: 0; } }
+html[data-tema='cyberpunk'] {
+  :is(.dialogo-folha .mat-mdc-dialog-surface, .folha) {
+    border-radius: 0 !important;
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%, 0 14px);
+    box-shadow: inset 0 2px 0 var(--c-destaque);
+  }
+  @include mat.snack-bar-overrides((container-color: #070a1a, supporting-text-color: #08d9d6, container-shape: 0));
+  .mdc-snackbar__surface { border-left: 3px solid #ff2e63; }
+  .mat-mdc-snack-bar-label::before { content: '> ' / ''; }
+  .mat-mdc-snack-bar-label::after { content: '_' / ''; animation: cursor-hud 1s steps(1) infinite; }
+}
+@media (prefers-reduced-motion: reduce) { html[data-tema='cyberpunk'] .mat-mdc-snack-bar-label::after { animation: none; } }
+
+// Fundo da tela (prévias aprovadas em 2026-11-21): ladrilho quase imperceptível atrás de tudo.
+html[data-tema='chrome'] body {
+  background-image: radial-gradient(#ffffff0c 1px, transparent 1px), radial-gradient(#0000002a 1px, transparent 1px);
+  background-size: 3px 3px, 4px 4px;
+  background-position: 0 0, 1px 2px;
+}
+html[data-tema^='commando'] body {
+  background-image:
+    radial-gradient(ellipse 30px 18px at 20% 30%, color-mix(in srgb, var(--c-destaque) 7%, transparent) 98%, transparent),
+    radial-gradient(ellipse 40px 22px at 70% 70%, color-mix(in srgb, var(--c-texto) 5%, transparent) 98%, transparent),
+    radial-gradient(ellipse 26px 30px at 85% 20%, #0000001a 98%, transparent);
+  background-size: 120px 90px;
+}
+html[data-tema='japao-hokusai'] body { background-image: repeating-linear-gradient(0deg, #ffffff06 0 1px, transparent 1px 4px), radial-gradient(circle at 30% 20%, #ffffff0a, transparent 60%); }
+html[data-tema='japao-sumie'] body { background-image: repeating-linear-gradient(23deg, #8a7d6214 0 1px, transparent 1px 9px), repeating-linear-gradient(-37deg, #8a7d6210 0 1px, transparent 1px 13px); }
+
+// Chips (prévias aprovadas em 2026-11-21); a badge de XP (.chip.xp) já tem o desenho de cada tema.
+html[data-tema='electric'] {
+  .chip:not(.xp) { background: transparent; box-shadow: inset 0 0 0 1px currentColor, 0 0 8px color-mix(in srgb, var(--c-primaria) 45%, transparent); }
+  .chip.objetivo { color: var(--c-destaque); }
+}
+html[data-tema='ignite'] .chip:not(.xp) { background: #1e232a; color: #ffae00; box-shadow: inset 0 0 0 1px #ff4e00, inset 0 -6px 10px -6px #ff4e00; }
+html[data-tema='japao-sakura'] .chip:not(.xp) { border-radius: 14px 2px 14px 2px; box-shadow: inset 0 0 0 1px var(--c-secundaria); }
+html[data-tema='japao-hokusai'] .chip:not(.xp) { border-radius: 2px; background: #e7c9a6; color: #13283f; box-shadow: inset 0 0 0 1px #13283f; }
+html[data-tema='japao-sumie'] {
+  .chip:not(.xp) { border-radius: 2px; background: transparent; color: #b3261e; box-shadow: inset 0 0 0 1.5px #b3261e; transform: rotate(-2deg); }
+  .chip.objetivo { background: #1c1a17; color: #f7f2e7; box-shadow: none; }
+}
+// O objetivo do plano ativo é preenchido com a primária na lista de planos (regra do componente, mais específica
+// por causa dos atributos do Angular); nestes temas ele segue o chip do tema.
+html[data-tema='electric'] .cartao.ativo .chip.objetivo { background: transparent !important; color: var(--c-destaque) !important; }
+html[data-tema='ignite'] .cartao.ativo .chip.objetivo { background: #1e232a !important; color: #ffae00 !important; }
+html[data-tema='japao-hokusai'] .cartao.ativo .chip.objetivo { background: #e7c9a6 !important; color: #13283f !important; }

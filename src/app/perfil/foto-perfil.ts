@@ -90,7 +90,7 @@ export type EscolhaFoto = File | 'remover' | undefined;
       border-radius: var(--r-md);
       background: var(--c-sup-3);
       color: var(--c-texto);
-      font: 600 16px/24px 'Inter', sans-serif;
+      font: 600 16px/24px var(--fonte-corpo);
       text-align: left;
       cursor: pointer;
       .icone { color: var(--c-destaque); }

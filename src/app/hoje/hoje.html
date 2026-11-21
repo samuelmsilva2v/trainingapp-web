@@ -36,7 +36,7 @@
 } @else if (hoje(); as h) {
   @if (!h.planoId) {
     <div class="vazio">
-      <span class="icone circulo" aria-hidden="true">fitness_center</span>
+      <app-ilustracao-vazio><span class="icone circulo" aria-hidden="true">fitness_center</span></app-ilustracao-vazio>
       <h2 class="titulo-sm">Nenhum plano ativo</h2>
       <p class="suave">Monte sua divisão de treinos e acompanhe sua evolução série a série.</p>
       <a class="btn btn-primario" routerLink="/planos/novo">

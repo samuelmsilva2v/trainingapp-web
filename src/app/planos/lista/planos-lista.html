@@ -18,7 +18,7 @@
   <app-tela-erro [falha]="falha" (tentar)="carregar()" />
 } @else if (planos().length === 0) {
   <div class="vazio">
-    <span class="icone circulo" aria-hidden="true">fitness_center</span>
+    <app-ilustracao-vazio><span class="icone circulo" aria-hidden="true">fitness_center</span></app-ilustracao-vazio>
     <h2 class="titulo-sm">Você ainda não possui planos de treino</h2>
     <p class="suave">Crie um plano com dias de treino, séries, repetições e cargas para começar sua evolução.</p>
     <a class="btn btn-primario" routerLink="/planos/novo">

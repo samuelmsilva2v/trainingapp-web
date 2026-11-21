@@ -23,7 +23,7 @@ input, select {
   border-radius: var(--r-sm);
   background: var(--c-sup-0);
   color: var(--c-texto);
-  font: 400 16px/24px 'Inter', sans-serif;
+  font: 400 16px/24px var(--fonte-corpo);
   &:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-3); }
   &::placeholder { color: var(--c-texto-2); opacity: 0.6; }
 }

@@ -67,7 +67,7 @@ export interface RegistrarPesoDados {
       border-radius: var(--r-sm);
       background: var(--c-sup-0);
       color: var(--c-texto);
-      font: 400 16px/24px 'Inter', sans-serif;
+      font: 400 16px/24px var(--fonte-corpo);
       color-scheme: dark;
     }
     input:focus { outline: 2px solid var(--c-destaque); background: var(--c-sup-3); }
