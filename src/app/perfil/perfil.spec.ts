@@ -284,6 +284,21 @@ describe('PerfilTela: peso', () => {
     expect(preferencias(tela).querySelector('input[autocomplete="name"]')).toBeNull();
   });
 
+  it('o tema em uso abre a tela de temas, e o próximo a liberar mostra o nível e o XP que falta', () => {
+    localStorage.clear();
+    const { tela } = abrir({}, []);
+    const entrada = preferencias(tela).querySelector<HTMLButtonElement>('.tema-atual')!;
+    expect(entrada.textContent).toContain('Escuro');
+    expect(entrada.textContent).toContain('2 de 11 liberados');
+    // Nível 1 com 182 XP: o Chrome libera no nível 5 (1.119 XP).
+    expect(preferencias(tela).querySelector('.proximo-tema')!.textContent).toContain('Próximo: Chrome no nível 5');
+    expect(preferencias(tela).querySelector('.proximo-tema')!.textContent).toContain('faltam 937 XP');
+
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    entrada.click();
+    expect(navigate).toHaveBeenCalledWith(['/temas']);
+  });
+
   it('lembrete de pesagem desligado não mostra a frequência; ligar salva com 7 dias', () => {
     const { fixture, tela } = abrir({}, []);
     expect(interruptorPeso(tela).checked).toBe(false);

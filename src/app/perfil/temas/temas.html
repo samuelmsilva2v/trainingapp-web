@@ -1,0 +1,37 @@
+<header class="topo">
+  <button type="button" class="btn-icone" aria-label="Voltar" (click)="voltar()">
+    <span class="icone" aria-hidden="true">arrow_back</span>
+  </button>
+  <h1 class="titulo-sm">Temas</h1>
+</header>
+
+<div class="pagina">
+  <p class="suave intro">{{ liberados() }} de {{ total }} liberados. Cada nível novo pode abrir um tema.</p>
+  <div class="grade">
+    @for (c of cards(); track c.tema) {
+      @let sel = c.tema === tema();
+      <button type="button" class="card-tema" [class.sel]="sel" [class.travado]="c.travado" [attr.aria-pressed]="c.travado ? null : sel"
+              [attr.aria-label]="c.travado ? c.nome + ', libera no nível ' + c.minimo + ', faltam ' + formatar(c.faltam) + ' XP' : null"
+              (click)="escolher(c)">
+        <app-amostra-tema [tema]="c.tema" />
+        <span class="nome">
+          <span>{{ c.nome }}</span>
+          @if (c.proximo) {
+            <span class="selo-proximo" aria-hidden="true">PRÓXIMO</span>
+          } @else if (c.travado) {
+            <span class="cadeado" aria-hidden="true"><span class="icone">lock</span>Nv {{ c.minimo }}</span>
+          }
+        </span>
+        <span class="estado" aria-hidden="true">
+          @if (sel) {
+            <span class="icone cheio">check_circle</span> Em uso
+          } @else if (c.travado) {
+            Nível {{ c.minimo }} · faltam {{ formatar(c.faltam) }} XP
+          } @else {
+            Toque para usar
+          }
+        </span>
+      </button>
+    }
+  </div>
+</div>

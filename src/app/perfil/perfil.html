@@ -115,28 +115,25 @@
 
       <div class="campo">
         <span class="legenda" id="rotulo-tema">Tema do aplicativo</span>
-        <div class="tema temas" role="group" aria-labelledby="rotulo-tema">
-          @for (t of temas; track t.valor) {
-            @let travado = nivelQueFalta(t.valor);
-            <button type="button" class="opcao" [class.sel]="selecionado(t.valor)" [class.travado]="travado" [attr.aria-pressed]="selecionado(t.valor)"
-                    [attr.aria-label]="travado ? t.rotulo + ', libera no nível ' + travado : null"
-                    (click)="selecionado(t.valor) || escolherTema(t.valor)">
-              @if (!travado && t.mascara) {
-                <span class="icone-mascara {{ t.mascara }}" aria-hidden="true"></span>
-              } @else {
-                <span class="icone" aria-hidden="true">{{ travado ? 'lock' : t.icone }}</span>
-              }
-              {{ t.rotulo }}
-              @if (travado) { <span class="nivel-tema" aria-hidden="true">Nv {{ travado }}</span> }
-            </button>
-          }
-        </div>
-        @if (variantes(); as vs) {
-          <div class="tema variantes" role="group" aria-label="Variante do tema" [style.grid-template-columns]="'repeat(' + vs.length + ', 1fr)'">
-            @for (c of vs; track c.valor) {
-              <button type="button" class="opcao" [class.sel]="tema() === c.valor" [attr.aria-pressed]="tema() === c.valor"
-                      (click)="escolherTema(c.valor)">{{ c.rotulo }}</button>
-            }
+        <!-- O tema em uso abre a tela de temas; logo abaixo, o próximo a liberar (prévia aprovada em 2026-11-21). -->
+        <button type="button" class="acao tema-atual" aria-describedby="rotulo-tema" (click)="abrirTemas()">
+          <app-amostra-tema class="amostra" [tema]="tema()" [compacta]="true" />
+          <span class="texto">
+            <span class="legenda-forte">{{ nomeDoTema(tema()) }}</span>
+            <span class="suave">{{ temasLiberados() }} de {{ totalTemas }} liberados · ver todos</span>
+          </span>
+          <span class="icone" aria-hidden="true">chevron_right</span>
+        </button>
+        @if (proximoTema(); as p) {
+          <div class="proximo-tema">
+            <div class="proximo-topo">
+              <app-amostra-tema class="amostra pequena" [tema]="p.tema" [compacta]="true" />
+              <span>Próximo: <b>{{ nomeDoTema(p.tema) }}</b> no nível {{ p.nivel }}<br><span class="suave num">faltam {{ p.faltam.toLocaleString('pt-BR') }} XP</span></span>
+            </div>
+            <div class="barra-tema" role="progressbar" [attr.aria-label]="'Progresso até o tema ' + nomeDoTema(p.tema)"
+                 aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="p.pct">
+              <i [style.width.%]="p.pct"></i>
+            </div>
           </div>
         }
       </div>

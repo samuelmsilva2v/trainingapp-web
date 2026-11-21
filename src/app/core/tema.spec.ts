@@ -1,4 +1,4 @@
-import { aplicarTemaDaConta, conferirTema, iniciarTema, lerTema, salvarTema } from './tema';
+import { aplicarTemaDaConta, conferirTema, gravandoTema, iniciarTema, lerTema, proximoTema, salvarTema, temasLiberados, xpDoNivel } from './tema';
 
 describe('tema', () => {
   beforeEach(() => {
@@ -96,5 +96,38 @@ describe('tema', () => {
     expect(localStorage.getItem('trainingapp.tema')).toBe('chrome');
     expect(aplicarTemaDaConta(null)).toBe('chrome');
     expect(aplicarTemaDaConta('rosa')).toBe('chrome');
+  });
+
+  it('com a gravação do tema em andamento, o tema que vem da conta não desfaz a escolha', () => {
+    salvarTema('claro');
+    gravandoTema(true);
+    expect(aplicarTemaDaConta('escuro')).toBe('claro');
+    gravandoTema(false);
+    expect(aplicarTemaDaConta('escuro')).toBe('escuro');
+  });
+
+  it('XP do nível espelha a API (100 × n^1,5 para cima)', () => {
+    expect(xpDoNivel(1)).toBe(100);
+    expect(xpDoNivel(5)).toBe(1119);
+    expect(xpDoNivel(20)).toBe(8945);
+  });
+
+  it('próximo tema: o primeiro ainda travado, com o XP que falta e a barra desde o último liberado', () => {
+    // Nível 4 com 1.048 XP: nada liberado além dos livres, o Chrome (nível 5) é o próximo.
+    expect(proximoTema(4, 1048)).toEqual({ tema: 'chrome', nivel: 5, faltam: 71, fracao: 1048 / 1119 });
+    // Nível 12: Electric (10) foi o último; Ignite (15) é o próximo, a barra conta a partir do XP do nível 10.
+    const p = proximoTema(12, 4500)!;
+    expect(p.tema).toBe('ignite');
+    expect(p.faltam).toBe(xpDoNivel(15) - 4500);
+    expect(p.fracao).toBeCloseTo((4500 - xpDoNivel(10)) / (xpDoNivel(15) - xpDoNivel(10)));
+    // Commando Mata e Deserto liberam juntos: depois deles vem o Cyberpunk.
+    expect(proximoTema(20, 9000)!.tema).toBe('cyberpunk');
+    expect(proximoTema(30, 20000)).toBeNull();
+  });
+
+  it('conta os temas liberados um a um (Commando e Japan valem cada variante)', () => {
+    expect(temasLiberados(1)).toBe(2);
+    expect(temasLiberados(20)).toBe(7);
+    expect(temasLiberados(30)).toBe(11);
   });
 });

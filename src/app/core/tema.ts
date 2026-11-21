@@ -70,6 +70,8 @@ export function aplicarTema(tema: Tema = lerTema()): void {
  * a tela antes do login (script do index.html). Conta que nunca escolheu (null) fica com o tema do aparelho.
  */
 export function aplicarTemaDaConta(tema: string | null | undefined): Tema {
+  // A tela de temas grava a escolha sem esperar: um perfil que chegue antes da resposta traria o tema antigo.
+  if (gravando) return lerTema();
   const daConta = TEMAS.find(t => t === tema);
   if (daConta && daConta !== lerTema()) salvarTema(daConta);
   return lerTema();
@@ -91,3 +93,62 @@ export function conferirTema(nivel: number): Tema {
 export function iniciarTema(): void {
   aplicarTema();
 }
+
+let gravando = false;
+/** Marca a gravação do tema na conta em andamento (ver `aplicarTemaDaConta`). */
+export function gravandoTema(ativo: boolean): void {
+  gravando = ativo;
+}
+
+/** Os 11 temas na ordem de desbloqueio, com o nome mostrado na tela de temas. */
+export const ORDEM_DOS_TEMAS: readonly { tema: Tema; nome: string }[] = [
+  { tema: 'escuro', nome: 'Escuro' },
+  { tema: 'claro', nome: 'Claro' },
+  { tema: 'chrome', nome: 'Chrome' },
+  { tema: 'electric', nome: 'Electric' },
+  { tema: 'ignite', nome: 'Ignite' },
+  { tema: 'commando-mata', nome: 'Commando Jungle' },
+  { tema: 'commando-deserto', nome: 'Commando Desert' },
+  { tema: 'cyberpunk', nome: 'Cyberpunk' },
+  { tema: 'japao-sakura', nome: 'Sakura' },
+  { tema: 'japao-hokusai', nome: 'Hokusai' },
+  { tema: 'japao-sumie', nome: 'Sumi-e' },
+];
+export const nomeDoTema = (tema: Tema): string => ORDEM_DOS_TEMAS.find(t => t.tema === tema)?.nome ?? tema;
+
+/** XP total para chegar ao nível (espelha `Regras.xpParaNivel` da API: 100 × n^1,5, arredondado para cima). */
+export const xpDoNivel = (nivel: number): number => Math.ceil(100 * nivel ** 1.5);
+
+/** Próximo tema a liberar e o caminho até ele, desde o último tema liberado; null quando todos já estão livres. */
+export function proximoTema(nivel: number, xp: number): { tema: Tema; nivel: number; faltam: number; fracao: number } | null {
+  const proximo = ORDEM_DOS_TEMAS.find(t => (NIVEL_DO_TEMA[t.tema] ?? 0) > nivel);
+  if (!proximo) return null;
+  const alvo = NIVEL_DO_TEMA[proximo.tema]!;
+  const anterior = Math.max(0, ...ORDEM_DOS_TEMAS.map(t => NIVEL_DO_TEMA[t.tema] ?? 0).filter(n => n <= nivel));
+  const de = anterior > 0 ? xpDoNivel(anterior) : 0, ate = xpDoNivel(alvo);
+  return { tema: proximo.tema, nivel: alvo, faltam: Math.max(0, ate - xp), fracao: Math.min(1, Math.max(0, (xp - de) / (ate - de))) };
+}
+
+/** Temas liberados para o nível. */
+export const temasLiberados = (nivel: number): number => ORDEM_DOS_TEMAS.filter(t => nivel >= (NIVEL_DO_TEMA[t.tema] ?? 0)).length;
+
+const TOKENS_DA_AMOSTRA = ['--c-fundo', '--c-sup-2', '--c-texto', '--c-primaria', '--c-sobre-primaria', '--c-destaque', '--fonte-titulo'];
+const coresGuardadas = new Map<Tema, Record<string, string>>();
+/**
+ * Cores e fonte de um tema para as miniaturas, lidas do próprio styles.scss (sem copiar as cores aqui): troca o
+ * data-tema por um instante e lê os tokens, sem pintar no meio. `light-dark()` fica como está e resolve pelo
+ * `color-scheme` da miniatura (`ehTemaClaro`).
+ */
+export function coresDoTema(tema: Tema): Record<string, string> {
+  let cores = coresGuardadas.get(tema);
+  if (!cores) {
+    const html = document.documentElement, atual = html.dataset['tema'];
+    html.dataset['tema'] = tema;
+    const estilo = getComputedStyle(html);
+    cores = Object.fromEntries(TOKENS_DA_AMOSTRA.map(t => [t, estilo.getPropertyValue(t).trim()]));
+    if (atual === undefined) delete html.dataset['tema']; else html.dataset['tema'] = atual;
+    coresGuardadas.set(tema, cores);
+  }
+  return cores;
+}
+export const ehTemaClaro = (tema: Tema): boolean => CLAROS.includes(tema);

@@ -97,12 +97,8 @@ input {
   gap: 8px;
   font: 700 14px/20px var(--fonte-corpo);
   .icone { font-size: 18px; }
-  // Ícone em PNG (máscara): um pouco maior que os da fonte, porque o desenho tem margem em volta.
-  .icone-mascara { width: 22px; height: 22px; }
   &.sel { background: var(--c-primaria); color: var(--c-sobre-primaria); }
   &:disabled { opacity: 0.5; cursor: default; }
-  &.travado { opacity: 0.6; }
-  .nivel-tema { font: 600 11px/14px var(--fonte-corpo); padding: 1px 6px; border-radius: 9999px; background: var(--c-sup-4); }
 }
 .dica { margin: 0; font-size: 11px; line-height: 14px; }
 
@@ -176,9 +172,6 @@ input {
 /* Notificações: cada interruptor num bloco, com as opções logo abaixo quando ligado. */
 .notificacao { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-sm); background: var(--c-sup-1); }
 .frequencias { grid-template-columns: repeat(3, 1fr); }
-// Variantes do grupo ativo (Commando: Jungle e Desert; Japan: Sakura, Hokusai e Sumi-e), logo abaixo dos temas;
-// as colunas vêm do número de variantes (perfil.html).
-.variantes { margin-top: 8px; }
 
 // Desafios da semana (api#38): mesma lista das conquistas; o cumprido fica aceso.
 .desafios-card { gap: 12px; }
@@ -188,3 +181,10 @@ input {
   .texto { display: flex; flex-direction: column; gap: 2px; }
   .nome-desafio { font-weight: 600; }
 }
+
+// Tema: o em uso abre a tela de temas; embaixo, o próximo a liberar com a barra do XP desde o último liberado.
+.tema-atual .amostra { flex-shrink: 0; width: 64px; }
+.proximo-tema { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: var(--r-sm); border: 1px dashed var(--c-borda); font-size: 13px; line-height: 18px; }
+.proximo-topo { display: flex; align-items: center; gap: 10px; }
+.amostra.pequena { flex-shrink: 0; width: 44px; }
+.barra-tema { height: 6px; border-radius: 6px; overflow: hidden; background: var(--c-sup-3); i { display: block; height: 100%; border-radius: 6px; background: var(--c-primaria); } }

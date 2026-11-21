@@ -14,7 +14,8 @@ import { formatarKg } from '../core/formatos';
 import { familias, metaComUnidade, visiveis } from '../core/conquistas';
 import { diasEntre, hojeIso } from '../core/peso';
 import { NO_APP } from '../core/cofre';
-import { NIVEL_DO_TEMA, Tema, aplicarTemaDaConta, lerTema, salvarTema } from '../core/tema';
+import { ORDEM_DOS_TEMAS, Tema, aplicarTemaDaConta, lerTema, nomeDoTema, proximoTema, temasLiberados } from '../core/tema';
+import { AmostraTema } from '../compartilhado/amostra-tema';
 import { GoogleCodigo, criarClienteGoogle, idTokenDoGoogle } from '../core/google';
 import { GamificacaoStore } from '../core/gamificacao-store';
 import { Perfil } from '../core/modelos';
@@ -28,14 +29,9 @@ import { EscolhaFoto, FotoPerfil, FotoPerfilDados } from './foto-perfil';
 /** Título padrão do card do usuário; vai virar um sistema de títulos por nível. */
 const TITULO_PADRAO = 'Praticante de musculação';
 
-/** 'commando-mata' → 'commando'; tema sem variante fica como está. */
-function grupoDoTema(tema: Tema): string {
-  return tema.split('-')[0];
-}
-
 @Component({
   selector: 'app-perfil',
-  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip, CuboGelo],
+  imports: [ForcaSenha, PesoSecao, TelaErro, NgTemplateOutlet, MatTooltip, CuboGelo, AmostraTema],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -110,42 +106,17 @@ export class PerfilTela implements OnInit, OnDestroy {
 
   protected readonly lembretePeso = computed(() => this.salvo()?.lembretePesoDias ?? null);
   protected readonly frequenciasPeso = [7, 15, 30];
-  /** `mascara`: ícone em PNG usado como máscara (classe em styles.scss) no lugar do ícone da fonte. */
-  protected readonly temas: readonly { valor: Tema; rotulo: string; icone: string; mascara?: string }[] = [
-    { valor: 'escuro', rotulo: 'Escuro', icone: 'dark_mode' },
-    { valor: 'claro', rotulo: 'Claro', icone: 'light_mode' },
-    { valor: 'chrome', rotulo: 'Chrome', icone: 'hexagon' },
-    { valor: 'electric', rotulo: 'Electric', icone: 'bolt' },
-    { valor: 'ignite', rotulo: 'Ignite', icone: 'local_fire_department' },
-    // Um botão só por grupo (Commando, Japan); ativo em qualquer variante dele (ver `selecionado`).
-    { valor: 'commando-mata', rotulo: 'Commando', icone: 'military_tech' },
-    { valor: 'cyberpunk', rotulo: 'Cyberpunk', icone: 'memory', mascara: 'blaster' },
-    { valor: 'japao-sakura', rotulo: 'Japan', icone: 'temple_buddhist' },
-  ];
-  /** Variantes de cada grupo, na linha que aparece embaixo quando ele está ativo. O prefixo do valor é o grupo. */
-  private readonly variantesDoGrupo: Record<string, readonly { valor: Tema; rotulo: string }[]> = {
-    commando: [
-      { valor: 'commando-mata', rotulo: 'Jungle' },
-      { valor: 'commando-deserto', rotulo: 'Desert' },
-    ],
-    japao: [
-      { valor: 'japao-sakura', rotulo: 'Sakura' },
-      { valor: 'japao-hokusai', rotulo: 'Hokusai' },
-      { valor: 'japao-sumie', rotulo: 'Sumi-e' },
-    ],
-  };
   // Relê quando o nível chega: a GamificacaoStore pode ter voltado um tema travado ao padrão (conferirTema).
   protected readonly tema = linkedSignal<Tema>(() => (this.gamificacao.dados(), lerTema()));
-  protected readonly variantes = computed(() => this.variantesDoGrupo[grupoDoTema(this.tema())] ?? null);
-  /** O botão do grupo fica marcado em qualquer variante dele. */
-  protected selecionado(valor: Tema): boolean {
-    return this.tema() === valor || (valor.includes('-') && grupoDoTema(valor) === grupoDoTema(this.tema()));
-  }
-  /** Nível que falta para escolher o tema, ou null se já pode. Sem a gamificação carregada, trava. */
-  protected nivelQueFalta(tema: Tema): number | null {
-    const minimo = NIVEL_DO_TEMA[tema];
-    return minimo && (this.gamificacao.dados()?.nivel ?? 0) < minimo ? minimo : null;
-  }
+  protected readonly nomeDoTema = nomeDoTema;
+  protected readonly totalTemas = ORDEM_DOS_TEMAS.length;
+  protected readonly temasLiberados = computed(() => temasLiberados(this.gamificacao.dados()?.nivel ?? 0));
+  /** Próximo tema a liberar, com a barra do XP desde o último liberado (some quando todos estão livres). */
+  protected readonly proximoTema = computed(() => {
+    const g = this.gamificacao.dados();
+    const p = g ? proximoTema(g.nivel, g.xpTotal) : null;
+    return p ? { ...p, pct: Math.round(p.fracao * 100) } : null;
+  });
 
   protected readonly alterado = computed(() => this.salvo()?.nome !== this.nome().trim());
   protected readonly valido = computed(() => this.nome().trim().length > 0);
@@ -286,22 +257,6 @@ export class PerfilTela implements OnInit, OnDestroy {
     });
   }
 
-  /** Salva na hora, com o nome já salvo: o que está sendo digitado no campo de nome continua lá. */
-  protected escolherTema(tema: Tema): void {
-    const nivel = this.nivelQueFalta(tema);
-    if (nivel) {
-      this.aviso.open(`Chegue ao nível ${nivel} para liberar este tema.`, 'OK', { duration: 4000 });
-      return;
-    }
-    salvarTema(tema);
-    this.tema.set(tema);
-    const salvo = this.salvo();
-    if (salvo) this.salvo.set({ ...salvo, tema });
-    this.api.escolherTema(tema).subscribe({
-      error: () => this.aviso.open('Não deu para salvar o tema na conta: ele ficou só neste aparelho.', 'OK', { duration: 5000 }),
-    });
-  }
-
   protected mudarLembretePeso(dias: number | null): void {
     const salvo = this.salvo();
     if (!salvo || salvo.lembretePesoDias === dias) return;
@@ -409,6 +364,10 @@ export class PerfilTela implements OnInit, OnDestroy {
 
   protected abrirConfiguracoes(): void {
     void this.roteador.navigate(['/configuracoes']);
+  }
+
+  protected abrirTemas(): void {
+    void this.roteador.navigate(['/temas']);
   }
 
   /** Leva junto a tela de onde a pessoa veio para o Perfil, que vai no contexto do relato. */

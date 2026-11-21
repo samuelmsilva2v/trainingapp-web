@@ -1,0 +1,32 @@
+:host { display: block; min-height: 100dvh; }
+
+.topo {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 64px;
+  padding: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) 12px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--c-fundo) 85%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 8px color-mix(in srgb, var(--c-sombra) 30%, transparent);
+}
+
+.pagina { max-width: 640px; margin: 0 auto; padding: 80px 16px 32px; display: flex; flex-direction: column; gap: 12px; }
+.intro { margin: 0; }
+.grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.card-tema {
+  display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 0; border-radius: 14px; text-align: left;
+  background: var(--c-sup-1); color: var(--c-texto); box-shadow: inset 0 0 0 1.5px transparent; transition: box-shadow 0.15s;
+  &.sel { box-shadow: inset 0 0 0 2px var(--c-destaque); }
+  // O prêmio fica à vista: o bloqueado mostra as cores, só um pouco apagadas.
+  &.travado app-amostra-tema { filter: saturate(0.75) brightness(0.92); }
+}
+.nome { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 4px; font: 700 13px/1.2 var(--fonte-corpo); }
+.estado { display: flex; align-items: center; gap: 3px; padding: 0 4px 2px; font: 600 11px/1.3 var(--fonte-corpo); color: var(--c-texto-2); .icone { font-size: 14px; } }
+.sel .estado { color: var(--c-destaque); }
+.cadeado { flex-shrink: 0; display: inline-flex; align-items: center; gap: 2px; padding: 3px 7px 3px 5px; border-radius: 9999px; background: var(--c-sup-3); font: 700 10px/1 var(--fonte-corpo); .icone { font-size: 13px; } }
+.selo-proximo { flex-shrink: 0; padding: 3px 7px; border-radius: 9999px; background: var(--c-primaria); color: var(--c-sobre-primaria); font: 800 9px/1 var(--fonte-corpo); letter-spacing: 0.05em; }

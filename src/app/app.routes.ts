@@ -34,6 +34,10 @@ export const routes: Routes = [
         loadComponent: () => import('./configuracoes/configuracoes').then(m => m.ConfiguracoesTela),
       },
       {
+        path: 'temas',
+        loadComponent: () => import('./perfil/temas/temas').then(m => m.TemasTela),
+      },
+      {
         path: 'compartilhado/:token',
         loadComponent: () => import('./planos/compartilhado/plano-compartilhado').then(m => m.PlanoCompartilhadoTela),
       },
