@@ -588,6 +588,8 @@ export class Treino implements OnInit, OnDestroy {
             panelClass: 'dialogo-confirmar',
             maxWidth: '95vw',
             width: '480px',
+            // Foco no diálogo, não no botão do fim: com o resultado longo ele abriria já rolado, escondendo o XP.
+            autoFocus: 'dialog',
             data: { sessao, antes, depois, mudancas },
           })
           .afterClosed(),
