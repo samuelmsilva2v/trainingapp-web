@@ -41,7 +41,8 @@ section { display: flex; flex-direction: column; gap: 8px; }
 
 // Celebração do tema no topo (prévias aprovadas em 2026-11-21). Roda uma vez ao abrir; o tema escolhe o efeito
 // (resultado-treino.ts). Tudo é decoração: a camada .fx não recebe toque e some com prefers-reduced-motion.
-.celebra { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 20px; margin: -8px -8px 0; padding: 8px; }
+// flex-shrink: 0: com overflow hidden o flex encolheria o bloco até cortar título e XP quando o resultado passa de 85dvh.
+.celebra { flex-shrink: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 20px; margin: -8px -8px 0; padding: 8px; }
 .fx { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
 :is(header, .xp, .sem-xp) { position: relative; z-index: 2; }
 // Escuro, Claro e Chrome: um reflexo varre o topo da esquerda para a direita (lima nos dois primeiros, branco no Chrome).
